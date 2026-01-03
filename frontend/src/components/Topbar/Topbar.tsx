@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
-import { TopbarCenter, TopbarContainer, TopbarDiv } from './style';
+import { TopbarCenter, TopbarContainer, TopbarDiv, TopbarLogo } from './style';
 
 const Topbar = () => {
   const { logout } = useAuth();
@@ -9,7 +9,9 @@ const Topbar = () => {
   return (
     <TopbarContainer>
       <TopbarCenter>
-        <TopbarDiv className="first">teste</TopbarDiv>
+        <TopbarDiv className="first">
+          <TopbarLogo src="/logo/logoGrande.svg" alt="Logotipo" />
+        </TopbarDiv>
         <TopbarDiv className="second">teste</TopbarDiv>
         <TopbarDiv className="third">teste</TopbarDiv>
       </TopbarCenter>
