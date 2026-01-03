@@ -1,0 +1,91 @@
+{
+  "env": {
+    "es2021": true,
+    "browser": true
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "next/core-web-vitals",
+    "airbnb"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "typescript", "@typescript-eslint", "prettier"],
+  "rules": {
+    "global-require": "off",
+    "no-console": "off",
+    "indent": "off",
+    "implicit-arrow-linebreak": "off",
+    "operator-linebreak": "off",
+    "arrow-body-style": "off",
+    "no-undef": "off",
+    "no-confusing-arrow": "off",
+    "no-restricted-globals": ["error", "event", "fdescribe"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "no-unused-vars": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/require-default-props": "off",
+    "react/prop-types": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-curly-newline": "off",
+    "react/jsx-indent": "off",
+    "import/prefer-default-export": "off",
+    "react/jsx-no-bind": "off",
+    "react/no-array-index-key": "off",
+    "no-param-reassign": "off",
+    "import/no-duplicates": "off",
+    "camelcase": "off",
+    "no-plusplus": "off",
+    "object-curly-newline": "off",
+    "consistent-return": "off",
+    "arrow-parens": "off",
+    "no-shadow": "off",
+    "no-nested-ternary": "off",
+    "no-useless-constructor": "off",
+    "function-paren-newline": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [".tsx"]
+      }
+    ],
+    "no-use-before-define": "off",
+    "react/react-in-jsx-scope": "off",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "prettier/prettier": "error",
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
+}
