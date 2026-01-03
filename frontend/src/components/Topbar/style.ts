@@ -4,8 +4,6 @@ export const TopbarContainer = styled.div`
   width: 100%;
   height: 50px;
 
-  border: 1px solid green;
-
   display: flex;
   justify-content: center;
   padding: 0 50px;

@@ -31,9 +31,10 @@ export const GlobalStyle = createGlobalStyle`
     text-rendering: optimizeLegibility;
     background: ${({ theme }) => theme.colors.white};
     color: ${({ theme }) => theme.colors.black};
-  }
+    font-family: var(--font-baloo2), sans-serif;
+    }
   .simplebar-track.simplebar-vertical {
-    background: ${({ theme }) => theme.colors.orange4};
+    background: ${({ theme }) => theme.colors.primaria100};
     width: 11px;
     border-radius: 20px;
     padding: 0 !important;
@@ -48,7 +49,7 @@ export const GlobalStyle = createGlobalStyle`
     z-index: 2;
   }
   .simplebar-scrollbar::before {
-    background-color: ${({ theme }) => theme.colors.orange2} !important;
+    background-color: ${({ theme }) => theme.colors.secundaria100} !important;
     border-radius: 20px !important;
     opacity: 1 !important;
     margin: 0 !important;

@@ -5,7 +5,7 @@ import { Main } from '@/app/styles';
 const HomePage = () => {
   return (
     <Main>
-      <p>Teste</p>
+      <div></div>
     </Main>
   );
 };

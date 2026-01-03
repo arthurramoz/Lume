@@ -26,7 +26,7 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="pt">
-      <body className={`${nunito.className} ${baloo2.variable}`}>
+      <body className={`${baloo2.className} ${nunito.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
