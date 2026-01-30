@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const TopbarContainer = styled.div`
   width: 100%;
-  height: 70px;
+  height: 80px;
 
   display: flex;
   justify-content: center;

@@ -1,7 +1,7 @@
 'use client';
 
 import { PropsWithChildren } from 'react';
-import Topbar from '@/components/Topbar/Topbar';
+import Topbar from '@/components/Components/Topbar/Topbar';
 import { MasterLayoutContainer, MasterLayoutContent } from './styles';
 
 const MasterLayout = ({ children }: PropsWithChildren) => {

@@ -24,8 +24,12 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
   button{
+    font-family: var(--font-baloo2), sans-serif;
     cursor: pointer;
-    }
+  }
+  input{
+    font-family: var(--font-nunito), sans-serif;
+  }
   body {
     height: 100vh;
     text-rendering: optimizeLegibility;
