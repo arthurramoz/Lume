@@ -14,7 +14,7 @@ export const Sections = styled.div`
   width: 100%;
   height: auto;
 
-  max-width: ${({ theme }) => theme.limit.screen};
+  ${({ theme }) => theme.limit.screen};
 
   display: flex;
   justify-content: center;

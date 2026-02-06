@@ -5,7 +5,7 @@ export const FooterMain = styled.div`
   height: 120px;
 
   background: ${({ theme }) => theme.colors.primaria100};
-  padding: 20px;
+  padding: 20px 50px;
 
   display: flex;
   justify-content: center;
@@ -14,7 +14,7 @@ export const FooterMain = styled.div`
 
 export const FooterCenter = styled.div`
   width: 100%;
-  max-width: ${({ theme }) => theme.limit.screen};
+  ${({ theme }) => theme.limit.screen};
   display: flex;
   justify-content: space-between;
   align-items: center;

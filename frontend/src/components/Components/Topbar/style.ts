@@ -40,4 +40,11 @@ export const TopbarDiv = styled.div`
 
 export const TopbarLogo = styled.img`
   width: 120px;
+  cursor: pointer;
+`;
+
+export const TopbarText = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.neutro100};
 `;

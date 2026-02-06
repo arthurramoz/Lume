@@ -1,4 +1,4 @@
-import { IconButton } from '../style';
+import { IconButton } from '@/components/Pages/Home/style';
 import {
   FooterCenter,
   FooterLeft,

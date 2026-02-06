@@ -65,18 +65,20 @@ const AuthProvider = ({ children }: ChildrenProps) => {
 
   const publicRoutes = ['/login', '/home'];
 
+  const guestRoutes = ['/login'];
+
+  const isPublicRoute =
+    publicRoutes.includes(pathname) || pathname.startsWith('/product');
+
   if (loading) {
     return null;
   }
 
-  if (!isAuthenticated && !publicRoutes.includes(pathname)) {
+  if (!isAuthenticated && !isPublicRoute) {
     redirect('/home');
   }
 
-  if (
-    (isAuthenticated && publicRoutes.includes(pathname)) ||
-    pathname === '/'
-  ) {
+  if (isAuthenticated && guestRoutes.includes(pathname)) {
     redirect('/home');
   }
 

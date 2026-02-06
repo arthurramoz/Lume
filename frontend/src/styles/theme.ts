@@ -25,6 +25,6 @@ export const theme = {
     black: '#000',
   },
   limit: {
-    screen: '1400px',
+    screen: 'max-width: 1400px',
   },
 } as const;

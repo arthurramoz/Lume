@@ -1,4 +1,3 @@
-import Footer from './Footer';
 import HomeSections from './Sections';
 import { Banner, Center } from './style';
 
@@ -7,7 +6,6 @@ const Home = () => {
     <Center>
       <Banner />
       <HomeSections />
-      <Footer />
     </Center>
   );
 };

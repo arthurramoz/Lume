@@ -13,8 +13,11 @@ import {
   TextsCardBook,
 } from '@/components/Pages/Home/style';
 import { formatToBRL } from '@/hooks/format';
+import { useRouter } from 'next/navigation';
+import { useGoToProduct } from '@/hooks/functions';
 
 interface Book {
+  id: number;
   title: string;
   by: string;
   price: number;
@@ -28,6 +31,8 @@ interface BookCarouselProps {
 }
 
 const BookCarousel = ({ books }: BookCarouselProps) => {
+  const goToProduct = useGoToProduct();
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (direction: 'left' | 'right') => {
@@ -50,7 +55,7 @@ const BookCarousel = ({ books }: BookCarouselProps) => {
 
       <ScrollContainer ref={scrollRef}>
         {books.map((book, index) => (
-          <CardBook key={index}>
+          <CardBook key={index} onClick={() => goToProduct(book.id)}>
             <MiddleCardBook>
               <ImageCardBook src={book.image.url} alt={book.title} />
               <TextsCardBook>
