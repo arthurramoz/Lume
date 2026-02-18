@@ -1,0 +1,13 @@
+.section-title {
+  font-family: var(--font-secundaria);
+  font-size: 32px;
+  color: var(--color-primaria100);
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  font-family: var(--font-primaria);
+  font-size: 18px;
+  color: var(--color-neutro100);
+  margin-bottom: 1.5rem;
+}

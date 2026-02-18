@@ -1,0 +1,42 @@
+export const booksMock = [
+  {
+    id: 1,
+    title: "O Dragão Azul 2",
+    by: "Lucas Andrade",
+    desc: "Uma aventura mágica sobre amizade e coragem.",
+    price: 12,
+    image: { id: 1, url: "assets/books/book1.svg" },
+  },
+  {
+    id: 2,
+    title: "A Menina das Estrelas",
+    by: "Marina Costa",
+    desc: "História infantil sobre sonhos e imaginação.",
+    price: 10,
+    image: { id: 2, url: "assets/books/book2.svg" },
+  },
+  {
+    id: 3,
+    title: "O Leão Medroso",
+    by: "Pedro Lima",
+    desc: "Um leão que aprende a vencer seus medos.",
+    price: 15,
+    image: { id: 3, url: "assets/books/book3.svg" },
+  },
+  {
+    id: 4,
+    title: "O novelo de emoções",
+    by: "Elizabete Neves",
+    desc: "Um passeio por um mundo cheio de criaturas mágicas.",
+    price: 18,
+    image: { id: 4, url: "assets/books/book4.svg" },
+  },
+  {
+    id: 5,
+    title: "O Robô Curioso",
+    by: "Carlos Souza",
+    desc: "Um robô que quer entender as emoções humanas.",
+    price: 14,
+    image: { id: 5, url: "assets/books/book1.svg" },
+  },
+];

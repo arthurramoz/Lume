@@ -1,0 +1,50 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  height: 100vh;
+  text-rendering: optimizeLegibility;
+  font-family: var(--font-primaria);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-primaria);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primaria);
+}
+
+main {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-white);
+}
+
+p,
+span,
+a {
+  font-family: var(--font-secundaria);
+}
