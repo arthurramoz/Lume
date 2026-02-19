@@ -8,8 +8,7 @@
 }
 
 .book-card {
-  min-width: 263px;
-  height: 482px;
+  height: 100%;
   padding: 14px;
   border: 1px solid var(--color-neutro20);
   border-radius: 12px;
@@ -22,11 +21,6 @@
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
-}
-
-.book-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .book-card__image {
