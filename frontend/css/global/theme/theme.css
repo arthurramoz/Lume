@@ -1,30 +1,31 @@
 :root {
-  --color-primaria100: #6165dc;
-  --color-primaria80: #8184e3;
-  --color-primaria60: #a0a3ea;
-  --color-primaria40: #c0c1f1;
-  --color-primaria20: #dfe0f8;
-  --color-secundaria100: #119da4;
-  --color-secundaria80: #41b1b6;
-  --color-secundaria60: #70c4c8;
-  --color-secundaria40: #a0d8db;
-  --color-secundaria20: #cfebed;
-  --color-neutro100: #7d7d7d;
-  --color-neutro80: #979797;
-  --color-neutro60: #b1b1b1;
-  --color-neutro40: #cbcbcb;
-  --color-neutro20: #e5e5e5;
-  --color-success1: #2dac3e;
-  --color-success2: #abdeb1;
-  --color-error1: #de3737;
-  --color-error2: #ffd2d2;
-  --color-warning1: #e1cf36;
-  --color-warning2: #fffacb;
-  --color-white: #ffffff;
-  --color-black: #000000;
+    --color-primaria100: #6165dc;
+    --color-primaria80: #8184e3;
+    --color-primaria60: #a0a3ea;
+    --color-primaria40: #c0c1f1;
+    --color-primaria20: #dfe0f8;
+    --color-secundaria100: #119da4;
+    --color-secundaria80: #41b1b6;
+    --color-secundaria60: #70c4c8;
+    --color-secundaria40: #a0d8db;
+    --color-secundaria20: #cfebed;
+    --color-neutro100: #7d7d7d;
+    --color-neutro80: #979797;
+    --color-neutro60: #b1b1b1;
+    --color-neutro40: #cbcbcb;
+    --color-neutro20: #e5e5e5;
+    --color-success1: #2dac3e;
+    --color-success2: #abdeb1;
+    --color-error1: #de3737;
+    --color-error2: #ffd2d2;
+    --color-warning1: #e1cf36;
+    --color-warning2: #fffacb;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-background: #fdfdfd;
 
-  --font-primaria: "Nunito", sans-serif;
-  --font-secundaria: "Baloo 2", cursive;
+    --font-primaria: "Nunito", sans-serif;
+    --font-secundaria: "Baloo 2", cursive;
 
-  --font-limit-screen: 1400px;
+    --font-limit-screen: 1400px;
 }

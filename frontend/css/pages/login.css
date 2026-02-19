@@ -1,0 +1,29 @@
+.login-container {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    display: flex;
+}
+
+.login-container-left {
+    flex: 1;
+    background-color: var(--color-background);
+    height: 100%;
+}
+
+.login-container-right {
+    flex: 1;
+    background-image: url("../../assets/images/background-login.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+}
+
+.back {
+    font-family: var(--font-secundaria);
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--color-primaria100);
+    display: flex;
+}
