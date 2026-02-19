@@ -17,10 +17,59 @@
                         <a href="/">Voltar</a>
                     </div>
                     <img src="../assets/images/logo-lume.svg" />
-                    <p>Cada página é uma nova aventura</p>
+
+                    <div class="login-texts">
+                        <p class="login-title">
+                            Cada página é uma nova aventura
+                        </p>
+                        <p class="login-subtitle">
+                            Insira seus dados para continuar
+                        </p>
+                    </div>
+
+                    <div class="login-form-inputs">
+                        <label for="email">E-mail</label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Digite seu e-mail"
+                            required
+                        />
+                    </div>
+                    <div class="login-form-inputs">
+                        <label for="senha">Senha</label>
+                        <div class="input-password">
+                            <input
+                                type="password"
+                                id="senha"
+                                placeholder="Digite sua senha"
+                                required
+                            />
+                            <button type="button" id="toggleSenha">
+                                <img src="../assets/icons/eye-off-icon.svg" />
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="book-card__btn">Entrar</button>
                 </div>
             </div>
             <div class="login-container-right"></div>
         </main>
+        <script>
+            const input = document.getElementById("senha");
+            const botao = document.getElementById("toggleSenha");
+
+            botao.addEventListener("click", function () {
+                if (input.type === "password") {
+                    input.type = "text";
+                    botao.innerHTML =
+                        '<img src="../assets/icons/eye-open-icon.svg" alt="Mostrar" />';
+                } else {
+                    input.type = "password";
+                    botao.innerHTML =
+                        '<img src="../assets/icons/eye-off-icon.svg" alt="Ocultar" />';
+                }
+            });
+        </script>
     </body>
 </html>

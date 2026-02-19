@@ -1,0 +1,21 @@
+input {
+    padding: 12px 14px;
+    border: 1px solid var(--color-neutro20);
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: normal;
+    width: 100%;
+    background-color: var(--color-background);
+    outline: none;
+}
+
+input::placeholder {
+    color: var(--color-neutro100);
+}
+
+label {
+    font-size: 18px;
+    font-family: var(--font-secundaria);
+    font-weight: bold;
+    color: var(--color-neutro80);
+}
