@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "/pages/login.html"
+    },
+    {
+      "source": "/product",
+      "destination": "/pages/product.html"
+    }
+  ]
+}
