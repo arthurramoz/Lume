@@ -4,11 +4,11 @@
   "rewrites": [
     {
       "source": "/login",
-      "destination": "/pages/login.html"
+      "destination": "/pages/login"
     },
     {
       "source": "/product",
-      "destination": "/pages/product.html"
+      "destination": "/pages/product"
     }
   ]
 }
