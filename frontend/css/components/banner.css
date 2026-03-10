@@ -2,5 +2,8 @@
   width: 100%;
   height: 360px;
   background-color: var(--color-neutro20);
-  margin-bottom: 2rem;
+  background-image: url("/assets/images/banner.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
