@@ -1,86 +1,87 @@
 .login-container {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
 }
 
 .login-container-left {
-    flex: 1;
-    background-color: var(--color-background);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  flex: 1;
+  background-color: var(--color-background);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-container-right {
-    flex: 1;
-    background-image: url("../../assets/images/background-login.svg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100%;
+  flex: 1;
+  background-image: url("../../assets/images/background-login.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
 }
 
 .back {
-    font-family: var(--font-secundaria);
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--color-primaria100);
-    display: flex;
+  font-family: var(--font-secundaria);
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-primaria100);
+  display: flex;
+  cursor: pointer;
 }
 
 .login-title {
-    font-family: var(--font-secundaria);
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--color-primaria100);
+  font-family: var(--font-secundaria);
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--color-primaria100);
 }
 
 .login-subtitle {
-    font-family: var(--font-secundaria);
-    font-size: 20px;
-    font-weight: medium;
-    color: var(--color-neutro100);
+  font-family: var(--font-secundaria);
+  font-size: 20px;
+  font-weight: medium;
+  color: var(--color-neutro100);
 }
 
 .login-form-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 
 .input-password {
-    position: relative;
+  position: relative;
 }
 .input-password button {
-    position: absolute;
-    right: 12px;
-    top: 56%;
-    transform: translateY(-50%);
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 16px;
+  position: absolute;
+  right: 12px;
+  top: 56%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .input-password button img {
-    width: 22px;
+  width: 22px;
 }
 
 .login-container-left-main {
-    width: 412px;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    align-items: start;
+  width: 412px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: start;
 }
 
 .login-texts {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
