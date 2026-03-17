@@ -1,0 +1,41 @@
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 18px;
+  margin-top: 40px;
+}
+
+.pagination-info {
+  font-family: var(--font-primaria);
+  font-size: 16px;
+  color: var(--color-neutro100);
+  font-weight: 600;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--color-neutro100);
+  font-family: var(--font-primaria);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page-number.active {
+  background-color: var(--color-primaria100);
+  color: var(--color-white);
+}

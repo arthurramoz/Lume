@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/users.css" />
+    <link rel="stylesheet" href="/css/components/table.css" />
+    <link rel="stylesheet" href="/css/components/pagination.css" />
+
+    <title>Lume | Usuários</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="navbar"></div>
+
+      <div class="list">
+        <header class="list-header">
+          <h1 class="list-title">Usuários</h1>
+          <div class="list-actions">
+            <div class="search-input-wrapper">
+              <img src="/assets/icons/search.svg" alt="" />
+              <input type="text" placeholder="Pesquise por nome" />
+            </div>
+            <button class="btn-primary">
+              <img src="/assets/icons/users-plus.svg" alt="+" width="16" />
+              Adicionar
+            </button>
+          </div>
+        </header>
+
+        <div class="table-container">
+          <div class="table-header users-table">
+            <span>Código</span>
+            <span>Nome</span>
+            <span>E-mail</span>
+            <span>Telefone</span>
+            <span>Status</span>
+            <span>Ações</span>
+          </div>
+
+          <div class="table-body"></div>
+        </div>
+
+        <footer class="pagination">
+          <span class="pagination-info">Mostrando 1 de 1</span>
+          <div class="pagination-controls">
+            <button class="icon-btn">
+              <img
+                src="/assets/icons/users-pagination-left.svg"
+                alt="Anterior"
+              />
+            </button>
+            <button class="page-number active">1</button>
+            <button class="icon-btn">
+              <img
+                src="/assets/icons/users-pagination-right.svg"
+                alt="Próximo"
+              />
+            </button>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>
