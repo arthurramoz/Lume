@@ -7,9 +7,33 @@ export const initDashboard = () => {
   if (!btnGenerate || !ctx) return;
 
   const mockChartData = {
-    labels: ["O corajoso Pinguim", "Um Dia Muito Mal Humorada"],
-    data: [58, 25],
-    year: "2026",
+    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+    datasets: [
+      {
+        label: "O corajoso Pinguim",
+        data: [12, 19, 15, 25, 22, 30],
+        borderColor: "#6165dc",
+        backgroundColor: "#6165dc",
+        borderWidth: 2,
+        pointBackgroundColor: "#6165dc",
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: false,
+        tension: 0.1,
+      },
+      {
+        label: "Um Dia Muito Mal Humorada",
+        data: [5, 10, 8, 15, 12, 20],
+        borderColor: "#119da4",
+        backgroundColor: "#119da4",
+        borderWidth: 2,
+        pointBackgroundColor: "#119da4",
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: false,
+        tension: 0.1,
+      },
+    ],
   };
 
   let salesChart = null;
@@ -26,20 +50,7 @@ export const initDashboard = () => {
       type: "line",
       data: {
         labels: mockChartData.labels,
-        datasets: [
-          {
-            label: mockChartData.year,
-            data: mockChartData.data,
-            borderColor: "#6165dc",
-            backgroundColor: "#6165dc",
-            borderWidth: 2,
-            pointBackgroundColor: "#6165dc",
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            fill: false,
-            tension: 0.1,
-          },
-        ],
+        datasets: mockChartData.datasets,
       },
       options: {
         responsive: true,
@@ -50,7 +61,9 @@ export const initDashboard = () => {
             position: "bottom",
             labels: {
               usePointStyle: true,
-              boxWidth: 8,
+              boxWidth: 6,
+              boxHeight: 6,
+              padding: 12,
               font: {
                 family: "'Nunito', sans-serif",
                 size: 14,
@@ -100,4 +113,6 @@ export const initDashboard = () => {
   btnGenerate.addEventListener("click", () => {
     renderChart();
   });
+
+  renderChart();
 };
