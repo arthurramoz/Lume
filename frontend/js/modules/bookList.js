@@ -31,12 +31,4 @@ export const initBookList = () => {
   if (!container) return;
 
   container.innerHTML = booksMock.map(createBookCard).join("");
-
-  container.addEventListener("click", (event) => {
-    const btn = event.target.closest(".book-card__btn");
-
-    if (!btn) return;
-
-    window.location.href = "/login";
-  });
 };
