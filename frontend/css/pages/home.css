@@ -101,7 +101,6 @@
   gap: 24px;
 }
 
-/* Modificação no Card do Livro para suportar display grid na home */
 .catalog-grid .book-card {
   scroll-snap-align: none;
   height: auto;

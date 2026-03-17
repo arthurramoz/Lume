@@ -12,6 +12,12 @@ export const initTopbar = () => {
   const rightContentHTML = isAuthenticated
     ? `
       <div class="topbar__logged-actions">
+        <a href="/pages/admin/users" class="topbar__action-link" aria-label="Admin">
+         <span>Admin</span>
+        </a>
+
+        <div class="topbar__divider"></div>
+
         <a href="/pages/cart.html" class="topbar__action-link" aria-label="Carrinho">
           <img src="/assets/icons/home-cart.svg" alt="Carrinho" width="24" />
         </a>
