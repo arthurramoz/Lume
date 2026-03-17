@@ -16,9 +16,15 @@ const loadUser = () => {
   }
 };
 
-export const getUser = () => currentUser;
+export const getUser = () => {
+  loadUser();
+  return currentUser;
+};
 
-export const getIsAuthenticated = () => !!currentUser?.id;
+export const getIsAuthenticated = () => {
+  loadUser();
+  return !!currentUser?.id;
+};
 
 export const logout = () => {
   localStorage.removeItem(localStorageKeys.user);

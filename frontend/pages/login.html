@@ -51,26 +51,6 @@
       </div>
       <div class="login-container-right"></div>
     </main>
-    <script>
-      const input = document.getElementById("senha");
-      const botao = document.getElementById("toggleSenha");
-      const backBtn = document.querySelector(".back");
-
-      botao.addEventListener("click", function () {
-        if (input.type === "password") {
-          input.type = "text";
-          botao.innerHTML =
-            '<img src="../assets/icons/eye-open-icon.svg" alt="Mostrar" />';
-        } else {
-          input.type = "password";
-          botao.innerHTML =
-            '<img src="../assets/icons/eye-off-icon.svg" alt="Ocultar" />';
-        }
-      });
-
-      backBtn.addEventListener("click", function () {
-        window.location.href = "/";
-      });
-    </script>
+    <script type="module" src="../js/login.js"></script>
   </body>
 </html>

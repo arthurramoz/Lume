@@ -1,0 +1,123 @@
+.catalog-section {
+  margin-top: 60px;
+}
+
+.catalog-title {
+  color: var(--color-secundaria100);
+}
+
+.catalog-layout {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+  align-items: flex-start;
+}
+
+.catalog-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-filter-group {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-neutro40);
+}
+
+.catalog-filter-group--first {
+  padding-top: 0;
+  padding-bottom: 16px;
+}
+
+.catalog-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.catalog-filter-title {
+  font-family: var(--font-secundaria);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-primaria100);
+  margin-bottom: 16px;
+}
+.catalog-filter-group--first .catalog-filter-title {
+  margin-bottom: 0;
+}
+
+.catalog-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-neutro40);
+  border-radius: 8px;
+  font-family: var(--font-primaria);
+  font-size: 14px;
+  color: var(--color-neutro80);
+  background-color: var(--color-white);
+  outline: none;
+  cursor: pointer;
+}
+
+.catalog-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.catalog-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-primaria);
+  font-size: 14px;
+  color: var(--color-neutro80);
+  cursor: pointer;
+}
+
+.catalog-checkbox input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-secundaria100);
+}
+
+.catalog-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-search {
+  width: 100%;
+  max-width: none;
+  margin-bottom: 32px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Modificação no Card do Livro para suportar display grid na home */
+.catalog-grid .book-card {
+  scroll-snap-align: none;
+  height: auto;
+}
+
+.book-card__status {
+  margin-top: 8px;
+  font-family: var(--font-primaria);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.book-card__status--available {
+  color: #27ae60;
+}
+
+.book-card__status--unavailable {
+  color: #ff6b6b;
+}

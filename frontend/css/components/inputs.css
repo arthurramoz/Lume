@@ -5,6 +5,7 @@ input {
   font-size: 16px;
   font-weight: normal;
   width: 100%;
+  color: #727376;
   background-color: var(--color-background);
   outline: none;
 }
@@ -16,8 +17,8 @@ input::placeholder {
 label {
   font-size: 18px;
   font-family: var(--font-secundaria);
-  font-weight: bold;
-  color: var(--color-neutro80);
+  font-weight: 500;
+  color: var(--color-neutro100);
 }
 
 .label-admin {

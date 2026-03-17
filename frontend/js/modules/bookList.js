@@ -1,7 +1,7 @@
 import { booksMock } from "../mock/books.js";
 import { formatCurrency } from "../utils/format.js";
 
-const createBookCard = (book) => `
+const createBookCard = (book, isCatalog = false) => `
   <div class="book-card" data-id="${book.id}">
     <img
       src="${book.image.url}"
@@ -13,6 +13,13 @@ const createBookCard = (book) => `
     <div class="book-card__content">
       <h3 class="book-card__title">${book.title}</h3>
       <span class="book-card__author">${book.by}</span>
+      ${
+        isCatalog
+          ? `<span class="book-card__status ${book.id % 2 === 0 ? "book-card__status--unavailable" : "book-card__status--available"}">
+              ${book.id % 2 === 0 ? "Indisponível" : "Disponível"}
+             </span>`
+          : ""
+      }
     </div>
 
     <div class="book-card__footer">
@@ -27,8 +34,18 @@ const createBookCard = (book) => `
 
 export const initBookList = () => {
   const container = document.querySelector(".book-list");
+  const catalogContainer = document.querySelector("#catalog-grid");
 
-  if (!container) return;
+  if (container) {
+    container.innerHTML = booksMock
+      .map((book) => createBookCard(book, false))
+      .join("");
+  }
 
-  container.innerHTML = booksMock.map(createBookCard).join("");
+  if (catalogContainer) {
+    const extendedMock = [...booksMock, ...booksMock, ...booksMock].slice(0, 9);
+    catalogContainer.innerHTML = extendedMock
+      .map((book) => createBookCard(book, true))
+      .join("");
+  }
 };

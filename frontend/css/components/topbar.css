@@ -35,3 +35,35 @@
   font-size: 18px;
   text-decoration: none;
 }
+
+.topbar__logged-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.topbar__divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-neutro40);
+}
+
+.topbar__action-link,
+.topbar__action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-primaria);
+  font-size: 16px;
+  color: var(--color-neutro100);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.topbar__center {
+  flex: 1;
+}

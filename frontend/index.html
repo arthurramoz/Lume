@@ -1,71 +1,177 @@
 <!doctype html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link rel="shortcut icon" href="assets/icons/favicon.ico" />
-        <link rel="stylesheet" href="css/main.css" />
-        <link rel="stylesheet" href="css/components/footer.css" />
-        <link rel="stylesheet" href="css/components/topbar.css" />
+    <link rel="shortcut icon" href="assets/icons/favicon.ico" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/components/footer.css" />
+    <link rel="stylesheet" href="css/components/topbar.css" />
+    <link rel="stylesheet" href="css/components/inputs.css" />
+    <link rel="stylesheet" href="css/components/pagination.css" />
+    <link rel="stylesheet" href="css/pages/home.css" />
 
-        <title>Lume | Home</title>
-    </head>
-    <body>
-        <main class="landing">
-            <header class="topbar"></header>
+    <title>Lume | Home</title>
+  </head>
+  <body>
+    <main class="landing">
+      <header class="topbar"></header>
 
-            <div class="l-center">
-                <div class="banner"></div>
+      <div class="l-center">
+        <div class="banner"></div>
 
-                <div class="l-container">
-                    <section class="l-section">
-                        <header>
-                            <h2 class="section-title">
-                                Favoritos dos pequenos leitores
-                            </h2>
-                            <p class="section-subtitle">
-                                Descubra por que esses livros fazem tanto
-                                sucesso!
-                            </p>
-                        </header>
+        <div class="l-container">
+          <section class="l-section">
+            <header>
+              <h2 class="section-title">Favoritos dos pequenos leitores</h2>
+              <p class="section-subtitle">
+                Descubra por que esses livros fazem tanto sucesso!
+              </p>
+            </header>
 
-                        <div class="book-list"></div>
-                    </section>
+            <div class="book-list"></div>
+          </section>
+
+          <section class="l-section catalog-section">
+            <header>
+              <h2 class="section-title catalog-title">
+                Explore o nosso catálogo de livros!
+              </h2>
+              <p class="section-subtitle">
+                Use os filtros e encontre o livro perfeito.
+              </p>
+            </header>
+
+            <div class="catalog-layout">
+              <aside class="catalog-sidebar">
+                <div class="catalog-filter-group catalog-filter-group--first">
+                  <div class="catalog-filter-header">
+                    <h3 class="catalog-filter-title">Filtrar</h3>
+                    <img src="assets/icons/home-filter.svg" alt="Filtro" />
+                  </div>
                 </div>
 
-                <footer class="footer-main">
-                    <div class="footer-main__wrapper">
-                        <div class="footer-main__left">
-                            <p class="footer-main__text">
-                                <strong>Fale conosco</strong>
-                            </p>
-                            <a
-                                href="#"
-                                class="footer-main__text footer-main__link"
-                            >
-                                <img
-                                    src="assets/icons/email.svg"
-                                    alt=""
-                                    width="24"
-                                    height="24"
-                                />
-                                www.contato@lume.com
-                            </a>
-                        </div>
+                <div class="catalog-filter-group">
+                  <h3 class="catalog-filter-title">Ordenar por</h3>
+                  <select class="catalog-select">
+                    <option>Selecione</option>
+                    <option>Preço - Menor para maior</option>
+                    <option>Preço - Maior para menor</option>
+                    <option>A-Z</option>
+                  </select>
+                </div>
 
-                        <div class="footer-main__right">
-                            <img
-                                src="assets/images/logo-lume.svg"
-                                alt="Lume"
-                                class="footer-main__logo"
-                            />
-                        </div>
-                    </div>
-                </footer>
+                <div class="catalog-filter-group">
+                  <h3 class="catalog-filter-title">Autor</h3>
+                  <div class="catalog-checkbox-list">
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Tracey Cory
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Tim Warnes
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Cornelia Maude
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Elizabete Neves
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Pedro Cardoso
+                    </label>
+                  </div>
+                </div>
+
+                <div class="catalog-filter-group">
+                  <h3 class="catalog-filter-title">Gênero</h3>
+                  <div class="catalog-checkbox-list">
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Educação
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Aventura
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Fantasia
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Lição de moral
+                    </label>
+                    <label class="catalog-checkbox">
+                      <input type="checkbox" /> Bebês
+                    </label>
+                  </div>
+                </div>
+              </aside>
+
+              <div class="catalog-content">
+                <div class="search-input-wrapper catalog-search">
+                  <img src="/assets/icons/search.svg" alt="Buscar" width="20" />
+                  <input
+                    type="text"
+                    placeholder="Pesquise por autores, gêneros, títulos..."
+                  />
+                </div>
+
+                <div class="catalog-grid" id="catalog-grid"></div>
+
+                <div class="pagination">
+                  <span class="pagination-info">Mostrando 06 de 300</span>
+                  <div class="pagination-controls">
+                    <button class="page-number">
+                      <img
+                        src="/assets/icons/users-pagination-left.svg"
+                        alt="Anterior"
+                      />
+                    </button>
+                    <button class="page-number active">1</button>
+                    <button class="page-number">2</button>
+                    <button class="page-number">3</button>
+                    <span class="page-number">..</span>
+                    <button class="page-number">30</button>
+                    <button class="page-number">
+                      <img
+                        src="/assets/icons/users-pagination-right.svg"
+                        alt="Próximo"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-        </main>
+          </section>
+        </div>
 
-        <script type="module" src="js/main.js"></script>
-    </body>
+        <footer class="footer-main">
+          <div class="footer-main__wrapper">
+            <div class="footer-main__left">
+              <p class="footer-main__text">
+                <strong>Fale conosco</strong>
+              </p>
+              <a href="#" class="footer-main__text footer-main__link">
+                <img
+                  src="assets/icons/email.svg"
+                  alt=""
+                  width="24"
+                  height="24"
+                />
+                www.contato@lume.com
+              </a>
+            </div>
+
+            <div class="footer-main__right">
+              <img
+                src="assets/images/logo-lume.svg"
+                alt="Lume"
+                class="footer-main__logo"
+              />
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
 </html>

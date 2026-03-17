@@ -1,15 +1,15 @@
 export const booksMock = [
   {
     id: 1,
-    title: "O Dragão Azul 2",
-    by: "Lucas Andrade",
+    title: "O Corajoso Pinguim",
+    by: "Tracey Corderoy",
     desc: "Uma aventura mágica sobre amizade e coragem.",
     price: 12,
     image: { id: 1, url: "assets/books/book1.svg" },
   },
   {
     id: 2,
-    title: "A Menina das Estrelas",
+    title: "Perigoso! Este livro contém coelhos!",
     by: "Marina Costa",
     desc: "História infantil sobre sonhos e imaginação.",
     price: 10,
@@ -17,7 +17,7 @@ export const booksMock = [
   },
   {
     id: 3,
-    title: "O Leão Medroso",
+    title: "Livro Como eu me sinto...Quando tenho medo",
     by: "Pedro Lima",
     desc: "Um leão que aprende a vencer seus medos.",
     price: 15,
