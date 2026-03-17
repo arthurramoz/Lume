@@ -26,6 +26,7 @@
 
 .navbar .top img {
   width: 140px;
+  cursor: pointer;
 }
 
 .navbar .middle {

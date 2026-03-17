@@ -9,7 +9,7 @@
     {
       "source": "/product",
       "destination": "/pages/product"
-    }
+    },
     {
       "source": "/admin/users",
       "destination": "/pages/admin/users"

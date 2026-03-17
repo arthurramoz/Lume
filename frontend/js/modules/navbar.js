@@ -5,7 +5,7 @@ export const initAdminNavbar = () => {
 
   navbar.innerHTML = `
     <div class="top">
-      <img src="/assets/images/logo-lume.svg" alt="Logo Lume" />
+        <img src="/assets/images/logo-lume.svg" alt="Logo Lume" class="logo" />
     </div>
     <div class="middle">
       <div class="option">
@@ -33,11 +33,18 @@ export const initAdminNavbar = () => {
     </div>
   `;
 
+  const logo = document.querySelector(".logo");
   const logoutBtn = document.querySelector("#logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
       window.location.href = "/login.html";
+    });
+  }
+
+  if (logo) {
+    logo.addEventListener("click", function () {
+      window.location.href = "/";
     });
   }
 };
