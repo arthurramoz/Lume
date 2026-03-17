@@ -1,0 +1,71 @@
+.navbar {
+  box-shadow: 0 0 10px #00000022;
+  width: 300px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
+.navbar div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.navbar .top {
+  flex: 2;
+  border-bottom: 1px solid var(--color-neutro20);
+}
+
+.navbar .top img {
+  width: 140px;
+  cursor: pointer;
+}
+
+.navbar .middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding: 24px;
+  gap: 30px;
+  flex: 12;
+}
+
+.navbar .middle .option {
+  display: flex;
+  justify-content: start;
+  gap: 14px;
+  font-size: 20px;
+  color: var(--color-neutro60);
+  font-weight: 480;
+}
+
+.navbar .middle .option img {
+  width: 24px;
+}
+
+.navbar .bottom {
+  display: flex;
+  justify-content: start;
+  border-top: 1px solid var(--color-neutro20);
+  flex: 2;
+
+  padding: 24px;
+  align-items: start;
+}
+
+.navbar .bottom .logout {
+  align-items: center;
+  display: flex;
+  justify-content: start;
+  gap: 14px;
+  font-size: 20px;
+  color: var(--color-neutro60);
+  font-weight: 480;
+}
+
+.navbar .bottom img {
+  width: 24px;
+  height: 24px;
+}

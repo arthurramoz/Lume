@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/components/navbar.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+    <link rel="stylesheet" href="/css/components/inputs.css" />
+    <link rel="stylesheet" href="/css/pages/dashboard.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <title>Lume | Dashboard</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="navbar"></div>
+
+      <div class="page-content">
+        <header class="dashboard-header">
+          <h1 class="dashboard-title">Dashboard</h1>
+          <p class="dashboard-subtitle">
+            Visualize o volume de vendas por produto ou categoria em períodos
+            personalizados
+          </p>
+        </header>
+
+        <section class="filters-card">
+          <div class="filters-header">
+            <img src="/assets/icons/filter.svg" alt="" width="30" />
+            <span>Filtros de análise</span>
+          </div>
+
+          <div class="filters-body">
+            <div class="input-group">
+              <p class="label-admin">Data inicial</p>
+              <div class="input-wrapper">
+                <input type="text" placeholder="dd/mm/aaaa" />
+                <img
+                  src="/assets/icons/dashboard-calendar.svg"
+                  alt="calendario"
+                  width="20"
+                />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <p class="label-admin">Data final</p>
+              <div class="input-wrapper">
+                <input type="text" placeholder="dd/mm/aaaa" />
+                <img
+                  src="/assets/icons/dashboard-calendar.svg"
+                  alt="calendario"
+                  width="20"
+                />
+              </div>
+            </div>
+
+            <button class="btn-primary" id="btn-generate">Gerar análise</button>
+          </div>
+        </section>
+
+        <section class="chart-card">
+          <div class="empty-state" id="dashboard-empty">
+            <img src="/assets/icons/dashboard-no-data.svg" alt="Nenhum dado" />
+            <h3 class="empty-state__title">Nenhum dado para exibir</h3>
+            <p class="empty-state__text">
+              Selecione um produto, defina o período e clique em "Gerar Análise"
+              para visualizar os dados de vendas.
+            </p>
+          </div>
+
+          <div class="chart-container" id="dashboard-data">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

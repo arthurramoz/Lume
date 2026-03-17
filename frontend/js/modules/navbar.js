@@ -10,19 +10,19 @@ export const initAdminNavbar = () => {
     <div class="middle">
       <div class="option nav-users">
         <img src="/assets/icons/users-off.svg" alt="Ícone" />
-        <a href="/admin/users.html">Usuários</a>
+        <a href="/pages/admin/users">Usuários</a>
       </div>
       <div class="option nav-dashboard">
         <img src="/assets/icons/dashboard-off.svg" alt="Ícone" />
-        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/pages/admin/dashboard">Dashboard</a>
       </div>
       <div class="option nav-orders">
         <img src="/assets/icons/orders-off.svg" alt="Ícone" />
-        <a href="/admin/orders.html">Pedidos</a>
+        <a href="/pages/admin/orders">Pedidos</a>
       </div>
       <div class="option nav-cupons">
         <img src="/assets/icons/cupons-off.svg" alt="Ícone" />
-        <a href="/admin/cupons.html">Cupons</a>
+        <a href="/pages/admin/cupons">Cupons</a>
       </div>
     </div>
     <div class="bottom">
@@ -72,13 +72,13 @@ export const initAdminNavbar = () => {
 
   const logo = document.querySelector(".logo");
   const logoutBtn = document.querySelector("#logout-btn");
+
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
       window.location.href = "/login.html";
     });
   }
-
   if (logo) {
     logo.addEventListener("click", function () {
       window.location.href = "/";
