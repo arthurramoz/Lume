@@ -29,3 +29,82 @@
 .users-table {
   grid-template-columns: 100px 2fr 2fr 1.5fr 1fr 120px !important;
 }
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-secundaria);
+  font-size: 18px;
+  color: var(--color-primaria100);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+}
+
+.user-form {
+  margin-top: 24px;
+}
+
+.user-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 24px;
+  column-gap: 32px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+select {
+  padding: 12px 14px;
+  border: 1px solid var(--color-neutro20);
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: var(--font-primaria);
+  width: 100%;
+  color: #727376;
+  background-color: var(--color-background);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23727376' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}

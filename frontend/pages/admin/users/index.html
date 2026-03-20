@@ -68,5 +68,31 @@
     </main>
 
     <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      const btnAdicionar = document.querySelector(".btn-primary");
+
+      if (btnAdicionar) {
+        btnAdicionar.addEventListener("click", () => {
+          window.location.href = "/pages/admin/users/create/index.html";
+        });
+      }
+
+      const tableBody = document.querySelector(".table-body");
+      if (tableBody) {
+        tableBody.addEventListener("click", (e) => {
+          const editBtn = e.target.closest('button[aria-label="Editar"]');
+          if (editBtn) {
+            const row = editBtn.closest(".table-row");
+            if (row) {
+              let idText = row.querySelector(".col-code").textContent.trim();
+              if (idText.startsWith("#")) {
+                idText = idText.substring(1);
+              }
+              window.location.href = `/pages/admin/users/edit/index.html?id=${encodeURIComponent(idText)}`;
+            }
+          }
+        });
+      }
+    </script>
   </body>
 </html>

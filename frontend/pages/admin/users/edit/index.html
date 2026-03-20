@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/users.css" />
+    <link rel="stylesheet" href="/css/components/navbar.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Editar Usuário</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="navbar"></div>
+
+      <div class="list">
+        <a href="/pages/admin/users/index.html" class="back-link">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          Voltar
+        </a>
+
+        <div class="create-header">
+          <h1 class="section-title">Editar usuário</h1>
+          <p class="section-subtitle">Edite os dados do usuário</p>
+        </div>
+
+        <form id="edit-user-form" class="user-form">
+          <div class="user-form-grid">
+            <div class="form-group">
+              <label class="label-admin" for="nome"
+                >Nome completo <span style="color: red">*</span></label
+              >
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                placeholder="Carolina Santos"
+                value="Carolina Santos"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="email"
+                >E-mail <span style="color: red">*</span></label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Digite o e-mail"
+                value="carolina.santos@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="telefone"
+                >Telefone <span style="color: red">*</span></label
+              >
+              <input
+                type="text"
+                id="telefone"
+                name="telefone"
+                placeholder="(11) 95643-6584"
+                value="(11) 95643-6584"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="cpf"
+                >CPF <span style="color: red">*</span></label
+              >
+              <input
+                type="text"
+                id="cpf"
+                name="cpf"
+                placeholder="123.456.789-10"
+                value="123.456.789-10"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="data_nascimento"
+                >Data de nascimento <span style="color: red">*</span></label
+              >
+              <input
+                type="date"
+                id="data_nascimento"
+                name="data_nascimento"
+                value="1990-08-12"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="genero"
+                >Gênero <span style="color: red">*</span></label
+              >
+              <select id="genero" name="genero" required>
+                <option value="" disabled>Selecione</option>
+                <option value="Feminino" selected>Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Outro">Outro</option>
+                <option value="Prefiro não dizer">Prefiro não dizer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-btn">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script type="module" src="/js/main.js"></script>
+    <script>
+      function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+
+        if (input.type === "password") {
+          input.type = "text";
+        } else {
+          input.type = "password";
+        }
+      }
+
+      document
+        .getElementById("edit-user-form")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const senha = document.getElementById("senha").value;
+          const confirmarSenha =
+            document.getElementById("confirmar_senha").value;
+
+          if (senha || confirmarSenha) {
+            if (senha !== confirmarSenha) {
+              alert("As senhas não coincidem!");
+              return;
+            }
+          }
+
+          const success = confirm("Deseja salvar as alterações deste usuário?");
+          if (success) {
+            alert("Usuário editado com sucesso!");
+            window.location.href = "/pages/admin/users/index.html";
+          }
+        });
+
+      document.getElementById("cancel-btn").addEventListener("click", () => {
+        if (
+          confirm(
+            "Deseja realmente cancelar? As alterações não salvas serão perdidas.",
+          )
+        ) {
+          window.location.href = "/pages/admin/users/index.html";
+        }
+      });
+    </script>
+  </body>
+</html>
