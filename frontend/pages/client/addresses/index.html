@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/client.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Meus Endereços</title>
+  </head>
+  <body>
+    <div class="client-page">
+      <header class="client-topbar"></header>
+
+      <div class="client-content">
+        <aside class="client-sidebar"></aside>
+
+        <section class="client-main">
+          <h1 class="client-main__title">Meus endereços</h1>
+
+          <div class="client-section" id="section-entrega">
+            <h2 class="client-section__title">Endereços de entrega</h2>
+            <div id="list-entrega"></div>
+            <div class="client-add-btn">
+              <button class="btn-primary" id="btn-add-entrega">
+                <img src="/assets/icons/users-plus.svg" alt="+" width="16" />
+                Adicionar
+              </button>
+            </div>
+          </div>
+
+          <div class="client-section" id="section-cobranca">
+            <h2 class="client-section__title">Endereços de cobrança</h2>
+            <div id="list-cobranca"></div>
+            <div class="client-add-btn">
+              <button class="btn-primary" id="btn-add-cobranca">
+                <img src="/assets/icons/users-plus.svg" alt="+" width="16" />
+                Adicionar
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="client-footer"></footer>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      async function fetchAddresses() {
+        try {
+          const res = await fetch("http://localhost:3333/api/addresses");
+          if (!res.ok) throw new Error("Erro ao carregar endereços");
+          return await res.json();
+        } catch (error) {
+          console.error(error);
+          return [];
+        }
+      }
+
+      async function renderAddresses() {
+        const listEntrega = document.getElementById("list-entrega");
+        const listCobranca = document.getElementById("list-cobranca");
+
+        const addresses = await fetchAddresses();
+
+        const entrega = addresses.filter(a => a.is_delivery);
+        const cobranca = addresses.filter(a => a.is_billing);
+
+        if (entrega.length === 0) {
+          listEntrega.innerHTML = "<p style='color: var(--color-neutro60); padding: 12px; font-size: 14px;'>Nenhum endereço de entrega cadastrado.</p>";
+        } else {
+          listEntrega.innerHTML = entrega.map(a => createAddressItem(a)).join("");
+        }
+
+        if (cobranca.length === 0) {
+          listCobranca.innerHTML = "<p style='color: var(--color-neutro60); padding: 12px; font-size: 14px;'>Nenhum endereço de cobrança cadastrado.</p>";
+        } else {
+          listCobranca.innerHTML = cobranca.map(a => createAddressItem(a)).join("");
+        }
+      }
+
+      function createAddressItem(address) {
+        return `
+          <div class="client-item" data-id="${address.id}">
+            <span class="client-item__text">${address.street_type || 'Rua'} ${address.street_name || address.street}, ${address.street_number || address.number} - ${address.neighborhood}</span>
+            <div class="client-item__actions">
+              <button class="client-item__btn client-item__btn--edit" aria-label="Editar" data-id="${address.id}">
+                <img src="/assets/icons/users-edit-blue.svg" alt="Editar" />
+              </button>
+              <button class="client-item__btn client-item__btn--delete" aria-label="Deletar" data-id="${address.id}">
+                <img src="/assets/icons/users-trash.svg" alt="Deletar" />
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderAddresses();
+
+      document.getElementById("btn-add-entrega").addEventListener("click", () => {
+        window.location.href = "/pages/client/addresses/create/index.html?type=entrega";
+      });
+      document.getElementById("btn-add-cobranca").addEventListener("click", () => {
+        window.location.href = "/pages/client/addresses/create/index.html?type=cobranca";
+      });
+
+      document.querySelector(".client-main").addEventListener("click", async (e) => {
+        const editBtn = e.target.closest('[aria-label="Editar"]');
+        if (editBtn) {
+          const id = editBtn.dataset.id;
+          window.location.href = `/pages/client/addresses/edit/index.html?id=${id}`;
+        }
+
+        const deleteBtn = e.target.closest('[aria-label="Deletar"]');
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          if (confirm("Tem certeza que deseja deletar este endereço?")) {
+            try {
+              const res = await fetch(`http://localhost:3333/api/addresses/${id}`, {
+                method: "DELETE"
+              });
+              if (res.ok) {
+                alert("Endereço deletado com sucesso!");
+                window.location.reload();
+              } else {
+                const errorData = await res.json();
+                alert("Erro ao deletar endereço: " + (errorData.error || ""));
+              }
+            } catch (error) {
+              console.error(error);
+              alert("Erro de conexão ao deletar endereço.");
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

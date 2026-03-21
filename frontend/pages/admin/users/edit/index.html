@@ -48,8 +48,7 @@
                 type="text"
                 id="nome"
                 name="nome"
-                placeholder="Carolina Santos"
-                value="Carolina Santos"
+                placeholder="Nome do usuário"
                 required
               />
             </div>
@@ -62,8 +61,7 @@
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Digite o e-mail"
-                value="carolina.santos@email.com"
+                placeholder="E-mail"
                 required
               />
             </div>
@@ -76,8 +74,7 @@
                 type="text"
                 id="telefone"
                 name="telefone"
-                placeholder="(11) 95643-6584"
-                value="(11) 95643-6584"
+                placeholder="Telefone"
                 required
               />
             </div>
@@ -90,8 +87,7 @@
                 type="text"
                 id="cpf"
                 name="cpf"
-                placeholder="123.456.789-10"
-                value="123.456.789-10"
+                placeholder="CPF"
                 required
               />
             </div>
@@ -104,7 +100,6 @@
                 type="date"
                 id="data_nascimento"
                 name="data_nascimento"
-                value="1990-08-12"
                 required
               />
             </div>
@@ -114,8 +109,8 @@
                 >Gênero <span style="color: red">*</span></label
               >
               <select id="genero" name="genero" required>
-                <option value="" disabled>Selecione</option>
-                <option value="Feminino" selected>Feminino</option>
+                <option value="" disabled selected>Selecione</option>
+                <option value="Feminino">Feminino</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Outro">Outro</option>
                 <option value="Prefiro não dizer">Prefiro não dizer</option>
@@ -135,36 +130,102 @@
 
     <script type="module" src="/js/main.js"></script>
     <script>
-      function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('id');
 
-        if (input.type === "password") {
-          input.type = "text";
-        } else {
-          input.type = "password";
-        }
+      if (userId) {
+        // Buscar dados do usuário e preencher o formulário
+        fetch(`http://localhost:3333/api/users/${userId}`)
+          .then(res => res.json())
+          .then(user => {
+            if (user.error) {
+              alert("Usuário não encontrado");
+              window.location.href = "/pages/admin/users/index.html";
+              return;
+            }
+            document.getElementById('nome').value = user.full_name || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('telefone').value = user.phone_number ? `(${user.phone_ddd || ''}) ${user.phone_number}` : '';
+            document.getElementById('cpf').value = user.cpf || '';
+            if (user.birth_date) {
+               const dateObj = new Date(user.birth_date);
+               if (!isNaN(dateObj.getTime())) {
+                 document.getElementById('data_nascimento').value = dateObj.toISOString().split('T')[0];
+               }
+            }
+            if (user.gender) {
+              document.getElementById('genero').value = user.gender;
+            }
+          })
+          .catch(err => {
+            console.error("Erro ao buscar usuário:", err);
+            alert("Erro ao buscar dados do usuário. O servidor pode estar offline.");
+          });
       }
 
       document
         .getElementById("edit-user-form")
-        .addEventListener("submit", (e) => {
+        .addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          const senha = document.getElementById("senha").value;
-          const confirmarSenha =
-            document.getElementById("confirmar_senha").value;
-
-          if (senha || confirmarSenha) {
-            if (senha !== confirmarSenha) {
-              alert("As senhas não coincidem!");
-              return;
-            }
+          if (!userId) {
+            alert("Nenhum ID de usuário fornecido para edição.");
+            return;
           }
+
+          const full_name = document.getElementById("nome").value;
+          const email = document.getElementById("email").value;
+          // O backend atual espera apenas full_name e email na query do UPDATE
+          // Mas vamos enviar os outros casos você adicione depois
+          const telefoneInput = document.getElementById("telefone").value;
+          const cpfInput = document.getElementById("cpf").value;
+          const data_nascimento = document.getElementById("data_nascimento").value;
+          const genero = document.getElementById("genero").value;
+
+          const cpf = cpfInput.replace(/\D/g, "");
+          const telefoneRaw = telefoneInput.replace(/\D/g, "");
+          
+          let phone_ddd = "";
+          let phone_number = "";
+          if (telefoneRaw.length >= 10) {
+            phone_ddd = telefoneRaw.substring(0, 2);
+            phone_number = telefoneRaw.substring(2);
+          } else {
+            phone_number = telefoneRaw; 
+          }
+
+          const payload = {
+            full_name: full_name,
+            email: email,
+            cpf: cpf,
+            phone_ddd: phone_ddd,
+            phone_number: phone_number,
+            birth_date: data_nascimento,
+            gender: genero
+          };
 
           const success = confirm("Deseja salvar as alterações deste usuário?");
           if (success) {
-            alert("Usuário editado com sucesso!");
-            window.location.href = "/pages/admin/users/index.html";
+            try {
+              const res = await fetch(`http://localhost:3333/api/users/${userId}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+              });
+
+              if (res.ok) {
+                alert("Usuário editado com sucesso!");
+                window.location.href = "/pages/admin/users/index.html";
+              } else {
+                const errorData = await res.json();
+                alert("Erro ao editar usuário: " + (errorData.error || ""));
+              }
+            } catch (error) {
+              console.error(error);
+              alert("Erro de conexão ao salvar usuário.");
+            }
           }
         });
 

@@ -4,6 +4,7 @@ import { initTopbar } from "./modules/topbar.js";
 import { initAdminNavbar } from "./modules/navbar.js";
 import { initUserList } from "./modules/userList.js";
 import { initDashboard } from "./modules/dashboard.js";
+import { initClientNavbar, initClientTopbar, initClientFooter } from "./modules/clientNavbar.js";
 
 // verifyAccess();
 
@@ -13,4 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initBookList();
   initAdminNavbar();
   initDashboard();
+  initClientNavbar();
+  initClientTopbar();
+  initClientFooter();
 });

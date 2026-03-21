@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/client.css" />
+    <link rel="stylesheet" href="/css/pages/users.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Adicionar Endereço</title>
+  </head>
+  <body>
+    <div class="client-page">
+      <header class="client-topbar"></header>
+
+      <div class="client-content">
+        <aside class="client-sidebar"></aside>
+
+        <section class="client-form-page">
+          <a href="/pages/client/addresses/index.html" class="client-back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Voltar
+          </a>
+
+          <div class="client-form-header">
+            <h1>Adicionar endereço</h1>
+            <p>Preencha os campos abaixo</p>
+          </div>
+
+          <form id="create-address-form">
+            <div class="client-form-grid">
+              <div class="form-group">
+                <label class="label-admin" for="tipo_endereco">Tipo de endereço <span style="color: red">*</span></label>
+                <select id="tipo_endereco" name="tipo_endereco" required>
+                  <option value="" disabled selected>Selecione</option>
+                  <option value="entrega">Entrega</option>
+                  <option value="cobranca">Cobrança</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="tipo_logradouro">Tipo de logradouro <span style="color: red">*</span></label>
+                <select id="tipo_logradouro" name="tipo_logradouro" required>
+                  <option value="" disabled selected>Selecione</option>
+                  <option value="Rua">Rua</option>
+                  <option value="Avenida">Avenida</option>
+                  <option value="Travessa">Travessa</option>
+                  <option value="Alameda">Alameda</option>
+                  <option value="Praça">Praça</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="logradouro">Logradouro <span style="color: red">*</span></label>
+                <input type="text" id="logradouro" name="logradouro" placeholder="Nome da rua" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="numero">Número <span style="color: red">*</span></label>
+                <input type="text" id="numero" name="numero" placeholder="123" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="bairro">Bairro <span style="color: red">*</span></label>
+                <input type="text" id="bairro" name="bairro" placeholder="Bairro" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="cep">CEP <span style="color: red">*</span></label>
+                <input type="text" id="cep" name="cep" placeholder="00000-000" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="cidade">Cidade <span style="color: red">*</span></label>
+                <input type="text" id="cidade" name="cidade" placeholder="Cidade" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="estado">Estado <span style="color: red">*</span></label>
+                <select id="estado" name="estado" required>
+                  <option value="" disabled selected>Selecione</option>
+                  <option value="AC">Acre</option>
+                  <option value="AL">Alagoas</option>
+                  <option value="AP">Amapá</option>
+                  <option value="AM">Amazonas</option>
+                  <option value="BA">Bahia</option>
+                  <option value="CE">Ceará</option>
+                  <option value="DF">Distrito Federal</option>
+                  <option value="ES">Espírito Santo</option>
+                  <option value="GO">Goiás</option>
+                  <option value="MA">Maranhão</option>
+                  <option value="MT">Mato Grosso</option>
+                  <option value="MS">Mato Grosso do Sul</option>
+                  <option value="MG">Minas Gerais</option>
+                  <option value="PA">Pará</option>
+                  <option value="PB">Paraíba</option>
+                  <option value="PR">Paraná</option>
+                  <option value="PE">Pernambuco</option>
+                  <option value="PI">Piauí</option>
+                  <option value="RJ">Rio de Janeiro</option>
+                  <option value="RN">Rio Grande do Norte</option>
+                  <option value="RS">Rio Grande do Sul</option>
+                  <option value="RO">Rondônia</option>
+                  <option value="RR">Roraima</option>
+                  <option value="SC">Santa Catarina</option>
+                  <option value="SP">São Paulo</option>
+                  <option value="SE">Sergipe</option>
+                  <option value="TO">Tocantins</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="pais">País <span style="color: red">*</span></label>
+                <input type="text" id="pais" name="pais" placeholder="Brasil" value="Brasil" required />
+              </div>
+
+              <div class="form-group">
+                <label class="label-admin" for="observacoes">Observações</label>
+                <input type="text" id="observacoes" name="observacoes" placeholder="Apto, bloco, referência..." />
+              </div>
+            </div>
+
+            <div class="client-form-actions">
+              <button type="button" class="btn-secondary" id="cancel-btn">Cancelar</button>
+              <button type="submit" class="btn-primary">Salvar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <footer class="client-footer"></footer>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script>
+      // Pré-selecionar tipo de endereço via query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const tipo = urlParams.get("type");
+      if (tipo) {
+        const tipoSelect = document.getElementById("tipo_endereco");
+        if (tipoSelect) tipoSelect.value = tipo;
+      }
+
+      document.getElementById("create-address-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const confirmSave = confirm("Deseja salvar este endereço?");
+        if (!confirmSave) return;
+
+        const formData = new FormData(e.target);
+        const isEntrega = formData.get("tipo_endereco") === "entrega";
+        const isCobranca = formData.get("tipo_endereco") === "cobranca";
+
+        const addressData = {
+          user_id: 1, // Assumindo user_id 1 por padrão
+          alias: "Meu Endereço",
+          residence_type: "Casa", // Valor padrão por não estar no formulário
+          street_type: formData.get("tipo_logradouro"),
+          street_name: formData.get("logradouro"),
+          street_number: formData.get("numero"),
+          neighborhood: formData.get("bairro"),
+          zip_code: formData.get("cep"),
+          city: formData.get("cidade"),
+          state: formData.get("estado"),
+          country: formData.get("pais"),
+          observations: formData.get("observacoes"),
+          is_billing: isCobranca,
+          is_delivery: isEntrega
+        };
+
+        try {
+          const res = await fetch("http://localhost:3333/api/addresses", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(addressData)
+          });
+
+          if (res.ok) {
+            alert("Endereço salvo com sucesso!");
+            window.location.href = "/pages/client/addresses/index.html";
+          } else {
+            const errorData = await res.json();
+            alert("Erro ao salvar endereço: " + (errorData.error || ""));
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Erro de conexão ao salvar endereço.");
+        }
+      });
+
+      document.getElementById("cancel-btn").addEventListener("click", () => {
+        if (confirm("Deseja realmente cancelar? Os dados não salvos serão perdidos.")) {
+          window.location.href = "/pages/client/addresses/index.html";
+        }
+      });
+    </script>
+  </body>
+</html>

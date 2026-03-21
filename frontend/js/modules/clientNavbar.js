@@ -1,0 +1,88 @@
+export const initClientNavbar = () => {
+  const sidebar = document.querySelector(".client-sidebar");
+  if (!sidebar) return;
+
+  sidebar.innerHTML = `
+    <h2 class="client-sidebar__title">Atalhos</h2>
+    <nav class="client-sidebar__nav">
+      <a href="/pages/client/profile/index.html" class="client-sidebar__link nav-profile">Meu perfil</a>
+      <a href="/pages/client/addresses/index.html" class="client-sidebar__link nav-addresses">Endereços</a>
+      <a href="/pages/client/cards/index.html" class="client-sidebar__link nav-cards">Cartões</a>
+      <a href="/pages/client/orders/index.html" class="client-sidebar__link nav-orders">Pedidos e devoluções</a>
+      <a href="/pages/client/coupons/index.html" class="client-sidebar__link nav-coupons">Cupons</a>
+    </nav>
+  `;
+
+  const path = window.location.pathname;
+
+  const routes = [
+    { path: "/client/addresses", selector: ".nav-addresses" },
+    { path: "/client/cards", selector: ".nav-cards" },
+    { path: "/client/profile", selector: ".nav-profile" },
+    { path: "/client/orders", selector: ".nav-orders" },
+    { path: "/client/coupons", selector: ".nav-coupons" },
+  ];
+
+  for (const route of routes) {
+    if (path.includes(route.path)) {
+      const link = document.querySelector(route.selector);
+      if (link) link.classList.add("active");
+      break;
+    }
+  }
+};
+
+export const initClientTopbar = () => {
+  const topbar = document.querySelector(".client-topbar");
+  if (!topbar) return;
+
+  topbar.innerHTML = `
+    <div class="client-topbar__left">
+      <a href="/">
+        <img src="/assets/images/logo-lume.svg" alt="Lume" class="client-topbar__logo" />
+      </a>
+    </div>
+    <div class="client-topbar__right">
+      <a href="/pages/cart.html">
+        <img src="/assets/icons/home-cart.svg" alt="Carrinho" width="22" />
+      </a>
+      <div class="client-topbar__divider"></div>
+      <a href="/pages/client/profile/index.html">
+        <span>Usuário</span>
+        <img src="/assets/icons/home-profile.svg" alt="Perfil" width="22" />
+      </a>
+      <div class="client-topbar__divider"></div>
+      <button id="client-logout-btn">
+        <span>Sair</span>
+        <img src="/assets/icons/home-logout.svg" alt="Sair" width="22" />
+      </button>
+    </div>
+  `;
+
+  const logoutBtn = document.querySelector("#client-logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      window.location.href = "/pages/login.html";
+    });
+  }
+};
+
+export const initClientFooter = () => {
+  const footer = document.querySelector(".client-footer");
+  if (!footer) return;
+
+  footer.innerHTML = `
+    <div class="client-footer__wrapper">
+      <div class="client-footer__left">
+        <span class="client-footer__text" style="font-weight: 700;">Fale conosco</span>
+        <a href="mailto:contato@lume.com" class="client-footer__text">
+          <img src="/assets/icons/email.svg" alt="E-mail" width="18" />
+          www.contato@lume.com
+        </a>
+      </div>
+      <div>
+        <img src="/assets/images/logo-lume.svg" alt="Lume" class="client-footer__logo" />
+      </div>
+    </div>
+  `;
+};

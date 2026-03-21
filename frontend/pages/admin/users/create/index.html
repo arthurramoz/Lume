@@ -220,24 +220,72 @@
 
       document
         .getElementById("create-user-form")
-        .addEventListener("submit", (e) => {
+        .addEventListener("submit", async (e) => {
           e.preventDefault();
 
+          const nome = document.getElementById("nome").value;
+          const email = document.getElementById("email").value;
+          const telefoneInput = document.getElementById("telefone").value;
+          const cpfInput = document.getElementById("cpf").value;
+          const data_nascimento = document.getElementById("data_nascimento").value;
+          const genero = document.getElementById("genero").value;
           const senha = document.getElementById("senha").value;
-          const confirmarSenha =
-            document.getElementById("confirmar_senha").value;
+          const confirmarSenha = document.getElementById("confirmar_senha").value;
 
           if (senha !== confirmarSenha) {
             alert("As senhas não coincidem!");
             return;
           }
 
-          const success = confirm(
-            "Deseja salvar as informações deste usuário?",
-          );
-          if (success) {
-            alert("Usuário salvo com sucesso!");
-            window.location.href = "/pages/admin/users/index.html";
+          // Limpando a máscara de CPF e Telefone
+          const cpf = cpfInput;
+          const telefoneRaw = telefoneInput;
+          
+          let phone_ddd = "";
+          let phone_number = "";
+          if (telefoneRaw.length >= 10) {
+            phone_ddd = telefoneRaw.substring(0, 2);
+            phone_number = telefoneRaw.substring(2);
+          } else {
+            phone_number = telefoneRaw; // Fallback se o usuário não digitar DDD
+          }
+          const phone_type = telefoneRaw.length >= 11 ? "Celular" : "Fixo";
+
+          const payload = {
+            gender: genero,
+            full_name: nome,
+            birth_date: data_nascimento,
+            cpf: cpf,
+            phone_type: phone_type,
+            phone_ddd: phone_ddd,
+            phone_number: phone_number,
+            email: email,
+            password_hash: senha // O backend está salvando a senha diretamente ou fazendo hash no controller? Replicando o body que o usuário enviou como "senha_criptografada_aqui"
+          };
+
+          const confirmSave = confirm("Deseja salvar as informações deste usuário?");
+          if (!confirmSave) return;
+
+          try {
+            const response = await fetch("http://localhost:3333/api/users", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              alert("Usuário salvo com sucesso!");
+              window.location.href = "/pages/admin/users/index.html";
+            } else {
+              const errorData = await response.json();
+              alert("Erro ao salvar usuário:\n" + (errorData.details || errorData.error));
+              console.error("Erro da API:", errorData);
+            }
+          } catch (error) {
+            console.error("Erro de conexão:", error);
+            alert("Erro de conexão com o servidor. Verifique se o backend está rodando.");
           }
         });
 

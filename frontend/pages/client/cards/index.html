@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/client.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Meus Cartões</title>
+  </head>
+  <body>
+    <div class="client-page">
+      <header class="client-topbar"></header>
+
+      <div class="client-content">
+        <aside class="client-sidebar"></aside>
+
+        <section class="client-main">
+          <h1 class="client-main__title">Meus cartões</h1>
+
+          <div class="client-section">
+            <div id="list-cards"></div>
+            <div class="client-add-btn">
+              <button class="btn-primary" id="btn-add-card">
+                <img src="/assets/icons/users-plus.svg" alt="+" width="16" />
+                Adicionar
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="client-footer"></footer>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      // Mock de dados — substituir por fetch quando houver backend
+      const cardsMock = [
+        { id: 1, last_digits: "1234" },
+      ];
+
+      function renderCards() {
+        const listCards = document.getElementById("list-cards");
+
+        if (cardsMock.length === 0) {
+          listCards.innerHTML = `<p style="color: var(--color-neutro60); font-family: var(--font-primaria); padding: 12px;">Nenhum cartão cadastrado.</p>`;
+          return;
+        }
+
+        listCards.innerHTML = cardsMock.map(card => `
+          <div class="client-item" data-id="${card.id}">
+            <span class="client-item__text">Final ${card.last_digits}</span>
+            <div class="client-item__actions">
+              <button class="client-item__btn client-item__btn--delete" aria-label="Deletar" data-id="${card.id}">
+                <img src="/assets/icons/users-trash.svg" alt="Deletar" />
+              </button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      renderCards();
+
+      // Botão "Adicionar"
+      document.getElementById("btn-add-card").addEventListener("click", () => {
+        window.location.href = "/pages/client/cards/create/index.html";
+      });
+
+      // Delegated click event for delete
+      document.querySelector(".client-main").addEventListener("click", (e) => {
+        const deleteBtn = e.target.closest('[aria-label="Deletar"]');
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          if (confirm("Tem certeza que deseja deletar este cartão?")) {
+            // Quando tiver backend: fetch DELETE /api/cards/:id
+            alert("Cartão deletado com sucesso!");
+            window.location.reload();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
