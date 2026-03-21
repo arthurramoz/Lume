@@ -14,11 +14,11 @@ const createBookCard = (book, isCatalog = false) => `
       <h3 class="book-card__title">${book.title}</h3>
       <span class="book-card__author">${book.by}</span>
       ${
-        isCatalog
-          ? `<span class="book-card__status ${book.id % 2 === 0 ? "book-card__status--unavailable" : "book-card__status--available"}">
+          isCatalog
+              ? `<span class="book-card__status ${book.id % 2 === 0 ? "book-card__status--unavailable" : "book-card__status--available"}">
               ${book.id % 2 === 0 ? "Indisponível" : "Disponível"}
              </span>`
-          : ""
+              : ""
       }
     </div>
 
@@ -33,19 +33,22 @@ const createBookCard = (book, isCatalog = false) => `
 `;
 
 export const initBookList = () => {
-  const container = document.querySelector(".book-list");
-  const catalogContainer = document.querySelector("#catalog-grid");
+    const container = document.querySelector(".book-list");
+    const catalogContainer = document.querySelector("#catalog-grid");
 
-  if (container) {
-    container.innerHTML = booksMock
-      .map((book) => createBookCard(book, false))
-      .join("");
-  }
+    if (container) {
+        container.innerHTML = booksMock
+            .map((book) => createBookCard(book, false))
+            .join("");
+    }
 
-  if (catalogContainer) {
-    const extendedMock = [...booksMock, ...booksMock, ...booksMock].slice(0, 9);
-    catalogContainer.innerHTML = extendedMock
-      .map((book) => createBookCard(book, true))
-      .join("");
-  }
+    if (catalogContainer) {
+        const extendedMock = [...booksMock, ...booksMock, ...booksMock].slice(
+            0,
+            9,
+        );
+        catalogContainer.innerHTML = extendedMock
+            .map((book) => createBookCard(book, true))
+            .join("");
+    }
 };
