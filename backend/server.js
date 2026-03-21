@@ -14,6 +14,5 @@ app.use("/api", addressesRoutes);
 
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
-    console.log(`📍 Teste as rotas em: http://localhost:${PORT}/api/users`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
