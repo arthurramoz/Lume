@@ -1,8 +1,7 @@
 const pool = require("../../config/database");
 
-class AddressDao {
-    //[Create]
-    async create(address) {
+class CardDao {
+    async create(card) {
         const query = `
         INSERT INTO credit_cards(
             user_id, card_number, printed_name, card_flag, security_code, expiration_date
@@ -12,20 +11,12 @@ class AddressDao {
         `;
 
         const values = [
-            address.user_id,
-            address.alias,
-            address.residence_type,
-            address.street_type,
-            address.street_name,
-            address.street_number,
-            address.neighborhood,
-            address.zip_code,
-            address.city,
-            address.state,
-            address.country,
-            address.observations,
-            address.is_billing || false,
-            address.is_delivery || false,
+            card.user_id,
+            card.card_number,
+            card.printed_name,
+            card.card_flag,
+            card.security_code,
+            card.expiration_date,
         ];
 
         const result = await pool.query(query, values);
@@ -33,63 +24,16 @@ class AddressDao {
     }
 
     async findAll() {
-        const query = `SELECT * FROM addresses`;
+        const query = `SELECT * FROM credit_cards`;
         const result = await pool.query(query);
         return result.rows;
     }
 
-    async findById(id) {
-        const query = "SELECT * FROM addresses WHERE id = $1";
-        const result = await pool.query(query, [id]);
-        return result.rows[0];
-    }
-    
-    async update(id, address) {
-    const query = `
-        UPDATE addresses 
-        SET 
-            residence_type = $1, 
-            street_type = $2, 
-            street_name = $3, 
-            street_number = $4, 
-            neighborhood = $5, 
-            zip_code = $6, 
-            city = $7, 
-            state = $8, 
-            country = $9, 
-            observations = $10, 
-            is_billing = $11, 
-            is_delivery = $12
-        WHERE id = $13 
-        RETURNING *;
-        `;
-    
-        const values = [
-            address.residence_type,
-            address.street_type,
-            address.street_name,
-            address.street_number,
-            address.neighborhood,
-            address.zip_code,
-            address.city,
-            address.state,
-            address.country,
-            address.observations,
-            address.is_billing || false,
-            address.is_delivery || false,
-            id // O ID do endereço vai aqui no final, que é o $13
-        ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
-
-    // [DELETE]
     async delete(id) {
-        const query = "DELETE FROM addresses WHERE id = $1 RETURNING *";
+        const query = "DELETE FROM credit_cards WHERE id = $1 RETURNING *";
         const result = await pool.query(query, [id]);
         return result.rows[0];
     }
 }
 
-module.exports = new AddressDao();
+module.exports = new CardDao();

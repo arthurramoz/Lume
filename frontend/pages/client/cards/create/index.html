@@ -50,6 +50,11 @@
               </div>
 
               <div class="form-group">
+                <label class="label-admin" for="vencimento">Vencimento <span style="color: red">*</span></label>
+                <input type="text" id="vencimento" name="vencimento" placeholder="MM/AA" maxlength="5" required />
+              </div>
+
+              <div class="form-group">
                 <label class="label-admin" for="bandeira">Bandeira <span style="color: red">*</span></label>
                 <select id="bandeira" name="bandeira" required>
                   <option value="" disabled selected>Selecione</option>
@@ -75,15 +80,43 @@
 
     <script type="module" src="/js/main.js"></script>
     <script>
-      document.getElementById("create-card-form").addEventListener("submit", (e) => {
+      document.getElementById("create-card-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const confirmSave = confirm("Deseja salvar este cartão?");
         if (!confirmSave) return;
 
-        // Quando tiver backend: fetch POST /api/cards
-        alert("Cartão salvo com sucesso!");
-        window.location.href = "/pages/client/cards/index.html";
+        const formData = new FormData(e.target);
+        
+        const cardData = {
+          user_id: 1, // Usando 1 de mock enquanto não há login
+          card_number: formData.get("numero_cartao"),
+          printed_name: formData.get("nome_impresso"),
+          card_flag: formData.get("bandeira"),
+          security_code: formData.get("cvv"),
+          expiration_date: formData.get("vencimento")
+        };
+
+        try {
+          const res = await fetch("http://localhost:3333/api/cards", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(cardData)
+          });
+
+          if (res.ok) {
+            alert("Cartão salvo com sucesso!");
+            window.location.href = "/pages/client/cards/index.html";
+          } else {
+            const errorData = await res.json();
+            alert("Erro ao salvar cartão: " + (errorData.error || ""));
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Erro de conexão ao salvar cartão.");
+        }
       });
 
       document.getElementById("cancel-btn").addEventListener("click", () => {

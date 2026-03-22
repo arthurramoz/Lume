@@ -38,47 +38,66 @@
 
     <script type="module" src="/js/main.js"></script>
     <script type="module">
-      // Mock de dados — substituir por fetch quando houver backend
-      const cardsMock = [
-        { id: 1, last_digits: "1234" },
-      ];
+      async function fetchCards() {
+        try {
+          const res = await fetch("http://localhost:3333/api/cards");
+          if (!res.ok) throw new Error("Erro ao carregar cartões");
+          return await res.json();
+        } catch (error) {
+          console.error(error);
+          return [];
+        }
+      }
 
-      function renderCards() {
+      async function renderCards() {
         const listCards = document.getElementById("list-cards");
+        const cards = await fetchCards();
 
-        if (cardsMock.length === 0) {
-          listCards.innerHTML = `<p style="color: var(--color-neutro60); font-family: var(--font-primaria); padding: 12px;">Nenhum cartão cadastrado.</p>`;
+        if (cards.length === 0) {
+          listCards.innerHTML = `<p style="color: var(--color-neutro60); font-family: var(--font-primaria); padding: 12px; font-size: 14px;">Nenhum cartão cadastrado.</p>`;
           return;
         }
 
-        listCards.innerHTML = cardsMock.map(card => `
+        listCards.innerHTML = cards.map(card => {
+          const lastDigits = card.card_number ? card.card_number.slice(-4) : "XXXX";
+          return `
           <div class="client-item" data-id="${card.id}">
-            <span class="client-item__text">Final ${card.last_digits}</span>
+            <span class="client-item__text">Final ${lastDigits}</span>
             <div class="client-item__actions">
               <button class="client-item__btn client-item__btn--delete" aria-label="Deletar" data-id="${card.id}">
                 <img src="/assets/icons/users-trash.svg" alt="Deletar" />
               </button>
             </div>
           </div>
-        `).join("");
+        `}).join("");
       }
 
       renderCards();
 
-      // Botão "Adicionar"
       document.getElementById("btn-add-card").addEventListener("click", () => {
         window.location.href = "/pages/client/cards/create/index.html";
       });
 
-      // Delegated click event for delete
-      document.querySelector(".client-main").addEventListener("click", (e) => {
+      document.querySelector(".client-main").addEventListener("click", async (e) => {
         const deleteBtn = e.target.closest('[aria-label="Deletar"]');
         if (deleteBtn) {
           const id = deleteBtn.dataset.id;
           if (confirm("Tem certeza que deseja deletar este cartão?")) {
-            // Quando tiver backend: fetch DELETE /api/cards/:id
-            alert("Cartão deletado com sucesso!");
-            window.location.reload();
+            try {
+              const res = await fetch(`http://localhost:3333/api/cards/${id}`, {
+                method: "DELETE"
+              });
+              if (res.ok) {
+                alert("Cartão deletado com sucesso!");
+                window.location.reload();
+              } else {
+                const errorData = await res.json();
+                alert("Erro ao deletar cartão: " + (errorData.error || ""));
+              }
+            } catch (error) {
+              console.error(error);
+              alert("Erro de conexão ao deletar cartão.");
+            }
           }
         }
       });
