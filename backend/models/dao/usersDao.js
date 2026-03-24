@@ -41,6 +41,12 @@ class UserDao {
     return result.rows[0];
   }
 
+  async updateStatus(id, status) {
+    const query = 'UPDATE users SET status = $1 WHERE id = $2 RETURNING *';
+    const result = await pool.query(query, [status, id]);
+    return result.rows[0];
+  }
+
   // [DELETE]
   async delete(id) {
     const query = 'DELETE FROM users WHERE id = $1 RETURNING *';

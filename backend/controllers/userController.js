@@ -52,6 +52,22 @@ exports.updateUser = async (req, res) => {
     }
 };
 
+exports.updateStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const updatedUser = await userDao.updateStatus(req.params.id, status);
+        if (!updatedUser) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error("Erro ao atualizar status:", error);
+        res.status(500).json({
+            error: "Erro ao atualizar status no banco de dados",
+        });
+    }
+};
+
 exports.deleteUser = async (req, res) => {
     try {
         const deletedUser = await userDao.delete(req.params.id);
