@@ -23,16 +23,35 @@ class UserDao {
         return result.rows[0];
     }
 
-    async findAll() {
-        const query = `SELECT * FROM users`;
-        const result = await pool.query(query);
-        return result.rows;
+    async findAll(search) {
+        let result;
+        if (search) {
+            const query = `
+                SELECT * FROM users 
+                WHERE full_name ILIKE $1 
+                   OR email ILIKE $1 
+                   OR cpf ILIKE $1
+            `;
+            result = await pool.query(query, [`%${search}%`]);
+        } else {
+            const query = `SELECT * FROM users`;
+            result = await pool.query(query);
+        }
+        
+        return result.rows.map(user => {
+            delete user.password_hash;
+            return user;
+        });
     }
 
     async findById(id) {
         const query = 'SELECT * FROM users WHERE id = $1';
         const result = await pool.query(query, [id]);
-        return result.rows[0];
+        const user = result.rows[0];
+        if (user) {
+            delete user.password_hash;
+        }
+        return user;
     }
 
     async update(id, user) {

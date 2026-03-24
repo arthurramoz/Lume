@@ -18,7 +18,8 @@ exports.createUser = async (req, res) => {
 //[GET]
 exports.getUsers = async (req, res) => {
     try {
-        const users = await userDao.findAll();
+        const { search } = req.query;
+        const users = await userDao.findAll(search);
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({
