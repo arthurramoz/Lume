@@ -14,6 +14,9 @@ const createUserRow = (user) => {
     <span>${formattedPhone}</span>
     <span>${statusAtivo ? "Ativo" : "Inativo"}</span>
     <div class="col-actions">
+      <button class="icon-btn" aria-label="Visualizar">
+        <img src="/assets/icons/eye-open-icon.svg" alt="" />
+      </button>
       <button class="icon-btn" aria-label="Editar">
         <img src="/assets/icons/users-edit-blue.svg" alt="" />
       </button>
@@ -61,17 +64,41 @@ export const initUserList = async () => {
 
     tableBody.innerHTML = users.map(createUserRow).join("");
 
-    tableBody.addEventListener("click", (e) => {
+    tableBody.addEventListener("click", async (e) => {
       const toggleBtn = e.target.closest(".toggle-btn");
 
       if (toggleBtn) {
+        const row = toggleBtn.closest(".table-row");
+        let idText = row.querySelector(".col-code").textContent.trim();
+        if (idText.startsWith("#")) {
+          idText = idText.substring(1);
+        }
+
         const isActive = toggleBtn.classList.toggle("active");
         toggleBtn.setAttribute("aria-pressed", isActive);
 
-        const statusSpan = toggleBtn
-          .closest(".table-row")
-          .querySelector("span:nth-child(5)");
+        const statusSpan = row.querySelector("span:nth-child(5)");
         statusSpan.textContent = isActive ? "Ativo" : "Inativo";
+
+        try {
+          const res = await fetch(`http://localhost:3333/api/users/${idText}/status`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status: isActive })
+          });
+          
+          if (!res.ok) {
+            throw new Error("Erro ao atualizar status na API");
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar status:", error);
+          const reverted = toggleBtn.classList.toggle("active");
+          toggleBtn.setAttribute("aria-pressed", reverted);
+          statusSpan.textContent = reverted ? "Ativo" : "Inativo";
+          alert("Erro ao atualizar status do usuário");
+        }
       }
     });
 

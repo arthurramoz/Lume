@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/users.css" />
+    <link rel="stylesheet" href="/css/components/navbar.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Visualizar Usuário</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="navbar"></div>
+
+      <div class="list">
+        <a href="/pages/admin/users/index.html" class="back-link">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          Voltar
+        </a>
+
+        <div class="create-header">
+          <h1 class="section-title">Visualizar usuário</h1>
+          <p class="section-subtitle">Detalhes do usuário cadastrado</p>
+        </div>
+
+        <form id="view-user-form" class="user-form">
+          <div class="user-form-grid">
+            <div class="form-group">
+              <label class="label-admin" for="nome">Nome completo</label>
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                placeholder="Nome do usuário"
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="email">E-mail</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="E-mail"
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="telefone">Telefone</label>
+              <input
+                type="text"
+                id="telefone"
+                name="telefone"
+                placeholder="Telefone"
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="cpf">CPF</label>
+              <input
+                type="text"
+                id="cpf"
+                name="cpf"
+                placeholder="CPF"
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="data_nascimento">Data de nascimento</label>
+              <input
+                type="date"
+                id="data_nascimento"
+                name="data_nascimento"
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="label-admin" for="genero">Gênero</label>
+              <select id="genero" name="genero" disabled>
+                <option value="" disabled selected>Selecione</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Outro">Outro</option>
+                <option value="Prefiro não dizer">Prefiro não dizer</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- O botão de salvar não é necessário, portanto teremos apenas o voltar para facilitar o layout -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="back-btn">
+              Voltar
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script type="module" src="/js/main.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('id');
+
+      if (userId) {
+        // Buscar dados do usuário e preencher o formulário
+        fetch(`http://localhost:3333/api/users/${userId}`)
+          .then(res => res.json())
+          .then(user => {
+            if (user.error) {
+              alert("Usuário não encontrado");
+              window.location.href = "/pages/admin/users/index.html";
+              return;
+            }
+            document.getElementById('nome').value = user.full_name || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('telefone').value = user.phone_number ? `(${user.phone_ddd || ''}) ${user.phone_number}` : '';
+            document.getElementById('cpf').value = user.cpf || '';
+            if (user.birth_date) {
+               const dateObj = new Date(user.birth_date);
+               if (!isNaN(dateObj.getTime())) {
+                 document.getElementById('data_nascimento').value = dateObj.toISOString().split('T')[0];
+               }
+            }
+            if (user.gender) {
+              document.getElementById('genero').value = user.gender;
+            }
+          })
+          .catch(err => {
+            console.error("Erro ao buscar usuário:", err);
+            alert("Erro ao buscar dados do usuário. O servidor pode estar offline.");
+          });
+      } else {
+        alert("ID de usuário não fornecido.");
+        window.location.href = "/pages/admin/users/index.html";
+      }
+
+      document.getElementById("back-btn").addEventListener("click", () => {
+        window.location.href = "/pages/admin/users/index.html";
+      });
+    </script>
+  </body>
+</html>

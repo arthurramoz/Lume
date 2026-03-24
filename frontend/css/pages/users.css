@@ -27,7 +27,7 @@
 }
 
 .users-table {
-  grid-template-columns: 100px 2fr 2fr 1.5fr 1fr 120px !important;
+  grid-template-columns: 100px 2fr 2fr 1.5fr 1fr 180px !important;
 }
 
 .back-link {
