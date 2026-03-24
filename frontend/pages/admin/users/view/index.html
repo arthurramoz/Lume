@@ -85,7 +85,9 @@
             </div>
 
             <div class="form-group">
-              <label class="label-admin" for="data_nascimento">Data de nascimento</label>
+              <label class="label-admin" for="data_nascimento"
+                >Data de nascimento</label
+              >
               <input
                 type="date"
                 id="data_nascimento"
@@ -105,13 +107,6 @@
               </select>
             </div>
           </div>
-
-          <!-- O botão de salvar não é necessário, portanto teremos apenas o voltar para facilitar o layout -->
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" id="back-btn">
-              Voltar
-            </button>
-          </div>
         </form>
       </div>
     </main>
@@ -119,35 +114,40 @@
     <script type="module" src="/js/main.js"></script>
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const userId = urlParams.get('id');
+      const userId = urlParams.get("id");
 
       if (userId) {
-        // Buscar dados do usuário e preencher o formulário
         fetch(`http://localhost:3333/api/users/${userId}`)
-          .then(res => res.json())
-          .then(user => {
+          .then((res) => res.json())
+          .then((user) => {
             if (user.error) {
               alert("Usuário não encontrado");
               window.location.href = "/pages/admin/users/index.html";
               return;
             }
-            document.getElementById('nome').value = user.full_name || '';
-            document.getElementById('email').value = user.email || '';
-            document.getElementById('telefone').value = user.phone_number ? `(${user.phone_ddd || ''}) ${user.phone_number}` : '';
-            document.getElementById('cpf').value = user.cpf || '';
+            document.getElementById("nome").value = user.full_name || "";
+            document.getElementById("email").value = user.email || "";
+            document.getElementById("telefone").value = user.phone_number
+              ? `(${user.phone_ddd || ""}) ${user.phone_number}`
+              : "";
+            document.getElementById("cpf").value = user.cpf || "";
             if (user.birth_date) {
-               const dateObj = new Date(user.birth_date);
-               if (!isNaN(dateObj.getTime())) {
-                 document.getElementById('data_nascimento').value = dateObj.toISOString().split('T')[0];
-               }
+              const dateObj = new Date(user.birth_date);
+              if (!isNaN(dateObj.getTime())) {
+                document.getElementById("data_nascimento").value = dateObj
+                  .toISOString()
+                  .split("T")[0];
+              }
             }
             if (user.gender) {
-              document.getElementById('genero').value = user.gender;
+              document.getElementById("genero").value = user.gender;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.error("Erro ao buscar usuário:", err);
-            alert("Erro ao buscar dados do usuário. O servidor pode estar offline.");
+            alert(
+              "Erro ao buscar dados do usuário. O servidor pode estar offline.",
+            );
           });
       } else {
         alert("ID de usuário não fornecido.");

@@ -62,7 +62,31 @@ export const initUserList = async () => {
       return;
     }
 
-    tableBody.innerHTML = users.map(createUserRow).join("");
+    const renderTable = (data) => {
+      if (data.length === 0) {
+        tableBody.innerHTML = `<div class="empty-state" style="padding: 20px;"><p class="empty-state__text">Nenhum usuário encontrado</p></div>`;
+      } else {
+        tableBody.innerHTML = data.map(createUserRow).join("");
+      }
+    };
+
+    renderTable(users);
+
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", async (e) => {
+        const term = e.target.value;
+        let url = "http://localhost:3333/api/users";
+        
+        if (term) {
+          url = `http://localhost:3333/api/users?search=${term}`;
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        renderTable(data);
+      });
+    }
 
     tableBody.addEventListener("click", async (e) => {
       const toggleBtn = e.target.closest(".toggle-btn");

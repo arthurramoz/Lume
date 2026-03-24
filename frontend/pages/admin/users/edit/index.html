@@ -131,35 +131,40 @@
     <script type="module" src="/js/main.js"></script>
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const userId = urlParams.get('id');
+      const userId = urlParams.get("id");
 
       if (userId) {
-        // Buscar dados do usuário e preencher o formulário
         fetch(`http://localhost:3333/api/users/${userId}`)
-          .then(res => res.json())
-          .then(user => {
+          .then((res) => res.json())
+          .then((user) => {
             if (user.error) {
               alert("Usuário não encontrado");
               window.location.href = "/pages/admin/users/index.html";
               return;
             }
-            document.getElementById('nome').value = user.full_name || '';
-            document.getElementById('email').value = user.email || '';
-            document.getElementById('telefone').value = user.phone_number ? `(${user.phone_ddd || ''}) ${user.phone_number}` : '';
-            document.getElementById('cpf').value = user.cpf || '';
+            document.getElementById("nome").value = user.full_name || "";
+            document.getElementById("email").value = user.email || "";
+            document.getElementById("telefone").value = user.phone_number
+              ? `(${user.phone_ddd || ""}) ${user.phone_number}`
+              : "";
+            document.getElementById("cpf").value = user.cpf || "";
             if (user.birth_date) {
-               const dateObj = new Date(user.birth_date);
-               if (!isNaN(dateObj.getTime())) {
-                 document.getElementById('data_nascimento').value = dateObj.toISOString().split('T')[0];
-               }
+              const dateObj = new Date(user.birth_date);
+              if (!isNaN(dateObj.getTime())) {
+                document.getElementById("data_nascimento").value = dateObj
+                  .toISOString()
+                  .split("T")[0];
+              }
             }
             if (user.gender) {
-              document.getElementById('genero').value = user.gender;
+              document.getElementById("genero").value = user.gender;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.error("Erro ao buscar usuário:", err);
-            alert("Erro ao buscar dados do usuário. O servidor pode estar offline.");
+            alert(
+              "Erro ao buscar dados do usuário. O servidor pode estar offline.",
+            );
           });
       }
 
@@ -175,23 +180,22 @@
 
           const full_name = document.getElementById("nome").value;
           const email = document.getElementById("email").value;
-          // O backend atual espera apenas full_name e email na query do UPDATE
-          // Mas vamos enviar os outros casos você adicione depois
           const telefoneInput = document.getElementById("telefone").value;
           const cpfInput = document.getElementById("cpf").value;
-          const data_nascimento = document.getElementById("data_nascimento").value;
+          const data_nascimento =
+            document.getElementById("data_nascimento").value;
           const genero = document.getElementById("genero").value;
 
           const cpf = cpfInput.replace(/\D/g, "");
           const telefoneRaw = telefoneInput.replace(/\D/g, "");
-          
+
           let phone_ddd = "";
           let phone_number = "";
           if (telefoneRaw.length >= 10) {
             phone_ddd = telefoneRaw.substring(0, 2);
             phone_number = telefoneRaw.substring(2);
           } else {
-            phone_number = telefoneRaw; 
+            phone_number = telefoneRaw;
           }
 
           const payload = {
@@ -201,19 +205,22 @@
             phone_ddd: phone_ddd,
             phone_number: phone_number,
             birth_date: data_nascimento,
-            gender: genero
+            gender: genero,
           };
 
           const success = confirm("Deseja salvar as alterações deste usuário?");
           if (success) {
             try {
-              const res = await fetch(`http://localhost:3333/api/users/${userId}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json"
+              const res = await fetch(
+                `http://localhost:3333/api/users/${userId}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(payload),
                 },
-                body: JSON.stringify(payload)
-              });
+              );
 
               if (res.ok) {
                 alert("Usuário editado com sucesso!");
