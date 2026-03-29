@@ -1,7 +1,6 @@
 const pool = require("../../config/database");
 
 class AddressDao {
-    //[Create]
     async create(address) {
         const query = `
         INSERT INTO addresses (
@@ -45,9 +44,9 @@ class AddressDao {
         const result = await pool.query(query, [id]);
         return result.rows[0];
     }
-    
+
     async update(id, address) {
-    const query = `
+        const query = `
         UPDATE addresses 
         SET 
             residence_type = $1, 
@@ -65,7 +64,7 @@ class AddressDao {
         WHERE id = $13 
         RETURNING *;
         `;
-    
+
         const values = [
             address.residence_type,
             address.street_type,
@@ -79,14 +78,13 @@ class AddressDao {
             address.observations,
             address.is_billing || false,
             address.is_delivery || false,
-            id // O ID do endereço vai aqui no final, que é o $13
+            id,
         ];
 
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    }
 
-    // [DELETE]
     async delete(id) {
         const query = "DELETE FROM addresses WHERE id = $1 RETURNING *";
         const result = await pool.query(query, [id]);

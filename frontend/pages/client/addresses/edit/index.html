@@ -1,234 +1,375 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages/client.css" />
-    <link rel="stylesheet" href="/css/pages/users.css" />
-    <link rel="stylesheet" href="/css/components/button.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/pages/client.css" />
+        <link rel="stylesheet" href="/css/pages/users.css" />
+        <link rel="stylesheet" href="/css/components/button.css" />
 
-    <title>Lume | Editar Endereço</title>
-  </head>
-  <body>
-    <div class="client-page">
-      <header class="client-topbar"></header>
+        <title>Lume | Editar Endereço</title>
+    </head>
+    <body>
+        <div class="client-page">
+            <header class="client-topbar"></header>
 
-      <div class="client-content">
-        <aside class="client-sidebar"></aside>
+            <div class="client-content">
+                <aside class="client-sidebar"></aside>
 
-        <section class="client-form-page">
-          <a href="/pages/client/addresses/index.html" class="client-back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-            </svg>
-            Voltar
-          </a>
+                <section class="client-form-page">
+                    <a
+                        href="/pages/client/addresses/index.html"
+                        class="client-back-link"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                            />
+                        </svg>
+                        Voltar
+                    </a>
 
-          <div class="client-form-header">
-            <h1>Editar endereço</h1>
-            <p>Edite os dados do endereço</p>
-          </div>
+                    <div class="client-form-header">
+                        <h1>Editar endereço</h1>
+                        <p>Edite os dados do endereço</p>
+                    </div>
 
-          <form id="edit-address-form">
-            <div class="client-form-grid">
-              <div class="form-group">
-                <label class="label-admin" for="tipo_endereco">Tipo de endereço <span style="color: red">*</span></label>
-                <select id="tipo_endereco" name="tipo_endereco" required>
-                  <option value="" disabled selected>Selecione</option>
-                  <option value="entrega">Entrega</option>
-                  <option value="cobranca">Cobrança</option>
-                </select>
-              </div>
+                    <form id="edit-address-form">
+                        <div class="client-form-grid">
+                            <div class="form-group">
+                                <label class="label-admin" for="tipo_endereco"
+                                    >Tipo de endereço
+                                    <span style="color: red">*</span></label
+                                >
+                                <select
+                                    id="tipo_endereco"
+                                    name="tipo_endereco"
+                                    required
+                                >
+                                    <option value="" disabled selected>
+                                        Selecione
+                                    </option>
+                                    <option value="entrega">Entrega</option>
+                                    <option value="cobranca">Cobrança</option>
+                                </select>
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="tipo_logradouro">Tipo de logradouro <span style="color: red">*</span></label>
-                <select id="tipo_logradouro" name="tipo_logradouro" required>
-                  <option value="" disabled selected>Selecione</option>
-                  <option value="Rua">Rua</option>
-                  <option value="Avenida">Avenida</option>
-                  <option value="Travessa">Travessa</option>
-                  <option value="Alameda">Alameda</option>
-                  <option value="Praça">Praça</option>
-                </select>
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="tipo_logradouro"
+                                    >Tipo de logradouro
+                                    <span style="color: red">*</span></label
+                                >
+                                <select
+                                    id="tipo_logradouro"
+                                    name="tipo_logradouro"
+                                    required
+                                >
+                                    <option value="" disabled selected>
+                                        Selecione
+                                    </option>
+                                    <option value="Rua">Rua</option>
+                                    <option value="Avenida">Avenida</option>
+                                    <option value="Travessa">Travessa</option>
+                                    <option value="Alameda">Alameda</option>
+                                    <option value="Praça">Praça</option>
+                                </select>
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="logradouro">Logradouro <span style="color: red">*</span></label>
-                <input type="text" id="logradouro" name="logradouro" placeholder="Nome da rua" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="logradouro"
+                                    >Logradouro
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="logradouro"
+                                    name="logradouro"
+                                    placeholder="Nome da rua"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="numero">Número <span style="color: red">*</span></label>
-                <input type="text" id="numero" name="numero" placeholder="123" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="numero"
+                                    >Número
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="numero"
+                                    name="numero"
+                                    placeholder="123"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="bairro">Bairro <span style="color: red">*</span></label>
-                <input type="text" id="bairro" name="bairro" placeholder="Bairro" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="bairro"
+                                    >Bairro
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="bairro"
+                                    name="bairro"
+                                    placeholder="Bairro"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="cep">CEP <span style="color: red">*</span></label>
-                <input type="text" id="cep" name="cep" placeholder="00000-000" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="cep"
+                                    >CEP
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="cep"
+                                    name="cep"
+                                    placeholder="00000-000"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="cidade">Cidade <span style="color: red">*</span></label>
-                <input type="text" id="cidade" name="cidade" placeholder="Cidade" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="cidade"
+                                    >Cidade
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="cidade"
+                                    name="cidade"
+                                    placeholder="Cidade"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="estado">Estado <span style="color: red">*</span></label>
-                <select id="estado" name="estado" required>
-                  <option value="" disabled selected>Selecione</option>
-                  <option value="AC">Acre</option>
-                  <option value="AL">Alagoas</option>
-                  <option value="AP">Amapá</option>
-                  <option value="AM">Amazonas</option>
-                  <option value="BA">Bahia</option>
-                  <option value="CE">Ceará</option>
-                  <option value="DF">Distrito Federal</option>
-                  <option value="ES">Espírito Santo</option>
-                  <option value="GO">Goiás</option>
-                  <option value="MA">Maranhão</option>
-                  <option value="MT">Mato Grosso</option>
-                  <option value="MS">Mato Grosso do Sul</option>
-                  <option value="MG">Minas Gerais</option>
-                  <option value="PA">Pará</option>
-                  <option value="PB">Paraíba</option>
-                  <option value="PR">Paraná</option>
-                  <option value="PE">Pernambuco</option>
-                  <option value="PI">Piauí</option>
-                  <option value="RJ">Rio de Janeiro</option>
-                  <option value="RN">Rio Grande do Norte</option>
-                  <option value="RS">Rio Grande do Sul</option>
-                  <option value="RO">Rondônia</option>
-                  <option value="RR">Roraima</option>
-                  <option value="SC">Santa Catarina</option>
-                  <option value="SP">São Paulo</option>
-                  <option value="SE">Sergipe</option>
-                  <option value="TO">Tocantins</option>
-                </select>
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="estado"
+                                    >Estado
+                                    <span style="color: red">*</span></label
+                                >
+                                <select id="estado" name="estado" required>
+                                    <option value="" disabled selected>
+                                        Selecione
+                                    </option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">
+                                        Mato Grosso do Sul
+                                    </option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">
+                                        Rio Grande do Norte
+                                    </option>
+                                    <option value="RS">
+                                        Rio Grande do Sul
+                                    </option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="pais">País <span style="color: red">*</span></label>
-                <input type="text" id="pais" name="pais" placeholder="Brasil" value="Brasil" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="pais"
+                                    >País
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="pais"
+                                    name="pais"
+                                    placeholder="Brasil"
+                                    value="Brasil"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="observacoes">Observações</label>
-                <input type="text" id="observacoes" name="observacoes" placeholder="Apto, bloco, referência..." />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="observacoes"
+                                    >Observações</label
+                                >
+                                <input
+                                    type="text"
+                                    id="observacoes"
+                                    name="observacoes"
+                                    placeholder="Apto, bloco, referência..."
+                                />
+                            </div>
+                        </div>
+
+                        <div class="client-form-actions">
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                id="cancel-btn"
+                            >
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                Salvar
+                            </button>
+                        </div>
+                    </form>
+                </section>
             </div>
 
-            <div class="client-form-actions">
-              <button type="button" class="btn-secondary" id="cancel-btn">Cancelar</button>
-              <button type="submit" class="btn-primary">Salvar</button>
-            </div>
-          </form>
-        </section>
-      </div>
+            <footer class="client-footer"></footer>
+        </div>
 
-      <footer class="client-footer"></footer>
-    </div>
+        <script type="module" src="/js/main.js"></script>
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const addressId = urlParams.get("id");
 
-    <script type="module" src="/js/main.js"></script>
-    <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const addressId = urlParams.get("id");
+            if (addressId) {
+                fetch(`http://localhost:3333/api/addresses/${addressId}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
 
-      if (addressId) {
-        // Fetch dados reais do banco
-        fetch(`http://localhost:3333/api/addresses/${addressId}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) {
-              alert(data.error);
-              return;
+                        let tipoEndereco = "";
+                        if (data.is_delivery) tipoEndereco = "entrega";
+                        if (data.is_billing) tipoEndereco = "cobranca";
+
+                        const tipoSelect =
+                            document.getElementById("tipo_endereco");
+                        if (tipoSelect && tipoEndereco)
+                            tipoSelect.value = tipoEndereco;
+
+                        const streetTypeSelect =
+                            document.getElementById("tipo_logradouro");
+                        if (streetTypeSelect && data.street_type)
+                            streetTypeSelect.value = data.street_type;
+
+                        document.getElementById("logradouro").value =
+                            data.street_name || "";
+                        document.getElementById("numero").value =
+                            data.street_number || "";
+                        document.getElementById("bairro").value =
+                            data.neighborhood || "";
+                        document.getElementById("cep").value =
+                            data.zip_code || "";
+                        document.getElementById("cidade").value =
+                            data.city || "";
+                        document.getElementById("estado").value =
+                            data.state || "";
+                        document.getElementById("pais").value =
+                            data.country || "Brasil";
+                        document.getElementById("observacoes").value =
+                            data.observations || "";
+                    })
+                    .catch((err) => {
+                        console.error("Erro ao carregar endereço:", err);
+                        alert(
+                            "Erro de conexão ao carregar os dados. Verifique console.",
+                        );
+                    });
             }
 
-            // Descobre qual o tipo pelo banco
-            let tipoEndereco = "";
-            if (data.is_delivery) tipoEndereco = "entrega";
-            if (data.is_billing) tipoEndereco = "cobranca";
+            document
+                .getElementById("edit-address-form")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
 
-            const tipoSelect = document.getElementById("tipo_endereco");
-            if (tipoSelect && tipoEndereco) tipoSelect.value = tipoEndereco;
-            
-            const streetTypeSelect = document.getElementById("tipo_logradouro");
-            if (streetTypeSelect && data.street_type) streetTypeSelect.value = data.street_type;
+                    const confirmSave = confirm("Deseja salvar as alterações?");
+                    if (!confirmSave) return;
 
-            document.getElementById("logradouro").value = data.street_name || "";
-            document.getElementById("numero").value = data.street_number || "";
-            document.getElementById("bairro").value = data.neighborhood || "";
-            document.getElementById("cep").value = data.zip_code || "";
-            document.getElementById("cidade").value = data.city || "";
-            document.getElementById("estado").value = data.state || "";
-            document.getElementById("pais").value = data.country || "Brasil";
-            document.getElementById("observacoes").value = data.observations || "";
-          })
-          .catch(err => {
-            console.error("Erro ao carregar endereço:", err);
-            alert("Erro de conexão ao carregar os dados. Verifique console.");
-          });
-      }
+                    const formData = new FormData(e.target);
+                    const isEntrega =
+                        formData.get("tipo_endereco") === "entrega";
+                    const isCobranca =
+                        formData.get("tipo_endereco") === "cobranca";
 
-      document.getElementById("edit-address-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
+                    const addressData = {
+                        residence_type: "Casa",
+                        street_type: formData.get("tipo_logradouro"),
+                        street_name: formData.get("logradouro"),
+                        street_number: formData.get("numero"),
+                        neighborhood: formData.get("bairro"),
+                        zip_code: formData.get("cep"),
+                        city: formData.get("cidade"),
+                        state: formData.get("estado"),
+                        country: formData.get("pais"),
+                        observations: formData.get("observacoes"),
+                        is_billing: isCobranca,
+                        is_delivery: isEntrega,
+                    };
 
-        const confirmSave = confirm("Deseja salvar as alterações?");
-        if (!confirmSave) return;
-        
-        const formData = new FormData(e.target);
-        const isEntrega = formData.get("tipo_endereco") === "entrega";
-        const isCobranca = formData.get("tipo_endereco") === "cobranca";
+                    try {
+                        const res = await fetch(
+                            `http://localhost:3333/api/addresses/${addressId}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(addressData),
+                            },
+                        );
 
-        const addressData = {
-          residence_type: "Casa", // Repassando default, já que o frontend não captura
-          street_type: formData.get("tipo_logradouro"),
-          street_name: formData.get("logradouro"),
-          street_number: formData.get("numero"),
-          neighborhood: formData.get("bairro"),
-          zip_code: formData.get("cep"),
-          city: formData.get("cidade"),
-          state: formData.get("estado"),
-          country: formData.get("pais"),
-          observations: formData.get("observacoes"),
-          is_billing: isCobranca,
-          is_delivery: isEntrega
-        };
+                        if (res.ok) {
+                            alert("Endereço editado com sucesso!");
+                            window.location.href =
+                                "/pages/client/addresses/index.html";
+                        } else {
+                            const errorData = await res.json();
+                            alert(
+                                "Erro ao editar endereço: " +
+                                    (errorData.error || ""),
+                            );
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Erro de conexão ao editar endereço.");
+                    }
+                });
 
-        try {
-          const res = await fetch(`http://localhost:3333/api/addresses/${addressId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(addressData)
-          });
-
-          if (res.ok) {
-            alert("Endereço editado com sucesso!");
-            window.location.href = "/pages/client/addresses/index.html";
-          } else {
-            const errorData = await res.json();
-            alert("Erro ao editar endereço: " + (errorData.error || ""));
-          }
-        } catch (error) {
-          console.error(error);
-          alert("Erro de conexão ao editar endereço.");
-        }
-      });
-
-      document.getElementById("cancel-btn").addEventListener("click", () => {
-        if (confirm("Deseja realmente cancelar? As alterações não salvas serão perdidas.")) {
-          window.location.href = "/pages/client/addresses/index.html";
-        }
-      });
-    </script>
-  </body>
+            document
+                .getElementById("cancel-btn")
+                .addEventListener("click", () => {
+                    if (
+                        confirm(
+                            "Deseja realmente cancelar? As alterações não salvas serão perdidas.",
+                        )
+                    ) {
+                        window.location.href =
+                            "/pages/client/addresses/index.html";
+                    }
+                });
+        </script>
+    </body>
 </html>

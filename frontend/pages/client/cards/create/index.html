@@ -1,129 +1,211 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages/client.css" />
-    <link rel="stylesheet" href="/css/pages/users.css" />
-    <link rel="stylesheet" href="/css/components/button.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/pages/client.css" />
+        <link rel="stylesheet" href="/css/pages/users.css" />
+        <link rel="stylesheet" href="/css/components/button.css" />
 
-    <title>Lume | Adicionar Cartão</title>
-  </head>
-  <body>
-    <div class="client-page">
-      <header class="client-topbar"></header>
+        <title>Lume | Adicionar Cartão</title>
+    </head>
+    <body>
+        <div class="client-page">
+            <header class="client-topbar"></header>
 
-      <div class="client-content">
-        <aside class="client-sidebar"></aside>
+            <div class="client-content">
+                <aside class="client-sidebar"></aside>
 
-        <section class="client-form-page">
-          <a href="/pages/client/cards/index.html" class="client-back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-            </svg>
-            Voltar
-          </a>
+                <section class="client-form-page">
+                    <a
+                        href="/pages/client/cards/index.html"
+                        class="client-back-link"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                            />
+                        </svg>
+                        Voltar
+                    </a>
 
-          <div class="client-form-header">
-            <h1>Adicionar cartão</h1>
-            <p>Preencha os dados do cartão</p>
-          </div>
+                    <div class="client-form-header">
+                        <h1>Adicionar cartão</h1>
+                        <p>Preencha os dados do cartão</p>
+                    </div>
 
-          <form id="create-card-form">
-            <div class="client-form-grid">
-              <div class="form-group">
-                <label class="label-admin" for="numero_cartao">Número do cartão <span style="color: red">*</span></label>
-                <input type="text" id="numero_cartao" name="numero_cartao" placeholder="0000 0000 0000 0000" required />
-              </div>
+                    <form id="create-card-form">
+                        <div class="client-form-grid">
+                            <div class="form-group">
+                                <label class="label-admin" for="numero_cartao"
+                                    >Número do cartão
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="numero_cartao"
+                                    name="numero_cartao"
+                                    placeholder="0000 0000 0000 0000"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="nome_impresso">Nome impresso <span style="color: red">*</span></label>
-                <input type="text" id="nome_impresso" name="nome_impresso" placeholder="Nome como está no cartão" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="nome_impresso"
+                                    >Nome impresso
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="nome_impresso"
+                                    name="nome_impresso"
+                                    placeholder="Nome como está no cartão"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="cvv">CVV <span style="color: red">*</span></label>
-                <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="cvv"
+                                    >CVV
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="cvv"
+                                    name="cvv"
+                                    placeholder="123"
+                                    maxlength="4"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="vencimento">Vencimento <span style="color: red">*</span></label>
-                <input type="text" id="vencimento" name="vencimento" placeholder="MM/AA" maxlength="5" required />
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="vencimento"
+                                    >Vencimento
+                                    <span style="color: red">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="vencimento"
+                                    name="vencimento"
+                                    placeholder="MM/AA"
+                                    maxlength="5"
+                                    required
+                                />
+                            </div>
 
-              <div class="form-group">
-                <label class="label-admin" for="bandeira">Bandeira <span style="color: red">*</span></label>
-                <select id="bandeira" name="bandeira" required>
-                  <option value="" disabled selected>Selecione</option>
-                  <option value="Visa">Visa</option>
-                  <option value="MasterCard">MasterCard</option>
-                  <option value="Elo">Elo</option>
-                  <option value="American Express">American Express</option>
-                  <option value="Hipercard">Hipercard</option>
-                </select>
-              </div>
+                            <div class="form-group">
+                                <label class="label-admin" for="bandeira"
+                                    >Bandeira
+                                    <span style="color: red">*</span></label
+                                >
+                                <select id="bandeira" name="bandeira" required>
+                                    <option value="" disabled selected>
+                                        Selecione
+                                    </option>
+                                    <option value="Visa">Visa</option>
+                                    <option value="MasterCard">
+                                        MasterCard
+                                    </option>
+                                    <option value="Elo">Elo</option>
+                                    <option value="American Express">
+                                        American Express
+                                    </option>
+                                    <option value="Hipercard">Hipercard</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="client-form-actions">
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                id="cancel-btn"
+                            >
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                Salvar
+                            </button>
+                        </div>
+                    </form>
+                </section>
             </div>
 
-            <div class="client-form-actions">
-              <button type="button" class="btn-secondary" id="cancel-btn">Cancelar</button>
-              <button type="submit" class="btn-primary">Salvar</button>
-            </div>
-          </form>
-        </section>
-      </div>
+            <footer class="client-footer"></footer>
+        </div>
 
-      <footer class="client-footer"></footer>
-    </div>
+        <script type="module" src="/js/main.js"></script>
+        <script>
+            document
+                .getElementById("create-card-form")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
 
-    <script type="module" src="/js/main.js"></script>
-    <script>
-      document.getElementById("create-card-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
+                    const confirmSave = confirm("Deseja salvar este cartão?");
+                    if (!confirmSave) return;
 
-        const confirmSave = confirm("Deseja salvar este cartão?");
-        if (!confirmSave) return;
+                    const formData = new FormData(e.target);
 
-        const formData = new FormData(e.target);
-        
-        const cardData = {
-          user_id: 1, // Usando 1 de mock enquanto não há login
-          card_number: formData.get("numero_cartao"),
-          printed_name: formData.get("nome_impresso"),
-          card_flag: formData.get("bandeira"),
-          security_code: formData.get("cvv"),
-          expiration_date: formData.get("vencimento")
-        };
+                    const cardData = {
+                        user_id: 1,
+                        card_number: formData.get("numero_cartao"),
+                        printed_name: formData.get("nome_impresso"),
+                        card_flag: formData.get("bandeira"),
+                        security_code: formData.get("cvv"),
+                        expiration_date: formData.get("vencimento"),
+                    };
 
-        try {
-          const res = await fetch("http://localhost:3333/api/cards", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(cardData)
-          });
+                    try {
+                        const res = await fetch(
+                            "http://localhost:3333/api/cards",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(cardData),
+                            },
+                        );
 
-          if (res.ok) {
-            alert("Cartão salvo com sucesso!");
-            window.location.href = "/pages/client/cards/index.html";
-          } else {
-            const errorData = await res.json();
-            alert("Erro ao salvar cartão: " + (errorData.error || ""));
-          }
-        } catch (error) {
-          console.error(error);
-          alert("Erro de conexão ao salvar cartão.");
-        }
-      });
+                        if (res.ok) {
+                            alert("Cartão salvo com sucesso!");
+                            window.location.href =
+                                "/pages/client/cards/index.html";
+                        } else {
+                            const errorData = await res.json();
+                            alert(
+                                "Erro ao salvar cartão: " +
+                                    (errorData.error || ""),
+                            );
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Erro de conexão ao salvar cartão.");
+                    }
+                });
 
-      document.getElementById("cancel-btn").addEventListener("click", () => {
-        if (confirm("Deseja realmente cancelar? Os dados não salvos serão perdidos.")) {
-          window.location.href = "/pages/client/cards/index.html";
-        }
-      });
-    </script>
-  </body>
+            document
+                .getElementById("cancel-btn")
+                .addEventListener("click", () => {
+                    if (
+                        confirm(
+                            "Deseja realmente cancelar? Os dados não salvos serão perdidos.",
+                        )
+                    ) {
+                        window.location.href = "/pages/client/cards/index.html";
+                    }
+                });
+        </script>
+    </body>
 </html>

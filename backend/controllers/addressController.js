@@ -1,21 +1,18 @@
 const addressDao = require("../models/dao/addressDao");
 
-//[POST]
 exports.createAddress = async (req, res) => {
     try {
-        //chama Dao passando os dados que vieram do front-end
         const newAddress = await addressDao.create(req.body);
         res.status(201).json(newAddress);
     } catch (error) {
         console.error("Erro na criação do endereço do usuário:", error);
         res.status(500).json({
             error: "Erro ao criar endereço no banco de dados",
-            details: error.message
+            details: error.message,
         });
     }
 };
 
-//[GET]
 exports.getAddresses = async (req, res) => {
     try {
         const address = await addressDao.findAll();
@@ -26,7 +23,6 @@ exports.getAddresses = async (req, res) => {
         });
     }
 };
-
 
 exports.getAddressById = async (req, res) => {
     try {
@@ -44,17 +40,16 @@ exports.getAddressById = async (req, res) => {
 
 exports.updateAddress = async (req, res) => {
     try {
-        const updatedAddress= await addressDao.update(req.params.id, req.body);
+        const updatedAddress = await addressDao.update(req.params.id, req.body);
         res.status(200).json(updatedAddress);
     } catch (error) {
         console.error("ERRO NO UPDATE:", error);
         res.status(500).json({
             error: "Erro ao atualizar endereço no banco de dados",
-            detalhes: error.message
+            detalhes: error.message,
         });
     }
 };
-
 
 exports.deleteAddress = async (req, res) => {
     try {
