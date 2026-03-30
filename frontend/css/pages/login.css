@@ -85,3 +85,23 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.login-register-text {
+  font-family: var(--font-secundaria);
+  font-size: 16px;
+  color: var(--color-neutro100);
+  text-align: center;
+  width: 100%;
+}
+
+.login-register-link {
+  color: var(--color-primaria100);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.login-register-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}

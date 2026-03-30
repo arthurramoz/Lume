@@ -46,19 +46,20 @@ export const verifyAccess = () => {
 
   const publicRoutes = [
     "/",
-    "/login",
-    "/recovery",
-    "/reset-password",
-    "/register",
-    "/verify-email",
+    "/index.html",
+    "/pages/login.html",
+    "/pages/recovery.html",
+    "/pages/reset-password.html",
+    "/pages/register.html",
+    "/pages/verify-email.html",
   ];
 
   const guestRoutes = [
-    "/login",
-    "/recovery",
-    "/reset-password",
-    "/register",
-    "/verify-email",
+    "/pages/login.html",
+    "/pages/recovery.html",
+    "/pages/reset-password.html",
+    "/pages/register.html",
+    "/pages/verify-email.html",
   ];
 
   const isPublicRoute =

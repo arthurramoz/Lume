@@ -1,0 +1,237 @@
+.register-container {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+}
+
+.register-container-left {
+  flex: 1;
+  background-color: var(--color-background);
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 0;
+}
+
+.register-container-right {
+  flex: 1;
+  background-image: url("../../assets/images/background-login.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
+  position: sticky;
+  top: 0;
+}
+
+.register-container-left-main {
+  width: 520px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: start;
+}
+
+.back {
+  font-family: var(--font-secundaria);
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-primaria100);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.register-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.register-title {
+  font-family: var(--font-secundaria);
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--color-primaria100);
+}
+
+.register-subtitle {
+  font-family: var(--font-secundaria);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-neutro100);
+}
+
+/* ========== SECTION DIVIDERS ========== */
+
+.register-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-section-title {
+  font-family: var(--font-secundaria);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primaria100);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-primaria20);
+}
+
+/* ========== FORM GRID ========== */
+
+.register-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 20px;
+  column-gap: 24px;
+}
+
+.register-form-grid .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ========== PASSWORD ========== */
+
+.register-password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.register-password-wrapper input {
+  padding-right: 48px;
+}
+
+.register-password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== ACTIONS ========== */
+
+.register-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.register-form-actions .btn-primary {
+  width: 100%;
+  height: 48px;
+}
+
+/* ========== LOGIN LINK ========== */
+
+.register-login-text {
+  font-family: var(--font-secundaria);
+  font-size: 16px;
+  color: var(--color-neutro100);
+  text-align: center;
+  width: 100%;
+}
+
+.register-login-link {
+  color: var(--color-primaria100);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.register-login-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ========== ADD BUTTON ========== */
+
+.register-add-btn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ========== CHECKBOX ========== */
+
+.register-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.register-checkbox-wrapper input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primaria100);
+  cursor: pointer;
+}
+
+.register-checkbox-label {
+  font-family: var(--font-secundaria);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-neutro100);
+  cursor: pointer;
+}
+
+/* ========== ADDRESS BLOCK ========== */
+
+.register-address-block {
+  border: 1px solid var(--color-neutro20);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.register-address-block + .register-address-block {
+  margin-top: 16px;
+}
+
+.register-address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register-address-header span {
+  font-family: var(--font-secundaria);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primaria100);
+}
+
+.register-address-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-secundaria);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-error1);
+  transition: opacity 0.2s;
+}
+
+.register-address-remove:hover {
+  opacity: 0.7;
+}
+

@@ -31,8 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.addEventListener("click", async (e) => {
       e.preventDefault();
 
-      const email = emailInput.value;
-      const pass = input.value;
+      const email = emailInput.value.trim();
+      const pass = input.value.trim();
 
       if (!email || !pass) {
         alert("Por favor, preencha todos os campos.");
@@ -41,22 +41,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
       submitBtn.disabled = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      try {
+        const response = await fetch("http://localhost:3333/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: pass }),
+        });
 
-      const fakeUser = {
-        id: 1,
-        name: "Usuário Teste",
-        email: email,
-        role: "admin",
-      };
+        const data = await response.json();
 
-      localStorage.setItem(localStorageKeys.user, JSON.stringify(fakeUser));
-      localStorage.setItem(
-        localStorageKeys.accessToken,
-        "fake-jwt-access-token",
-      );
+        if (!response.ok) {
+          alert(data.error || "Erro ao realizar login");
+          submitBtn.disabled = false;
+          return;
+        }
 
-      window.location.replace("/");
+        // Salva os dados retornados no localStorage
+        localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
+        localStorage.setItem(localStorageKeys.accessToken, data.token);
+
+        // Redireciona baseado no role do usuário (admin vs client)
+        if (data.user.role === "admin") {
+          window.location.replace("/pages/admin/dashboard/index.html");
+        } else {
+          window.location.replace("/"); 
+        }
+      } catch (err) {
+        console.error("Erro no login:", err);
+        alert("Servidor indisponível no momento.");
+        submitBtn.disabled = false;
+      }
     });
   }
 });

@@ -1,11 +1,55 @@
 const userDao = require("../models/dao/usersDao");
+const bcrypt = require("bcryptjs");
+
+// ==========================================
+// ROTAS PÚBLICAS (Sem Autenticação)
+// ==========================================
+
+exports.registerClient = async (req, res) => {
+    try {
+        const data = req.body;
+        // Força o papel como "client" e status "Ativo" por segurança
+        data.role = "client";
+        data.status = "Ativo";
+
+        if (data.password_hash) {
+            const salt = await bcrypt.genSalt(10);
+            data.password_hash = await bcrypt.hash(data.password_hash, salt);
+        }
+
+        const newUser = await userDao.create(data);
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error("Erro no cadastro de cliente:", error);
+        res.status(500).json({
+            error: "Erro ao criar cliente no banco de dados",
+            details: error.message,
+        });
+    }
+};
+
+// ==========================================
+// ROTAS DO ADMIN E CLIENTE
+// Assume que req.user = { id, role } existe
+// ==========================================
 
 exports.createUser = async (req, res) => {
     try {
-        const newUser = await userDao.create(req.body);
+        // Admin pode criar mandando qualquer role no body
+        if (req.user && req.user.role !== "admin") {
+            return res.status(403).json({ error: "Acesso negado." });
+        }
+        
+        const data = req.body;
+        if (data.password_hash) {
+            const salt = await bcrypt.genSalt(10);
+            data.password_hash = await bcrypt.hash(data.password_hash, salt);
+        }
+
+        const newUser = await userDao.create(data);
         res.status(201).json(newUser);
     } catch (error) {
-        console.error("Erro na criação deo usuário:", error);
+        console.error("Erro na criação do usuário:", error);
         res.status(500).json({
             error: "Erro ao criar usuário no banco de dados",
             details: error.message,
@@ -15,6 +59,12 @@ exports.createUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
+        // Se for cliente, retorna apenas os dados dele
+        if (req.user && req.user.role === "client") {
+            const user = await userDao.findById(req.user.id);
+            return res.status(200).json([user]);
+        }
+        
         const { search } = req.query;
         const users = await userDao.findAll(search);
         res.status(200).json(users);
@@ -27,7 +77,9 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const user = await userDao.findById(req.params.id);
+        const idToSearch = (req.user && req.user.role === "client") ? req.user.id : req.params.id;
+
+        const user = await userDao.findById(idToSearch);
         if (!user) {
             return res.status(404).json({ error: "Usuário não encontrado" });
         }
@@ -41,7 +93,17 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const updatedUser = await userDao.update(req.params.id, req.body);
+        let idToUpdate = req.params.id;
+        const updateData = { ...req.body };
+
+        if (req.user && req.user.role === "client") {
+            idToUpdate = req.user.id; // Força atualizar a si mesmo
+            // Protege campos sensíveis de clientes
+            delete updateData.role;
+            delete updateData.status;
+        }
+
+        const updatedUser = await userDao.update(idToUpdate, updateData);
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({
@@ -52,6 +114,11 @@ exports.updateUser = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
     try {
+        // Somente admin deveria mudar status dessa forma
+        if (req.user && req.user.role !== "admin") {
+            return res.status(403).json({ error: "Acesso negado." });
+        }
+
         const { status } = req.body;
         const updatedUser = await userDao.updateStatus(req.params.id, status);
         if (!updatedUser) {
@@ -68,7 +135,10 @@ exports.updateStatus = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
-        const deletedUser = await userDao.delete(req.params.id);
+        // Geralmente apenas Admin pode deletar fisicamente, mas se cliente puder, forçamos o ID
+        const idToDelete = (req.user && req.user.role === "client") ? req.user.id : req.params.id;
+
+        const deletedUser = await userDao.delete(idToDelete);
         res.status(200).json(deletedUser);
     } catch (error) {
         res.status(500).json({

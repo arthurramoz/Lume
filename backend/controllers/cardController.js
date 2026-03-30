@@ -2,6 +2,11 @@ const cardsDao = require("../models/dao/cardsDao");
 
 exports.createCard = async (req, res) => {
     try {
+        // Se for cliente, força o user_id dele no body
+        if (req.user && req.user.role === "client") {
+            req.body.user_id = req.user.id;
+        }
+
         const newCard = await cardsDao.create(req.body);
         res.status(201).json(newCard);
     } catch (error) {
@@ -15,8 +20,14 @@ exports.createCard = async (req, res) => {
 
 exports.getCards = async (req, res) => {
     try {
-        const card = await cardsDao.findAll();
-        res.status(200).json(card);
+        let cards = await cardsDao.findAll();
+
+        // Se for cliente, filtra apenas os cartões dele
+        if (req.user && req.user.role === "client") {
+            cards = cards.filter(c => c.user_id === req.user.id);
+        }
+
+        res.status(200).json(cards);
     } catch (error) {
         res.status(500).json({
             error: "Erro ao buscar cartões no banco de dados",
@@ -26,6 +37,13 @@ exports.getCards = async (req, res) => {
 
 exports.deleteCard = async (req, res) => {
     try {
+        if (req.user && req.user.role === "client") {
+            const card = await cardsDao.findById(req.params.id);
+            if (!card || card.user_id !== req.user.id) {
+                return res.status(403).json({ error: "Acesso negado." });
+            }
+        }
+
         const deletedCard = await cardsDao.delete(req.params.id);
         res.status(200).json(deletedCard);
     } catch (error) {

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/icons/favicon.ico" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/pages/register.css" />
+    <link rel="stylesheet" href="../css/pages/users.css" />
+    <link rel="stylesheet" href="../css/components/button.css" />
+    <title>Lume | Cadastro</title>
+  </head>
+  <body>
+    <main class="register-container">
+      <div class="register-container-left">
+        <div class="register-container-left-main">
+          <a href="login.html" class="back" style="text-decoration: none;">
+            <img src="../assets/icons/back-icon.svg" />
+            <span>Voltar</span>
+          </a>
+          <img src="../assets/images/logo-lume.svg" />
+
+          <div class="register-texts">
+            <p class="register-title">Crie sua conta</p>
+            <p class="register-subtitle">
+              Preencha os campos abaixo para se cadastrar
+            </p>
+          </div>
+
+          <form id="register-form" style="width: 100%; display: flex; flex-direction: column; gap: 32px;">
+            <div class="register-section">
+              <h2 class="register-section-title">Dados Pessoais</h2>
+              <div class="register-form-grid">
+                <div class="form-group">
+                  <label class="label-admin" for="nome"
+                    >Nome completo <span style="color: red">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Carolina Santos"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="email"
+                    >E-mail <span style="color: red">*</span></label
+                  >
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="telefone"
+                    >Telefone <span style="color: red">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="telefone"
+                    name="telefone"
+                    placeholder="(11) 95643-6584"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="cpf"
+                    >CPF <span style="color: red">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="cpf"
+                    name="cpf"
+                    placeholder="123.456.789-10"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="data_nascimento"
+                    >Data de nascimento
+                    <span style="color: red">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="data_nascimento"
+                    name="data_nascimento"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="genero"
+                    >Gênero <span style="color: red">*</span></label
+                  >
+                  <select id="genero" name="genero" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Outro">Outro</option>
+                    <option value="Prefiro não dizer">Prefiro não dizer</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="senha"
+                    >Senha <span style="color: red">*</span></label
+                  >
+                  <div class="register-password-wrapper">
+                    <input
+                      type="password"
+                      id="senha"
+                      name="senha"
+                      placeholder="Digite sua senha"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="register-password-toggle"
+                    >
+                      <img
+                        src="../assets/icons/eye-off-icon.svg"
+                        alt="Mostrar senha"
+                        style="width: 22px"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="label-admin" for="confirmar_senha"
+                    >Confirmar senha
+                    <span style="color: red">*</span></label
+                  >
+                  <div class="register-password-wrapper">
+                    <input
+                      type="password"
+                      id="confirmar_senha"
+                      name="confirmar_senha"
+                      placeholder="Confirme sua senha"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="register-password-toggle"
+                    >
+                      <img
+                        src="../assets/icons/eye-off-icon.svg"
+                        alt="Mostrar senha"
+                        style="width: 22px"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="register-section">
+              <h2 class="register-section-title">Endereços de Entrega</h2>
+              <div id="entrega-addresses-container"></div>
+              <div class="register-add-btn">
+                <button type="button" class="btn-primary" id="btn-add-entrega">
+                  <img src="../assets/icons/users-plus.svg" alt="+" width="16" />
+                  Adicionar
+                </button>
+              </div>
+              <div class="register-checkbox-wrapper">
+                <input type="checkbox" id="same-as-billing" />
+                <label for="same-as-billing" class="register-checkbox-label">
+                  Usar o mesmo endereço para cobrança
+                </label>
+              </div>
+            </div>
+
+            <div class="register-section" id="cobranca-section">
+              <h2 class="register-section-title">Endereços de Cobrança</h2>
+              <div id="cobranca-addresses-container"></div>
+              <div class="register-add-btn">
+                <button type="button" class="btn-primary" id="btn-add-cobranca">
+                  <img src="../assets/icons/users-plus.svg" alt="+" width="16" />
+                  Adicionar
+                </button>
+              </div>
+            </div>
+
+
+
+            <div class="register-form-actions">
+              <button type="submit" class="btn-primary">Cadastrar</button>
+            </div>
+          </form>
+
+          <p class="register-login-text">
+            Já tem uma conta?
+            <a href="login.html" class="register-login-link">Faça login</a>
+          </p>
+        </div>
+      </div>
+      <div class="register-container-right"></div>
+    </main>
+    <script type="module" src="../js/register.js"></script>
+  </body>
+</html>

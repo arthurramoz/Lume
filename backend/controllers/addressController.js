@@ -2,6 +2,11 @@ const addressDao = require("../models/dao/addressDao");
 
 exports.createAddress = async (req, res) => {
     try {
+        // Se for cliente, força o user_id dele no body
+        if (req.user && req.user.role === "client") {
+            req.body.user_id = req.user.id;
+        }
+
         const newAddress = await addressDao.create(req.body);
         res.status(201).json(newAddress);
     } catch (error) {
@@ -15,8 +20,14 @@ exports.createAddress = async (req, res) => {
 
 exports.getAddresses = async (req, res) => {
     try {
-        const address = await addressDao.findAll();
-        res.status(200).json(address);
+        let addresses = await addressDao.findAll();
+        
+        // Se for cliente, filtra apenas os endereços dele
+        if (req.user && req.user.role === "client") {
+            addresses = addresses.filter(a => a.user_id === req.user.id);
+        }
+
+        res.status(200).json(addresses);
     } catch (error) {
         res.status(500).json({
             error: "Erro ao buscar endereços no banco de dados",
@@ -30,6 +41,12 @@ exports.getAddressById = async (req, res) => {
         if (!address) {
             return res.status(404).json({ error: "Endereço não encontrado" });
         }
+
+        // Se for cliente, garante que o endereço é dele
+        if (req.user && req.user.role === "client" && address.user_id !== req.user.id) {
+            return res.status(403).json({ error: "Acesso negado." });
+        }
+
         res.status(200).json(address);
     } catch (error) {
         res.status(500).json({
@@ -40,6 +57,13 @@ exports.getAddressById = async (req, res) => {
 
 exports.updateAddress = async (req, res) => {
     try {
+        if (req.user && req.user.role === "client") {
+            const address = await addressDao.findById(req.params.id);
+            if (!address || address.user_id !== req.user.id) {
+                return res.status(403).json({ error: "Acesso negado." });
+            }
+        }
+
         const updatedAddress = await addressDao.update(req.params.id, req.body);
         res.status(200).json(updatedAddress);
     } catch (error) {
@@ -53,6 +77,13 @@ exports.updateAddress = async (req, res) => {
 
 exports.deleteAddress = async (req, res) => {
     try {
+        if (req.user && req.user.role === "client") {
+            const address = await addressDao.findById(req.params.id);
+            if (!address || address.user_id !== req.user.id) {
+                return res.status(403).json({ error: "Acesso negado." });
+            }
+        }
+
         const deletedAddress = await addressDao.delete(req.params.id);
         res.status(200).json(deletedAddress);
     } catch (error) {

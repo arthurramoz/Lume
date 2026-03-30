@@ -53,6 +53,13 @@ class UserDao {
         return user;
     }
 
+    async findByEmail(email) {
+        const query = "SELECT * FROM users WHERE email = $1";
+        const result = await pool.query(query, [email]);
+        // Aqui NO deletamos o password_hash porque o login precisa dele para validar a senha
+        return result.rows[0];
+    }
+
     async update(id, user) {
         const query =
             "UPDATE users SET full_name = $1, email = $2 WHERE id = $3 RETURNING *";

@@ -12,11 +12,12 @@ export const initTopbar = () => {
   const rightContentHTML = isAuthenticated
     ? `
       <div class="topbar__logged-actions">
-        <a href="/pages/admin/users" class="topbar__action-link" aria-label="Admin">
+        ${user?.role === "admin" ? `
+        <a href="/pages/admin/dashboard/index.html" class="topbar__action-link" aria-label="Admin">
          <span>Admin</span>
         </a>
-
         <div class="topbar__divider"></div>
+        ` : ""}
 
         <a href="/pages/cart.html" class="topbar__action-link" aria-label="Carrinho">
           <img src="/assets/icons/home-cart.svg" alt="Carrinho" width="24" />
@@ -24,7 +25,7 @@ export const initTopbar = () => {
 
         <div class="topbar__divider"></div>
 
-        <a href="/pages/client/addresses" class="topbar__action-link" aria-label="Perfil">
+        <a href="/pages/client/addresses/index.html" class="topbar__action-link" aria-label="Perfil">
           <span>${userName}</span>
           <img src="/assets/icons/home-profile.svg" alt="Perfil" width="24" />
         </a>
@@ -39,7 +40,7 @@ export const initTopbar = () => {
     `
     : `
       <div class="topbar__actions">
-        <a href="/login" class="topbar__btn-login">
+        <a href="/pages/login.html" class="topbar__btn-login">
           Entrar
         </a>
       </div>
