@@ -42,6 +42,12 @@ const renderEmptyState = () => `
   </div>
 `;
 
+import { localStorageKeys } from "../hooks/useAuth.js";
+
+function getToken() {
+  return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+}
+
 export const initUserList = async () => {
   const tableBody = document.querySelector(".table-body");
   const tableContainer = document.querySelector(".table-container");
@@ -49,7 +55,9 @@ export const initUserList = async () => {
   if (!tableBody || !tableContainer) return;
 
   try {
-    const response = await fetch("http://localhost:3333/api/users");
+    const response = await fetch("http://localhost:3333/api/users", {
+        headers: { "Authorization": `Bearer ${getToken()}` }
+    });
     
     if (!response.ok) {
       throw new Error("Erro na resposta da API");
@@ -82,7 +90,9 @@ export const initUserList = async () => {
           url = `http://localhost:3333/api/users?search=${term}`;
         }
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: { "Authorization": `Bearer ${getToken()}` }
+        });
         const data = await response.json();
         renderTable(data);
       });
@@ -108,7 +118,8 @@ export const initUserList = async () => {
           const res = await fetch(`http://localhost:3333/api/users/${idText}/status`, {
             method: "PATCH",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${getToken()}`
             },
             body: JSON.stringify({ status: isActive })
           });

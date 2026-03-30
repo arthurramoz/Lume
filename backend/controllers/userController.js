@@ -1,5 +1,8 @@
 const userDao = require("../models/dao/usersDao");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET || "LUME_SECRET_TOKEN_2026";
 
 // ==========================================
 // ROTAS PÚBLICAS (Sem Autenticação)
@@ -18,7 +21,16 @@ exports.registerClient = async (req, res) => {
         }
 
         const newUser = await userDao.create(data);
-        res.status(201).json(newUser);
+
+        // Gera token automaticamente após registro para usar nas chamadas seguintes
+        const tokenPayload = {
+            id: newUser.id,
+            email: newUser.email,
+            role: "client"
+        };
+        const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "7d" });
+
+        res.status(201).json({ user: newUser, token });
     } catch (error) {
         console.error("Erro no cadastro de cliente:", error);
         res.status(500).json({

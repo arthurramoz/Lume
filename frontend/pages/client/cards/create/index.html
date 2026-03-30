@@ -146,7 +146,13 @@
         </div>
 
         <script type="module" src="/js/main.js"></script>
-        <script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+            
+            function getToken() {
+              return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+            }
+
             document
                 .getElementById("create-card-form")
                 .addEventListener("submit", async (e) => {
@@ -158,7 +164,6 @@
                     const formData = new FormData(e.target);
 
                     const cardData = {
-                        user_id: 1,
                         card_number: formData.get("numero_cartao"),
                         printed_name: formData.get("nome_impresso"),
                         card_flag: formData.get("bandeira"),
@@ -173,6 +178,7 @@
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${getToken()}`
                                 },
                                 body: JSON.stringify(cardData),
                             },

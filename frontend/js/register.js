@@ -307,8 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirmSave) return;
 
     try {
-      // 1. Criar usuário
-      const userRes = await fetch("http://localhost:3333/api/users", {
+      // 1. Criar usuário e pegar Token
+      const userRes = await fetch("http://localhost:3333/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -320,15 +320,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const createdUser = await userRes.json();
-      const userId = createdUser.id || createdUser.user?.id;
+      const createdResponse = await userRes.json();
+      const userId = createdResponse.user?.id || createdResponse.id;
+      const userToken = createdResponse.token; // O Token gerado pela API
 
       // 2. Criar endereços
       for (const addr of allAddresses) {
         try {
           await fetch("http://localhost:3333/api/addresses", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${userToken}`
+            },
             body: JSON.stringify({ ...addr, user_id: userId }),
           });
         } catch (err) {

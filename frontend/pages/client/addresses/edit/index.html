@@ -248,12 +248,20 @@
         </div>
 
         <script type="module" src="/js/main.js"></script>
-        <script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+            
+            function getToken() {
+              return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const addressId = urlParams.get("id");
 
             if (addressId) {
-                fetch(`http://localhost:3333/api/addresses/${addressId}`)
+                fetch(`http://localhost:3333/api/addresses/${addressId}`, {
+                    headers: { "Authorization": `Bearer ${getToken()}` }
+                })
                     .then((res) => res.json())
                     .then((data) => {
                         if (data.error) {
@@ -336,6 +344,7 @@
                                 method: "PUT",
                                 headers: {
                                     "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${getToken()}`
                                 },
                                 body: JSON.stringify(addressData),
                             },

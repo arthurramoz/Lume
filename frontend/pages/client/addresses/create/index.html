@@ -248,7 +248,13 @@
         </div>
 
         <script type="module" src="/js/main.js"></script>
-        <script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+            
+            function getToken() {
+              return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const tipo = urlParams.get("type");
             if (tipo) {
@@ -271,7 +277,6 @@
                         formData.get("tipo_endereco") === "cobranca";
 
                     const addressData = {
-                        user_id: 1,
                         alias: "Meu Endereço",
                         residence_type: "Casa",
                         street_type: formData.get("tipo_logradouro"),
@@ -294,6 +299,7 @@
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${getToken()}`
                                 },
                                 body: JSON.stringify(addressData),
                             },

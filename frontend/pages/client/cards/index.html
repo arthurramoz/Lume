@@ -38,9 +38,17 @@
 
     <script type="module" src="/js/main.js"></script>
     <script type="module">
+      import { localStorageKeys } from "/js/hooks/useAuth.js";
+      
+      function getToken() {
+        return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+      }
+
       async function fetchCards() {
         try {
-          const res = await fetch("http://localhost:3333/api/cards");
+          const res = await fetch("http://localhost:3333/api/cards", {
+            headers: { "Authorization": `Bearer ${getToken()}` }
+          });
           if (!res.ok) throw new Error("Erro ao carregar cartões");
           return await res.json();
         } catch (error) {
@@ -85,7 +93,8 @@
           if (confirm("Tem certeza que deseja deletar este cartão?")) {
             try {
               const res = await fetch(`http://localhost:3333/api/cards/${id}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${getToken()}` }
               });
               if (res.ok) {
                 alert("Cartão deletado com sucesso!");
