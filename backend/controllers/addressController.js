@@ -2,11 +2,9 @@ const addressDao = require("../models/dao/addressDao");
 
 exports.createAddress = async (req, res) => {
     try {
-        // Se for cliente, força o user_id dele no body
         if (req.user && req.user.role === "client") {
             req.body.user_id = req.user.id;
         }
-
         const newAddress = await addressDao.create(req.body);
         res.status(201).json(newAddress);
     } catch (error) {
@@ -21,10 +19,10 @@ exports.createAddress = async (req, res) => {
 exports.getAddresses = async (req, res) => {
     try {
         let addresses = await addressDao.findAll();
-        
+
         // Se for cliente, filtra apenas os endereços dele
         if (req.user && req.user.role === "client") {
-            addresses = addresses.filter(a => a.user_id === req.user.id);
+            addresses = addresses.filter((a) => a.user_id === req.user.id);
         }
 
         res.status(200).json(addresses);
@@ -43,7 +41,11 @@ exports.getAddressById = async (req, res) => {
         }
 
         // Se for cliente, garante que o endereço é dele
-        if (req.user && req.user.role === "client" && address.user_id !== req.user.id) {
+        if (
+            req.user &&
+            req.user.role === "client" &&
+            address.user_id !== req.user.id
+        ) {
             return res.status(403).json({ error: "Acesso negado." });
         }
 

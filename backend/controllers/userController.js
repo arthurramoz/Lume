@@ -2,21 +2,18 @@ const userDao = require("../models/dao/usersDao");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "LUME_SECRET_TOKEN_2026";
-
-// ==========================================
-// ROTAS PÚBLICAS (Sem Autenticação)
-// ==========================================
+const JWT_SECRET = process.env.JWT_SECRET || "LUME_TOKEN_2026";
+const ADMIN_EMAIL = "admin@lume.com";
 
 exports.registerClient = async (req, res) => {
     try {
         const data = req.body;
-        // Força o papel como "client" e status "Ativo" por segurança
+        // Força o papel como "client" e status "Ativo" sempre, por segurança
         data.role = "client";
         data.status = "Ativo";
 
         if (data.password_hash) {
-            const salt = await bcrypt.genSalt(10);
+            const salt = await bcrypt.genSalt(10); //Embaralha a senha
             data.password_hash = await bcrypt.hash(data.password_hash, salt);
         }
 
@@ -26,7 +23,7 @@ exports.registerClient = async (req, res) => {
         const tokenPayload = {
             id: newUser.id,
             email: newUser.email,
-            role: "client"
+            role: "client",
         };
         const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "7d" });
 
@@ -40,18 +37,12 @@ exports.registerClient = async (req, res) => {
     }
 };
 
-// ==========================================
-// ROTAS DO ADMIN E CLIENTE
-// Assume que req.user = { id, role } existe
-// ==========================================
-
 exports.createUser = async (req, res) => {
     try {
-        // Admin pode criar mandando qualquer role no body
         if (req.user && req.user.role !== "admin") {
             return res.status(403).json({ error: "Acesso negado." });
         }
-        
+
         const data = req.body;
         if (data.password_hash) {
             const salt = await bcrypt.genSalt(10);
@@ -71,15 +62,16 @@ exports.createUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
-        // Se for cliente, retorna apenas os dados dele
         if (req.user && req.user.role === "client") {
             const user = await userDao.findById(req.user.id);
             return res.status(200).json([user]);
         }
-        
+
         const { search } = req.query;
         const users = await userDao.findAll(search);
-        res.status(200).json(users);
+        // Esconde o admin da listagem
+        const filtered = users.filter(u => u.email !== ADMIN_EMAIL);
+        res.status(200).json(filtered);
     } catch (error) {
         res.status(500).json({
             error: "Erro ao buscar usuários no banco de dados.",
@@ -89,12 +81,20 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const idToSearch = (req.user && req.user.role === "client") ? req.user.id : req.params.id;
+        let idToSearch;
+
+        if (req.user && req.user.role === "client") {
+            idToSearch = req.user.id; // Se for cliente, busca a si mesmo
+        } else {
+            idToSearch = req.params.id; // Se for admin, busca o ID digitado na URL
+        }
 
         const user = await userDao.findById(idToSearch);
+
         if (!user) {
             return res.status(404).json({ error: "Usuário não encontrado" });
         }
+
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({
@@ -109,10 +109,15 @@ exports.updateUser = async (req, res) => {
         const updateData = { ...req.body };
 
         if (req.user && req.user.role === "client") {
-            idToUpdate = req.user.id; // Força atualizar a si mesmo
-            // Protege campos sensíveis de clientes
+            idToUpdate = req.user.id;
             delete updateData.role;
             delete updateData.status;
+        }
+
+        // Bloqueia edição do admin
+        const target = await userDao.findById(idToUpdate);
+        if (target && target.email === ADMIN_EMAIL) {
+            return res.status(403).json({ error: "O usuário administrador não pode ser editado." });
         }
 
         const updatedUser = await userDao.update(idToUpdate, updateData);
@@ -126,9 +131,14 @@ exports.updateUser = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
     try {
-        // Somente admin deveria mudar status dessa forma
         if (req.user && req.user.role !== "admin") {
             return res.status(403).json({ error: "Acesso negado." });
+        }
+
+        // Bloqueia inativação do admin
+        const target = await userDao.findById(req.params.id);
+        if (target && target.email === ADMIN_EMAIL) {
+            return res.status(403).json({ error: "O usuário administrador não pode ser inativado." });
         }
 
         const { status } = req.body;
@@ -147,8 +157,19 @@ exports.updateStatus = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
-        // Geralmente apenas Admin pode deletar fisicamente, mas se cliente puder, forçamos o ID
-        const idToDelete = (req.user && req.user.role === "client") ? req.user.id : req.params.id;
+        let idToDelete;
+
+        if (req.user && req.user.role === "client") {
+            idToDelete = req.user.id;
+        } else {
+            idToDelete = req.params.id;
+        }
+
+        // Bloqueia exclusão do admin
+        const target = await userDao.findById(idToDelete);
+        if (target && target.email === ADMIN_EMAIL) {
+            return res.status(403).json({ error: "O usuário administrador não pode ser excluído." });
+        }
 
         const deletedUser = await userDao.delete(idToDelete);
         res.status(200).json(deletedUser);

@@ -99,6 +99,51 @@ export const initUserList = async () => {
     }
 
     tableBody.addEventListener("click", async (e) => {
+      const viewBtn = e.target.closest('[aria-label="Visualizar"]');
+      if (viewBtn) {
+        const row = viewBtn.closest(".table-row");
+        let idText = row.querySelector(".col-code").textContent.trim();
+        if (idText.startsWith("#")) idText = idText.substring(1);
+        window.location.href = `/pages/admin/users/view/index.html?id=${idText}`;
+        return;
+      }
+
+      const editBtn = e.target.closest('[aria-label="Editar"]');
+      if (editBtn) {
+        const row = editBtn.closest(".table-row");
+        let idText = row.querySelector(".col-code").textContent.trim();
+        if (idText.startsWith("#")) idText = idText.substring(1);
+        window.location.href = `/pages/admin/users/edit/index.html?id=${idText}`;
+        return;
+      }
+
+      const deleteBtn = e.target.closest('[aria-label="Deletar"]');
+      if (deleteBtn) {
+        const row = deleteBtn.closest(".table-row");
+        let idText = row.querySelector(".col-code").textContent.trim();
+        if (idText.startsWith("#")) idText = idText.substring(1);
+
+        if (confirm("Tem certeza que deseja deletar este usuário?")) {
+          try {
+            const res = await fetch(`http://localhost:3333/api/users/${idText}`, {
+              method: "DELETE",
+              headers: { "Authorization": `Bearer ${getToken()}` }
+            });
+            if (res.ok) {
+              alert("Usuário deletado com sucesso!");
+              row.remove();
+            } else {
+              const errData = await res.json();
+              alert("Erro ao deletar: " + (errData.error || ""));
+            }
+          } catch (error) {
+            console.error("Erro ao deletar usuário:", error);
+            alert("Erro de conexão ao deletar usuário.");
+          }
+        }
+        return;
+      }
+
       const toggleBtn = e.target.closest(".toggle-btn");
 
       if (toggleBtn) {

@@ -1,3 +1,5 @@
+import { logout } from "../hooks/useAuth.js";
+
 export const initAdminNavbar = () => {
   const navbar = document.querySelector(".navbar");
 
@@ -10,11 +12,11 @@ export const initAdminNavbar = () => {
     <div class="middle">
       <div class="option nav-users">
         <img src="/assets/icons/users-off.svg" alt="Ícone" />
-        <a href="/pages/admin/users">Usuários</a>
+        <a href="/pages/admin/users/index.html">Usuários</a>
       </div>
       <div class="option nav-dashboard">
         <img src="/assets/icons/dashboard-off.svg" alt="Ícone" />
-        <a href="/pages/admin/dashboard">Dashboard</a>
+        <a href="/pages/admin/dashboard/index.html">Dashboard</a>
       </div>
       <div class="option nav-orders">
         <img src="/assets/icons/orders-off.svg" alt="Ícone" />
@@ -35,7 +37,7 @@ export const initAdminNavbar = () => {
 
   const path = window.location.pathname;
 
-  if (path.includes("/admin/users" || path.includes("/pages/admin/users"))) {
+  if (path.includes("/admin/users")) {
     const usersOption = document.querySelector(".nav-users");
     const usersIcon = usersOption?.querySelector("img");
 
@@ -43,9 +45,7 @@ export const initAdminNavbar = () => {
     if (usersIcon) usersIcon.src = "/assets/icons/users-on.svg";
   }
 
-  if (
-    path.includes("/admin/dashboard" || path.includes("/pages/admin/dashboard"))
-  ) {
+  if (path.includes("/admin/dashboard")) {
     const dashboardOption = document.querySelector(".nav-dashboard");
     const dashboardIcon = dashboardOption?.querySelector("img");
 
@@ -54,7 +54,7 @@ export const initAdminNavbar = () => {
     if (dashboardIcon) dashboardIcon.src = "/assets/icons/dashboard-on.svg";
   }
 
-  if (path.includes("/admin/orders" || path.includes("/pages/admin/orders"))) {
+  if (path.includes("/admin/orders")) {
     const ordersOption = document.querySelector(".nav-orders");
     const ordersIcon = ordersOption?.querySelector("img");
 
@@ -62,7 +62,7 @@ export const initAdminNavbar = () => {
     if (ordersIcon) ordersIcon.src = "/assets/icons/orders-on.svg";
   }
 
-  if (path.includes("/admin/cupons" || path.includes("/pages/admin/cupons"))) {
+  if (path.includes("/admin/cupons")) {
     const cupomOption = document.querySelector(".nav-cupons");
     const cupomIcon = cupomOption?.querySelector("img");
 
@@ -76,7 +76,7 @@ export const initAdminNavbar = () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      window.location.href = "/login.html";
+      logout();
     });
   }
   if (logo) {

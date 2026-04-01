@@ -7,7 +7,7 @@ export const initTopbar = () => {
 
   const isAuthenticated = getIsAuthenticated();
   const user = getUser();
-  const userName = user?.name || "Usuário";
+  const userName = user?.full_name || user?.name || "Usuário";
 
   const rightContentHTML = isAuthenticated
     ? `

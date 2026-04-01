@@ -76,64 +76,6 @@
           window.location.href = "/pages/admin/users/create/index.html";
         });
       }
-
-      const tableBody = document.querySelector(".table-body");
-      if (tableBody) {
-        tableBody.addEventListener("click", async (e) => {
-          const viewBtn = e.target.closest('button[aria-label="Visualizar"]');
-          if (viewBtn) {
-            const row = viewBtn.closest(".table-row");
-            if (row) {
-              let idText = row.querySelector(".col-code").textContent.trim();
-              if (idText.startsWith("#")) {
-                idText = idText.substring(1);
-              }
-              window.location.href = `/pages/admin/users/view/index.html?id=${encodeURIComponent(idText)}`;
-            }
-          }
-
-          const editBtn = e.target.closest('button[aria-label="Editar"]');
-          if (editBtn) {
-            const row = editBtn.closest(".table-row");
-            if (row) {
-              let idText = row.querySelector(".col-code").textContent.trim();
-              if (idText.startsWith("#")) {
-                idText = idText.substring(1);
-              }
-              window.location.href = `/pages/admin/users/edit/index.html?id=${encodeURIComponent(idText)}`;
-            }
-          }
-
-          const deleteBtn = e.target.closest('button[aria-label="Deletar"]');
-          if (deleteBtn) {
-            const row = deleteBtn.closest(".table-row");
-            if (row) {
-              let idText = row.querySelector(".col-code").textContent.trim();
-              if (idText.startsWith("#")) {
-                idText = idText.substring(1);
-              }
-              
-              if (confirm("Tem certeza que deseja deletar este usuário?")) {
-                try {
-                  const res = await fetch(`http://localhost:3333/api/users/${idText}`, {
-                    method: "DELETE"
-                  });
-                  if (res.ok) {
-                    alert("Usuário deletado com sucesso!");
-                    window.location.reload();
-                  } else {
-                    const errorData = await res.json();
-                    alert("Erro ao deletar usuário: " + (errorData.error || ""));
-                  }
-                } catch (error) {
-                  console.error(error);
-                  alert("Erro de conexão ao deletar usuário.");
-                }
-              }
-            }
-          }
-        });
-      }
     </script>
   </body>
 </html>

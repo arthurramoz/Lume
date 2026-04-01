@@ -2,7 +2,6 @@ const cardsDao = require("../models/dao/cardsDao");
 
 exports.createCard = async (req, res) => {
     try {
-        // Se for cliente, força o user_id dele no body
         if (req.user && req.user.role === "client") {
             req.body.user_id = req.user.id;
         }
@@ -22,9 +21,8 @@ exports.getCards = async (req, res) => {
     try {
         let cards = await cardsDao.findAll();
 
-        // Se for cliente, filtra apenas os cartões dele
         if (req.user && req.user.role === "client") {
-            cards = cards.filter(c => c.user_id === req.user.id);
+            cards = cards.filter((c) => c.user_id === req.user.id);
         }
 
         res.status(200).json(cards);

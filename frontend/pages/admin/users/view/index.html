@@ -112,12 +112,20 @@
     </main>
 
     <script type="module" src="/js/main.js"></script>
-    <script>
+    <script type="module">
+      import { localStorageKeys } from "/js/hooks/useAuth.js";
+
+      function getToken() {
+        return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const userId = urlParams.get("id");
 
       if (userId) {
-        fetch(`http://localhost:3333/api/users/${userId}`)
+        fetch(`http://localhost:3333/api/users/${userId}`, {
+          headers: { "Authorization": `Bearer ${getToken()}` }
+        })
           .then((res) => res.json())
           .then((user) => {
             if (user.error) {
@@ -153,10 +161,6 @@
         alert("ID de usuário não fornecido.");
         window.location.href = "/pages/admin/users/index.html";
       }
-
-      document.getElementById("back-btn").addEventListener("click", () => {
-        window.location.href = "/pages/admin/users/index.html";
-      });
     </script>
   </body>
 </html>

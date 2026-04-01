@@ -207,7 +207,7 @@
     </main>
 
     <script type="module" src="/js/main.js"></script>
-    <script>
+    <script type="module">
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
 
@@ -216,6 +216,15 @@
         } else {
           input.type = "password";
         }
+      }
+
+      // Expose to inline onclick handlers
+      window.togglePassword = togglePassword;
+
+      import { localStorageKeys } from "/js/hooks/useAuth.js";
+
+      function getToken() {
+        return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
       }
 
       document
@@ -237,7 +246,6 @@
             return;
           }
 
-          // Limpando a máscara de CPF e Telefone
           const cpf = cpfInput;
           const telefoneRaw = telefoneInput;
           
@@ -247,7 +255,7 @@
             phone_ddd = telefoneRaw.substring(0, 2);
             phone_number = telefoneRaw.substring(2);
           } else {
-            phone_number = telefoneRaw; // Fallback se o usuário não digitar DDD
+            phone_number = telefoneRaw;
           }
           const phone_type = telefoneRaw.length >= 11 ? "Celular" : "Fixo";
 
@@ -260,7 +268,7 @@
             phone_ddd: phone_ddd,
             phone_number: phone_number,
             email: email,
-            password_hash: senha // O backend está salvando a senha diretamente ou fazendo hash no controller? Replicando o body que o usuário enviou como "senha_criptografada_aqui"
+            password_hash: senha
           };
 
           const confirmSave = confirm("Deseja salvar as informações deste usuário?");
@@ -270,7 +278,8 @@
             const response = await fetch("http://localhost:3333/api/users", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getToken()}`
               },
               body: JSON.stringify(payload)
             });
