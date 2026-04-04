@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const addressesRoutes = require("./routes/addressesRoutes");
 const cardRoutes = require("./routes/cardRoutes");
 const authRoutes = require("./routes/authRoutes");
+const booksRoutes = require("./routes/booksRoutes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/auth", authRoutes); // Novas rotas públicas
 app.use("/api", userRoutes);
 app.use("/api", addressesRoutes);
 app.use("/api", cardRoutes);
+app.use("/api", booksRoutes);
 
 const PORT = process.env.PORT || 3333;
 
