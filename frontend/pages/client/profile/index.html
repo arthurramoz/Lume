@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gerencie seus dados pessoais na Lume." />
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages/client.css" />
+    <link rel="stylesheet" href="/css/components/button.css" />
+
+    <title>Lume | Meu Perfil</title>
+  </head>
+  <body>
+    <div class="client-page">
+      <header class="client-topbar"></header>
+
+      <div class="client-content">
+        <aside class="client-sidebar"></aside>
+
+        <section class="client-main">
+          <div class="profile-header">
+            <h1 class="client-main__title">Meu perfil</h1>
+            <button class="btn-primary" id="btn-edit-profile" style="width: auto; padding: 0 20px;">
+              <img src="/assets/icons/users-edit-blue.svg" alt="Editar" width="18" style="filter: brightness(0) invert(1);" />
+              Editar
+            </button>
+          </div>
+
+          <!-- View Mode -->
+          <div id="profile-view" class="client-form-grid">
+            <div class="profile-field">
+              <label class="label-admin">Nome completo</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="view-name" readonly />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin">E-mail</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="email" id="view-email" readonly />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin">Telefone</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="view-phone" readonly />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin">CPF</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="view-cpf" readonly />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin">Data de nascimento</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="view-birthdate" readonly />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin">Gênero</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="view-gender" readonly />
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <form id="profile-edit" class="client-form-grid" style="display: none;" novalidate>
+            <div class="profile-field">
+              <label class="label-admin" for="edit-name">Nome completo</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="edit-name" placeholder="Seu nome completo" />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin" for="edit-email">E-mail</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="email" id="edit-email" placeholder="exemplo@gmail.com" />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin" for="edit-phone">Telefone</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="edit-phone" placeholder="(11) 99999-9999" maxlength="15" />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin" for="edit-cpf">CPF</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="text" id="edit-cpf" placeholder="000.000.000-00" maxlength="14" />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin" for="edit-birthdate">Data de nascimento</label>
+              <div class="input-wrapper" style="margin-top: 8px;">
+                <input type="date" id="edit-birthdate" />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="label-admin" for="edit-gender">Gênero</label>
+              <div class="input-wrapper" style="margin-top: 8px; padding: 0 14px;">
+                <select id="edit-gender" style="border: none; outline: none; width: 100%; font-family: var(--font-primaria); font-size: 16px; color: var(--color-neutro100); background: transparent; cursor: pointer;">
+                  <option value="">Selecione</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Não binário">Não binário</option>
+                  <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="client-form-actions" style="grid-column: 1 / -1;">
+              <button type="button" class="btn-secondary" id="btn-cancel-edit">Cancelar</button>
+              <button type="submit" class="btn-primary" id="btn-save-profile">Salvar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <footer class="client-footer"></footer>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+      import { localStorageKeys, getUser } from "/js/hooks/useAuth.js";
+
+      function getToken() {
+        return (
+          localStorage.getItem(localStorageKeys.accessToken) ||
+          sessionStorage.getItem(localStorageKeys.accessToken)
+        );
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        if (isNaN(d)) return dateStr;
+        const day = String(d.getUTCDate()).padStart(2, "0");
+        const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+        const year = d.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+      }
+
+      function formatPhone(value) {
+        const digits = value.replace(/\D/g, "").slice(0, 11);
+        if (digits.length <= 10) {
+          return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
+        }
+        return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
+      }
+
+      function formatCPF(value) {
+        const digits = value.replace(/\D/g, "").slice(0, 11);
+        return digits
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+      }
+
+      async function fetchProfile() {
+        try {
+          const res = await fetch("http://localhost:3333/api/users/profile", {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          if (!res.ok) throw new Error("Erro ao carregar perfil");
+          return await res.json();
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      }
+
+      async function saveProfile(data) {
+        const res = await fetch("http://localhost:3333/api/users/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Erro ao salvar perfil");
+        }
+        return await res.json();
+      }
+
+      let profileData = null;
+
+      function fillViewMode(data) {
+        document.getElementById("view-name").value = data.name || "";
+        document.getElementById("view-email").value = data.email || "";
+        document.getElementById("view-phone").value = data.phone ? formatPhone(data.phone) : "";
+        document.getElementById("view-cpf").value = data.cpf ? formatCPF(data.cpf) : "";
+        document.getElementById("view-birthdate").value = formatDate(data.birth_date || data.birthdate || "");
+        document.getElementById("view-gender").value = data.gender || "";
+      }
+
+      function fillEditMode(data) {
+        document.getElementById("edit-name").value = data.name || "";
+        document.getElementById("edit-email").value = data.email || "";
+        document.getElementById("edit-phone").value = data.phone ? formatPhone(data.phone) : "";
+        document.getElementById("edit-cpf").value = data.cpf ? formatCPF(data.cpf) : "";
+
+        // Format date for input[type=date] → YYYY-MM-DD
+        if (data.birth_date || data.birthdate) {
+          const raw = data.birth_date || data.birthdate;
+          const d = new Date(raw);
+          if (!isNaN(d)) {
+            document.getElementById("edit-birthdate").value = d.toISOString().split("T")[0];
+          }
+        }
+        const genderSelect = document.getElementById("edit-gender");
+        genderSelect.value = data.gender || "";
+      }
+
+      function enterEditMode() {
+        document.getElementById("profile-view").style.display = "none";
+        document.getElementById("profile-edit").style.display = "grid";
+        document.getElementById("btn-edit-profile").style.display = "none";
+        if (profileData) fillEditMode(profileData);
+      }
+
+      function exitEditMode() {
+        document.getElementById("profile-edit").style.display = "none";
+        document.getElementById("profile-view").style.display = "grid";
+        document.getElementById("btn-edit-profile").style.display = "flex";
+      }
+
+      document.getElementById("btn-edit-profile").addEventListener("click", enterEditMode);
+      document.getElementById("btn-cancel-edit").addEventListener("click", exitEditMode);
+
+      // Phone mask
+      document.getElementById("edit-phone").addEventListener("input", (e) => {
+        e.target.value = formatPhone(e.target.value);
+      });
+
+      // CPF mask
+      document.getElementById("edit-cpf").addEventListener("input", (e) => {
+        e.target.value = formatCPF(e.target.value);
+      });
+
+      document.getElementById("profile-edit").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("btn-save-profile");
+        btn.disabled = true;
+        btn.textContent = "Salvando...";
+
+        try {
+          const payload = {
+            name: document.getElementById("edit-name").value.trim(),
+            email: document.getElementById("edit-email").value.trim(),
+            phone: document.getElementById("edit-phone").value.replace(/\D/g, ""),
+            cpf: document.getElementById("edit-cpf").value.replace(/\D/g, ""),
+            birth_date: document.getElementById("edit-birthdate").value,
+            gender: document.getElementById("edit-gender").value,
+          };
+
+          const updated = await saveProfile(payload);
+          profileData = { ...profileData, ...updated };
+          fillViewMode(profileData);
+          exitEditMode();
+          alert("Perfil atualizado com sucesso!");
+        } catch (error) {
+          alert("Erro ao salvar: " + error.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = `<img src="/assets/icons/users-edit-blue.svg" alt="Editar" width="18" style="filter: brightness(0) invert(1);" /> Salvar`;
+        }
+      });
+
+      // Init
+      (async () => {
+        profileData = await fetchProfile();
+        if (profileData) {
+          fillViewMode(profileData);
+        }
+      })();
+    </script>
+  </body>
+</html>
