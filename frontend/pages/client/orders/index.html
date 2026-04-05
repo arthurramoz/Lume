@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Gerencie seus pedidos e devoluções na Lume."
+        />
+        <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/pages/client.css" />
+        <link rel="stylesheet" href="/css/pages/orders.css" />
+        <link rel="stylesheet" href="/css/components/button.css" />
+        <link rel="stylesheet" href="/css/components/pagination.css" />
+
+        <title>Lume | Pedidos e devoluções</title>
+    </head>
+    <body>
+        <div class="client-page">
+            <header class="client-topbar"></header>
+
+            <div class="client-content">
+                <aside class="client-sidebar"></aside>
+
+                <section class="client-main">
+                    <div class="orders-header">
+                        <h1 class="client-main__title">
+                            Pedidos e devoluções
+                        </h1>
+                        <div class="input-wrapper select-wrapper orders-filter">
+                            <select id="filter-status">
+                                <option value="">Selecione</option>
+                                <option value="em_processamento">Em processamento</option>
+                                <option value="em_transito">Em trânsito</option>
+                                <option value="entregue">Entregue</option>
+                                <option value="em_troca">Em troca</option>
+                                <option value="troca_autorizada">Troca autorizada</option>
+                                <option value="trocado">Trocado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="orders-table">
+                        <div class="orders-table__header">
+                            <span class="orders-col orders-col--id">ID do pedido</span>
+                            <span class="orders-col orders-col--date">Data</span>
+                            <span class="orders-col orders-col--status">Status</span>
+                            <span class="orders-col orders-col--actions">Ações</span>
+                        </div>
+                        <div id="orders-list"></div>
+                    </div>
+
+                    <div class="pagination" id="orders-pagination"></div>
+                </section>
+            </div>
+
+            <footer class="client-footer"></footer>
+        </div>
+
+        <div class="modal-overlay" id="modal-details" style="display: none">
+            <div class="modal-content">
+                <a href="javascript:void(0)" class="client-back-link" id="modal-details-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                    </svg>
+                    Voltar
+                </a>
+                <h2 class="modal-title">Detalhes do pedido</h2>
+                <p class="modal-subtitle">Veja aqui os detalhes do pedido:</p>
+                <div class="modal-items" id="modal-items-list"></div>
+                <div class="modal-footer-info">
+                    <div class="modal-footer-row">
+                        <span class="modal-footer-label">Total</span>
+                        <span class="modal-footer-value" id="modal-total"></span>
+                    </div>
+                    <div class="modal-footer-row">
+                        <span class="modal-footer-label">Pagamento</span>
+                        <span class="modal-footer-value">Cartão de crédito</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="modal-exchange" style="display: none">
+            <div class="modal-content modal-content--sm">
+                <a href="javascript:void(0)" class="client-back-link" id="modal-exchange-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                    </svg>
+                    Voltar
+                </a>
+                <h2 class="modal-title">Solicitar troca</h2>
+                <p class="modal-subtitle">Escreva o motivo da troca:</p>
+                <textarea
+                    class="modal-textarea"
+                    id="exchange-reason"
+                    placeholder="Digite o motivo"
+                    rows="5"
+                ></textarea>
+                <div class="modal-buttons">
+                    <button class="btn-outline" id="btn-cancel-exchange">Cancelar</button>
+                    <button class="btn-primary" id="btn-submit-exchange">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="/js/main.js"></script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+
+            const API = "http://localhost:3333/api";
+            const ITEMS_PER_PAGE = 10;
+            let allOrders = [];
+            let filteredOrders = [];
+            let currentPage = 1;
+            let exchangeOrderId = null;
+
+            function getToken() {
+                return (
+                    localStorage.getItem(localStorageKeys.accessToken) ||
+                    sessionStorage.getItem(localStorageKeys.accessToken)
+                );
+            }
+
+            function formatDate(dateStr) {
+                const d = new Date(dateStr);
+                const day = String(d.getDate()).padStart(2, "0");
+                const month = String(d.getMonth() + 1).padStart(2, "0");
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            function formatCurrency(value) {
+                return Number(value).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                });
+            }
+
+            function formatStatus(status) {
+                const map = {
+                    em_processamento: "Em processamento",
+                    em_transito: "Em trânsito",
+                    entregue: "Entregue",
+                    em_troca: "Em troca",
+                    troca_autorizada: "Troca autorizada",
+                    trocado: "Trocado",
+                };
+                return map[status] || status;
+            }
+
+            async function fetchOrders() {
+                try {
+                    const res = await fetch(`${API}/orders`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao buscar pedidos");
+                    allOrders = await res.json();
+                    filteredOrders = [...allOrders];
+                } catch (err) {
+                    console.error(err);
+                    allOrders = [];
+                    filteredOrders = [];
+                }
+            }
+
+            function renderOrders() {
+                const list = document.getElementById("orders-list");
+                const start = (currentPage - 1) * ITEMS_PER_PAGE;
+                const pageItems = filteredOrders.slice(start, start + ITEMS_PER_PAGE);
+
+                if (pageItems.length === 0) {
+                    list.innerHTML = `
+                        <div class="orders-empty">
+                            <p>Nenhum pedido encontrado.</p>
+                        </div>
+                    `;
+                    renderPagination();
+                    return;
+                }
+
+                list.innerHTML = pageItems
+                    .map((order) => {
+                        const exchangeBtn =
+                            order.status === "entregue"
+                                ? `<button class="client-item__btn client-item__btn--edit btn-exchange-order" data-id="${order.id}" title="Solicitar troca">
+                                     <img src="/assets/icons/orders-on.svg" alt="Trocar" />
+                                   </button>`
+                                : "";
+
+                        return `
+                        <div class="orders-table__row" data-id="${order.id}">
+                            <span class="orders-col orders-col--id">#${String(order.id).padStart(2, "0")}</span>
+                            <span class="orders-col orders-col--date">${formatDate(order.created_at)}</span>
+                            <span class="orders-col orders-col--status">${formatStatus(order.status)}</span>
+                            <span class="orders-col orders-col--actions">
+                                <button class="client-item__btn client-item__btn--edit btn-view-order" data-id="${order.id}" title="Ver detalhes">
+                                    <img src="/assets/icons/eye-open-icon.svg" alt="Ver" />
+                                </button>
+                                ${exchangeBtn}
+                            </span>
+                        </div>
+                    `;
+                    })
+                    .join("");
+
+                renderPagination();
+                attachOrderEvents();
+            }
+
+            function attachOrderEvents() {
+                document.querySelectorAll(".btn-view-order").forEach((btn) => {
+                    btn.addEventListener("click", () => openDetailsModal(btn.dataset.id));
+                });
+                document.querySelectorAll(".btn-exchange-order").forEach((btn) => {
+                    btn.addEventListener("click", () => openExchangeModal(btn.dataset.id));
+                });
+            }
+
+            async function openDetailsModal(orderId) {
+                try {
+                    const res = await fetch(`${API}/orders/${orderId}`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao buscar detalhes");
+                    const order = await res.json();
+
+                    const address = order.street_name
+                        ? `${order.street_type || "Rua"} ${order.street_name}, n${order.street_number} - ${order.neighborhood}`
+                        : "";
+
+                    const itemsHtml = (order.items || [])
+                        .map((item) => {
+                            const coverRaw = item.cover_image || "";
+                            const cover = coverRaw
+                                ? coverRaw.startsWith("/") ? coverRaw : "/" + coverRaw
+                                : "/assets/books/upload.svg";
+                            const itemTotal = Number(item.price) * Number(item.quantity);
+                            return `
+                                <div class="modal-item">
+                                    <img src="${cover}" alt="${item.title}" class="modal-item__cover" onerror="this.src='/assets/books/upload.svg'" />
+                                    <div class="modal-item__info">
+                                        <div class="modal-item__title">${item.title}</div>
+                                        <div class="modal-item__detail">Por: ${item.author_name || "Autor"}</div>
+                                        <div class="modal-item__detail">Quantidade: ${item.quantity}</div>
+                                        ${address ? `<div class="modal-item__detail">Endereço: ${address}</div>` : ""}
+                                        <div class="modal-item__detail">Total: ${formatCurrency(itemTotal)}</div>
+                                    </div>
+                                </div>
+                            `;
+                        })
+                        .join("");
+
+                    document.getElementById("modal-items-list").innerHTML = itemsHtml;
+                    document.getElementById("modal-total").textContent = formatCurrency(order.total_amount);
+                    document.getElementById("modal-details").style.display = "flex";
+                } catch (err) {
+                    alert("Erro ao carregar detalhes: " + err.message);
+                }
+            }
+
+            function openExchangeModal(orderId) {
+                exchangeOrderId = orderId;
+                document.getElementById("exchange-reason").value = "";
+                document.getElementById("modal-exchange").style.display = "flex";
+            }
+
+            function renderPagination() {
+                const container = document.getElementById("orders-pagination");
+                const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ITEMS_PER_PAGE));
+                const totalItems = filteredOrders.length;
+                const showing = Math.min(ITEMS_PER_PAGE, totalItems - (currentPage - 1) * ITEMS_PER_PAGE);
+
+                let html = `<span class="pagination-info">Mostrando ${showing} de ${totalItems}</span>`;
+                html += `<div class="pagination-controls">`;
+                html += `<button class="page-number" id="btn-prev" ${currentPage <= 1 ? "disabled" : ""}>
+                    <img src="/assets/icons/users-pagination-left.svg" alt="Anterior" />
+                </button>`;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button class="page-number ${i === currentPage ? "active" : ""}" data-page="${i}">${i}</button>`;
+                }
+
+                html += `<button class="page-number" id="btn-next" ${currentPage >= totalPages ? "disabled" : ""}>
+                    <img src="/assets/icons/users-pagination-right.svg" alt="Próximo" />
+                </button>`;
+                html += `</div>`;
+
+                container.innerHTML = html;
+
+                container.querySelectorAll("[data-page]").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        currentPage = Number(btn.dataset.page);
+                        renderOrders();
+                    });
+                });
+
+                const prevBtn = document.getElementById("btn-prev");
+                const nextBtn = document.getElementById("btn-next");
+                if (prevBtn) prevBtn.addEventListener("click", () => { currentPage--; renderOrders(); });
+                if (nextBtn) nextBtn.addEventListener("click", () => { currentPage++; renderOrders(); });
+            }
+
+            document.getElementById("filter-status").addEventListener("change", (e) => {
+                const val = e.target.value;
+                currentPage = 1;
+                filteredOrders = val
+                    ? allOrders.filter((o) => o.status === val)
+                    : [...allOrders];
+                renderOrders();
+            });
+
+            document.getElementById("modal-details-close").addEventListener("click", () => {
+                document.getElementById("modal-details").style.display = "none";
+            });
+
+            document.getElementById("modal-details").addEventListener("click", (e) => {
+                if (e.target === e.currentTarget) {
+                    e.currentTarget.style.display = "none";
+                }
+            });
+
+            document.getElementById("modal-exchange-close").addEventListener("click", () => {
+                document.getElementById("modal-exchange").style.display = "none";
+            });
+
+            document.getElementById("btn-cancel-exchange").addEventListener("click", () => {
+                document.getElementById("modal-exchange").style.display = "none";
+            });
+
+            document.getElementById("modal-exchange").addEventListener("click", (e) => {
+                if (e.target === e.currentTarget) {
+                    e.currentTarget.style.display = "none";
+                }
+            });
+
+            document.getElementById("btn-submit-exchange").addEventListener("click", async () => {
+                const reason = document.getElementById("exchange-reason").value.trim();
+                if (!reason) {
+                    alert("Digite o motivo da troca.");
+                    return;
+                }
+
+                const btn = document.getElementById("btn-submit-exchange");
+                btn.disabled = true;
+                btn.textContent = "Enviando...";
+
+                try {
+                    const res = await fetch(`${API}/orders/${exchangeOrderId}/exchange`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${getToken()}`,
+                        },
+                        body: JSON.stringify({ reason }),
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.error || "Erro ao solicitar troca");
+                    }
+
+                    alert("Troca solicitada com sucesso!");
+                    document.getElementById("modal-exchange").style.display = "none";
+                    await fetchOrders();
+                    renderOrders();
+                } catch (err) {
+                    alert(err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Enviar";
+                }
+            });
+
+            (async () => {
+                await fetchOrders();
+                renderOrders();
+            })();
+        </script>
+    </body>
+</html>

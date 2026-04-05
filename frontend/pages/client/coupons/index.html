@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Veja seus cupons disponíveis na Lume."
+        />
+        <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/pages/client.css" />
+        <link rel="stylesheet" href="/css/pages/coupons.css" />
+        <link rel="stylesheet" href="/css/components/button.css" />
+        <link rel="stylesheet" href="/css/components/pagination.css" />
+
+        <title>Lume | Cupons</title>
+    </head>
+    <body>
+        <div class="client-page">
+            <header class="client-topbar"></header>
+
+            <div class="client-content">
+                <aside class="client-sidebar"></aside>
+
+                <section class="client-main">
+                    <h1 class="client-main__title">Cupons</h1>
+
+                    <div class="coupons-table">
+                        <div class="coupons-table__header">
+                            <span class="coupons-col coupons-col--id">ID do cupom</span>
+                            <span class="coupons-col coupons-col--code">Código</span>
+                            <span class="coupons-col coupons-col--type">Tipo</span>
+                            <span class="coupons-col coupons-col--value">Valor</span>
+                            <span class="coupons-col coupons-col--status">Status</span>
+                            <span class="coupons-col coupons-col--expires">Validade</span>
+                        </div>
+                        <div id="coupons-list"></div>
+                    </div>
+
+                    <div class="pagination" id="coupons-pagination"></div>
+                </section>
+            </div>
+
+            <footer class="client-footer"></footer>
+        </div>
+
+        <script type="module" src="/js/main.js"></script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+
+            const API = "http://localhost:3333/api";
+            const ITEMS_PER_PAGE = 10;
+            let allCoupons = [];
+            let currentPage = 1;
+
+            function getToken() {
+                return (
+                    localStorage.getItem(localStorageKeys.accessToken) ||
+                    sessionStorage.getItem(localStorageKeys.accessToken)
+                );
+            }
+
+            function formatCurrency(value) {
+                return Number(value).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                });
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return "—";
+                const d = new Date(dateStr);
+                const day = String(d.getDate()).padStart(2, "0");
+                const month = String(d.getMonth() + 1).padStart(2, "0");
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            function formatType(type) {
+                const map = {
+                    promocional: "Promocional",
+                    troca: "Troca",
+                };
+                return map[type] || type;
+            }
+
+            function getStatus(coupon) {
+                if (coupon.is_used) return "Expirado";
+                if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) return "Expirado";
+                return "Ativo";
+            }
+
+            async function fetchCoupons() {
+                try {
+                    const res = await fetch(`${API}/coupons`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao buscar cupons");
+                    allCoupons = await res.json();
+                } catch (err) {
+                    console.error(err);
+                    allCoupons = [];
+                }
+            }
+
+            function renderCoupons() {
+                const list = document.getElementById("coupons-list");
+                const start = (currentPage - 1) * ITEMS_PER_PAGE;
+                const pageItems = allCoupons.slice(start, start + ITEMS_PER_PAGE);
+
+                if (pageItems.length === 0) {
+                    list.innerHTML = `
+                        <div class="coupons-empty">
+                            <p>Nenhum cupom encontrado.</p>
+                        </div>
+                    `;
+                    renderPagination();
+                    return;
+                }
+
+                list.innerHTML = pageItems
+                    .map((coupon) => {
+                        const status = getStatus(coupon);
+                        const statusClass = status === "Ativo"
+                            ? "coupons-status--active"
+                            : "coupons-status--expired";
+
+                        return `
+                        <div class="coupons-table__row">
+                            <span class="coupons-col coupons-col--id">#${String(coupon.id).padStart(2, "0")}</span>
+                            <span class="coupons-col coupons-col--code">${coupon.code}</span>
+                            <span class="coupons-col coupons-col--type">${formatType(coupon.type)}</span>
+                            <span class="coupons-col coupons-col--value">${formatCurrency(coupon.value)}</span>
+                            <span class="coupons-col coupons-col--status ${statusClass}">${status}</span>
+                            <span class="coupons-col coupons-col--expires">${formatDate(coupon.expires_at)}</span>
+                        </div>
+                    `;
+                    })
+                    .join("");
+
+                renderPagination();
+            }
+
+            function renderPagination() {
+                const container = document.getElementById("coupons-pagination");
+                const totalPages = Math.max(1, Math.ceil(allCoupons.length / ITEMS_PER_PAGE));
+                const totalItems = allCoupons.length;
+                const showing = Math.min(ITEMS_PER_PAGE, totalItems - (currentPage - 1) * ITEMS_PER_PAGE);
+
+                let html = `<span class="pagination-info">Mostrando ${showing} de ${totalItems}</span>`;
+                html += `<div class="pagination-controls">`;
+                html += `<button class="page-number" id="btn-prev" ${currentPage <= 1 ? "disabled" : ""}>
+                    <img src="/assets/icons/users-pagination-left.svg" alt="Anterior" />
+                </button>`;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button class="page-number ${i === currentPage ? "active" : ""}" data-page="${i}">${i}</button>`;
+                }
+
+                html += `<button class="page-number" id="btn-next" ${currentPage >= totalPages ? "disabled" : ""}>
+                    <img src="/assets/icons/users-pagination-right.svg" alt="Próximo" />
+                </button>`;
+                html += `</div>`;
+
+                container.innerHTML = html;
+
+                container.querySelectorAll("[data-page]").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        currentPage = Number(btn.dataset.page);
+                        renderCoupons();
+                    });
+                });
+
+                const prevBtn = document.getElementById("btn-prev");
+                const nextBtn = document.getElementById("btn-next");
+                if (prevBtn) prevBtn.addEventListener("click", () => { currentPage--; renderCoupons(); });
+                if (nextBtn) nextBtn.addEventListener("click", () => { currentPage++; renderCoupons(); });
+            }
+
+            (async () => {
+                await fetchCoupons();
+                renderCoupons();
+            })();
+        </script>
+    </body>
+</html>

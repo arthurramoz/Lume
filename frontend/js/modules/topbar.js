@@ -1,4 +1,4 @@
-import { getIsAuthenticated, getUser, logout } from "../hooks/useAuth.js";
+import { getIsAuthenticated, getUser, logout, localStorageKeys } from "../hooks/useAuth.js";
 
 export const initTopbar = () => {
   const topbar = document.querySelector(".topbar");
@@ -19,8 +19,8 @@ export const initTopbar = () => {
         <div class="topbar__divider"></div>
         ` : ""}
 
-        <a href="/pages/cart.html" class="topbar__action-link" aria-label="Carrinho">
-          <img src="/assets/icons/home-cart.svg" alt="Carrinho" width="24" />
+        <a href="/pages/client/cart.html" class="topbar__action-link" aria-label="Carrinho">
+          <img id="topbar-cart-icon" src="/assets/icons/home-cart.svg" alt="Carrinho" width="24" />
         </a>
 
         <div class="topbar__divider"></div>
@@ -62,6 +62,24 @@ export const initTopbar = () => {
       logoutBtn.addEventListener("click", () => {
         logout();
       });
+    }
+
+    // Verifica se tem itens no carrinho e troca o ícone
+    const token = localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
+    if (token) {
+      fetch("http://localhost:3333/api/cart/count", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.count > 0) {
+            const cartIcon = document.getElementById("topbar-cart-icon");
+            if (cartIcon) {
+              cartIcon.src = "/assets/icons/home-cart-notification.svg";
+            }
+          }
+        })
+        .catch((err) => console.error("Erro ao verificar carrinho:", err));
     }
   } else {
     const loginBtn = document.querySelector(".topbar__btn-login");

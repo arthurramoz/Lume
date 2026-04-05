@@ -1,0 +1,54 @@
+.coupons-table {
+    width: 100%;
+}
+
+.coupons-table__header {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 1fr;
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--color-primaria100);
+}
+
+.coupons-table__header .coupons-col {
+    font-family: var(--font-secundaria);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primaria100);
+    text-transform: uppercase;
+}
+
+.coupons-table__row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 1fr;
+    padding: 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-neutro20);
+    transition: background-color 0.15s;
+}
+
+.coupons-table__row:hover {
+    background-color: var(--color-primaria20);
+}
+
+.coupons-col {
+    font-family: var(--font-primaria);
+    font-size: 15px;
+    color: var(--color-neutro100);
+}
+
+.coupons-status--active {
+    color: var(--color-primaria100);
+    font-weight: 600;
+}
+
+.coupons-status--expired {
+    color: var(--color-neutro60);
+    font-weight: 600;
+}
+
+.coupons-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--color-neutro60);
+    font-size: 15px;
+}

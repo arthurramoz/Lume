@@ -46,7 +46,21 @@ class CartDao {
     }
 
     async getCartItems(cart_id) {
-        const query = `SELECT * FROM cart_items WHERE cart_id = $1`;
+        const query = `
+            SELECT 
+                ci.id,
+                ci.cart_id,
+                ci.book_id,
+                ci.quantity,
+                b.title,
+                b.price,
+                b.cover_image,
+                a.name AS author_name
+            FROM cart_items ci
+            INNER JOIN books b ON ci.book_id = b.id
+            LEFT JOIN authors a ON b.author_id = a.id
+            WHERE ci.cart_id = $1
+        `;
         const result = await pool.query(query, [cart_id]);
         return result.rows;
     }

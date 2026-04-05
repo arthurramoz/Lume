@@ -7,8 +7,15 @@ class BookDao {
         return rows;
     }
 
+    async findById(id) {
+        const query = "SELECT * FROM books WHERE id = $1";
+        const { rows } = await pool.query(query, [id]);
+        return rows[0];
+    }
+
     async findBooksCards() {
         const query = `SELECT 
+            books.id,
             books.title, 
             books.price, 
             books.cover_image,

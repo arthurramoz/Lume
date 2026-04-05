@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Confira seu carrinho de compras na Lume."
+        />
+        <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/pages/client.css" />
+        <link rel="stylesheet" href="/css/pages/cart.css" />
+        <link rel="stylesheet" href="/css/components/button.css" />
+
+        <title>Lume | Carrinho</title>
+    </head>
+    <body>
+        <div class="client-page">
+            <header class="client-topbar"></header>
+
+            <div class="client-content cart-content">
+                <a href="javascript:history.back()" class="client-back-link">
+                    &#8249; Voltar
+                </a>
+
+                <div class="client-form-header">
+                    <h1>Carrinho</h1>
+                    <p>Confira seus escolhidos.</p>
+                </div>
+
+                <div
+                    class="cart-empty-full"
+                    id="cart-empty-full"
+                    style="display: none"
+                >
+                    <img
+                        src="/assets/icons/home-cart.svg"
+                        alt="Carrinho vazio"
+                        class="cart-empty__icon"
+                    />
+                    <p class="cart-empty__message">
+                        Nenhum item foi adicionado ao carrinho
+                    </p>
+                    <a href="/" class="btn-primary cart-add-link"
+                        >+ Adicionar</a
+                    >
+                </div>
+
+                <div class="cart-layout" id="cart-grid">
+                    <div class="cart-left">
+                        <div class="cart-panel">
+                            <h2 class="client-section__title">
+                                Endereço de entrega
+                            </h2>
+                            <p class="cart-panel__subtitle">
+                                Selecione o endereço ou cadastre um novo:
+                            </p>
+
+                            <div class="input-wrapper select-wrapper">
+                                <select id="select-address">
+                                    <option value="">Selecione</option>
+                                </select>
+                            </div>
+
+                            <div class="client-add-btn">
+                                <a
+                                    href="/pages/client/addresses/create/index.html"
+                                    class="btn-primary cart-add-link"
+                                >
+                                    + Adicionar
+                                </a>
+                            </div>
+                        </div>
+                        <div class="cart-panel">
+                            <h2 class="client-section__title">
+                                Método de pagamento
+                            </h2>
+                            <p class="cart-panel__subtitle">
+                                Escolha o método de pagamento:
+                            </p>
+
+                            <label class="label-admin">Cartão de crédito</label>
+                            <div
+                                class="input-wrapper select-wrapper"
+                                style="margin-top: 8px"
+                            >
+                                <select id="select-card">
+                                    <option value="">Selecione</option>
+                                </select>
+                            </div>
+
+                            <div class="client-add-btn">
+                                <a
+                                    href="/pages/client/cards/create/index.html"
+                                    class="btn-primary cart-add-link"
+                                >
+                                    + Adicionar
+                                </a>
+                            </div>
+                            <div class="cart-coupon-section">
+                                <label class="label-admin">Cupons</label>
+                                <div class="coupon-row">
+                                    <div
+                                        class="input-wrapper coupon-row__input"
+                                    >
+                                        <input
+                                            type="text"
+                                            id="coupon-input"
+                                            placeholder="Digite o código"
+                                        />
+                                    </div>
+                                    <button
+                                        class="btn-primary cart-apply-btn"
+                                        id="btn-apply-coupon"
+                                    >
+                                        Aplicar
+                                    </button>
+                                </div>
+                                <div
+                                    id="coupon-msg"
+                                    class="cart-coupon-msg"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-right">
+                        <div
+                            class="cart-panel cart-items-panel"
+                            id="cart-items-container"
+                        ></div>
+                        <div class="cart-panel cart-summary-panel">
+                            <h2
+                                class="client-section__title"
+                                style="font-size: 18px; margin-bottom: 16px"
+                            >
+                                Resumo do pedido
+                            </h2>
+
+                            <div class="cart-summary__rows">
+                                <div class="cart-summary__row">
+                                    <span id="summary-products-label"
+                                        >Produtos (0)</span
+                                    >
+                                    <span id="summary-products-value"
+                                        >R$0,00</span
+                                    >
+                                </div>
+                                <div class="cart-summary__row">
+                                    <span>Frete</span>
+                                    <span id="summary-freight">R$0,00</span>
+                                </div>
+                                <div class="cart-summary__row">
+                                    <span>Desconto</span>
+                                    <span id="summary-discount">R$-0,00</span>
+                                </div>
+                                <div
+                                    class="cart-summary__row cart-summary__row--total"
+                                >
+                                    <span>Total</span>
+                                    <span id="summary-total">R$0,00</span>
+                                </div>
+                            </div>
+
+                            <button
+                                class="btn-primary btn-finalize"
+                                id="btn-finalize"
+                                disabled
+                            >
+                                Finalizar compra
+                            </button>
+
+                            <p
+                                class="cart-summary__warning"
+                                id="finalize-warning"
+                            >
+                                *Para finalizar a compra selecione um endereço
+                                de entrega e um método de pagamento
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="client-footer"></footer>
+        </div>
+
+        <script type="module" src="/js/main.js"></script>
+        <script type="module">
+            import { localStorageKeys } from "/js/hooks/useAuth.js";
+
+            const API = "http://localhost:3333/api";
+
+            function getToken() {
+                return (
+                    localStorage.getItem(localStorageKeys.accessToken) ||
+                    sessionStorage.getItem(localStorageKeys.accessToken)
+                );
+            }
+
+            function formatCurrency(value) {
+                return value.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                });
+            }
+
+            // ============================================================
+            // CART STATE
+            // ============================================================
+
+            let cartItems = [];
+            let addresses = [];
+            let cards = [];
+            let selectedAddressId = null;
+            let selectedCardId = null;
+            let appliedDiscount = 0;
+            let appliedCouponCode = null;
+            let appliedCouponId = null;
+
+            // ============================================================
+            // FETCH FUNCTIONS
+            // ============================================================
+
+            async function fetchCart() {
+                try {
+                    const res = await fetch(`${API}/cart`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao carregar carrinho");
+                    const data = await res.json();
+                    cartItems = data.items || data || [];
+                } catch (err) {
+                    console.error(err);
+                    cartItems = [];
+                }
+            }
+
+            async function fetchAddresses() {
+                try {
+                    const res = await fetch(`${API}/addresses`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao carregar endereços");
+                    addresses = await res.json();
+                } catch (err) {
+                    console.error(err);
+                    addresses = [];
+                }
+            }
+
+            async function fetchCards() {
+                try {
+                    const res = await fetch(`${API}/cards`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao carregar cartões");
+                    cards = await res.json();
+                } catch (err) {
+                    console.error(err);
+                    cards = [];
+                }
+            }
+
+            async function updateQuantity(itemId, quantity) {
+                try {
+                    await fetch(`${API}/cart/${itemId}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${getToken()}`,
+                        },
+                        body: JSON.stringify({ quantity }),
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            async function removeItem(itemId) {
+                try {
+                    await fetch(`${API}/cart/${itemId}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            async function applyCoupon(code) {
+                try {
+                    const res = await fetch(`${API}/coupons/validate`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${getToken()}`,
+                        },
+                        body: JSON.stringify({ code }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok)
+                        throw new Error(data.error || "Cupom inválido");
+                    return data;
+                } catch (err) {
+                    throw err;
+                }
+            }
+
+            async function finalizeOrder() {
+                const body = {
+                    address_id: selectedAddressId,
+                    card_id: selectedCardId,
+                    coupon_id: appliedCouponId || undefined,
+                    coupon_code: appliedCouponCode || undefined,
+                };
+
+                const res = await fetch(`${API}/orders`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${getToken()}`,
+                    },
+                    body: JSON.stringify(body),
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || "Erro ao finalizar compra");
+                }
+                return await res.json();
+            }
+
+            // ============================================================
+            // RENDER FUNCTIONS
+            // ============================================================
+
+            function renderAddresses() {
+                const sel = document.getElementById("select-address");
+                sel.innerHTML = `<option value="">Selecione</option>`;
+                addresses.filter(a => a.is_delivery).forEach((addr) => {
+                    const alias = addr.alias ? `${addr.alias} — ` : "";
+                    const label = `${alias}${addr.street_type || ""} ${addr.street_name}, ${addr.street_number} - ${addr.neighborhood}, ${addr.city}/${addr.state}`;
+                    const opt = document.createElement("option");
+                    opt.value = addr.id;
+                    opt.textContent = label;
+                    sel.appendChild(opt);
+                });
+            }
+
+            function renderCards() {
+                const sel = document.getElementById("select-card");
+                sel.innerHTML = `<option value="">Selecione</option>`;
+                cards.forEach((card) => {
+                    const last4 = (card.card_number || "").slice(-4) || "****";
+                    const flag = card.card_flag ? `${card.card_flag} — ` : "";
+                    const label = `${flag}${card.printed_name} •••• ${last4}`;
+                    const opt = document.createElement("option");
+                    opt.value = card.id;
+                    opt.textContent = label;
+                    sel.appendChild(opt);
+                });
+            }
+
+            function getSubtotal() {
+                return cartItems.reduce((sum, item) => {
+                    const price = Number(item.price || item.book?.price || 0);
+                    const qty = Number(item.quantity || 1);
+                    return sum + price * qty;
+                }, 0);
+            }
+
+            function renderSummary() {
+                const subtotal = getSubtotal();
+                const freight = 0; // grátis por enquanto
+                const discount = appliedDiscount;
+                const total = Math.max(0, subtotal - discount + freight);
+                const count = cartItems.reduce(
+                    (s, i) => s + Number(i.quantity || 1),
+                    0,
+                );
+
+                document.getElementById("summary-products-label").textContent =
+                    `Produtos (${count})`;
+                document.getElementById("summary-products-value").textContent =
+                    formatCurrency(subtotal);
+                document.getElementById("summary-freight").textContent =
+                    formatCurrency(freight);
+                document.getElementById("summary-discount").textContent =
+                    `R$-${discount.toFixed(2).replace(".", ",")}`;
+                document.getElementById("summary-total").textContent =
+                    formatCurrency(total);
+
+                updateFinalizeButton();
+            }
+
+            function updateFinalizeButton() {
+                const btn = document.getElementById("btn-finalize");
+                const warning = document.getElementById("finalize-warning");
+                const ready =
+                    selectedAddressId && selectedCardId && cartItems.length > 0;
+                btn.disabled = !ready;
+                warning.style.display = ready ? "none" : "block";
+            }
+
+            function renderCartItems() {
+                const container = document.getElementById(
+                    "cart-items-container",
+                );
+                const emptyFull = document.getElementById("cart-empty-full");
+                const cartGrid = document.getElementById("cart-grid");
+
+                const existingItems = container.querySelectorAll(".cart-item");
+                existingItems.forEach((el) => el.remove());
+
+                if (cartItems.length === 0) {
+                    emptyFull.style.display = "flex";
+                    cartGrid.style.display = "none";
+                    return;
+                }
+
+                emptyFull.style.display = "none";
+                cartGrid.style.display = "grid";
+
+                cartItems.forEach((item) => {
+                    const title = item.title || "Livro";
+                    const author = item.author_name || "Autor";
+                    const price = Number(item.price || 0);
+                    const qty = Number(item.quantity || 1);
+                    const coverRaw = item.cover_image || "";
+                    const cover = coverRaw ? (coverRaw.startsWith("/") ? coverRaw : "/" + coverRaw) : "/assets/books/upload.svg";
+                    const itemId = item.id;
+
+                    const el = document.createElement("div");
+                    el.className = "cart-item";
+                    el.dataset.id = itemId;
+
+                    el.innerHTML = `
+            <img src="${cover}" alt="${title}" class="cart-item__cover" onerror="this.src='/assets/books/upload.svg'" />
+            <div class="cart-item__info">
+              <div class="cart-item__title">${title}</div>
+              <div class="cart-item__author">Por: ${author}</div>
+              <div class="cart-item__qty">
+                <button class="qty-btn btn-minus" data-id="${itemId}" title="Diminuir">−</button>
+                <span class="qty-value">${qty}</span>
+                <button class="qty-btn btn-plus" data-id="${itemId}" title="Aumentar">+</button>
+              </div>
+              <div class="cart-item__price">${formatCurrency(price * qty)}</div>
+            </div>
+            <button class="client-item__btn client-item__btn--delete cart-item__delete" data-id="${itemId}" title="Remover item">
+              <img src="/assets/icons/users-trash.svg" alt="Remover" />
+            </button>
+          `;
+
+                    container.appendChild(el);
+                });
+
+                // Quantity events
+                container.querySelectorAll(".btn-minus").forEach((btn) => {
+                    btn.addEventListener("click", async () => {
+                        const id = btn.dataset.id;
+                        const item = cartItems.find(
+                            (i) => String(i.id) === String(id),
+                        );
+                        if (!item) return;
+                        const newQty = Number(item.quantity || 1) - 1;
+                        if (newQty < 1) {
+                            await handleRemoveItem(id);
+                        } else {
+                            item.quantity = newQty;
+                            await updateQuantity(id, newQty);
+                            renderCartItems();
+                            renderSummary();
+                        }
+                    });
+                });
+
+                container.querySelectorAll(".btn-plus").forEach((btn) => {
+                    btn.addEventListener("click", async () => {
+                        const id = btn.dataset.id;
+                        const item = cartItems.find(
+                            (i) => String(i.id) === String(id),
+                        );
+                        if (!item) return;
+                        item.quantity = Number(item.quantity || 1) + 1;
+                        await updateQuantity(id, item.quantity);
+                        renderCartItems();
+                        renderSummary();
+                    });
+                });
+
+                // Delete events
+                container
+                    .querySelectorAll(".cart-item__delete")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", async () => {
+                            await handleRemoveItem(btn.dataset.id);
+                        });
+                    });
+            }
+
+            async function handleRemoveItem(id) {
+                await removeItem(id);
+                cartItems = cartItems.filter(
+                    (i) => String(i.id) !== String(id),
+                );
+                renderCartItems();
+                renderSummary();
+            }
+
+            // ============================================================
+            // EVENTS
+            // ============================================================
+
+            document
+                .getElementById("select-address")
+                .addEventListener("change", (e) => {
+                    selectedAddressId = e.target.value || null;
+                    updateFinalizeButton();
+                });
+
+            document
+                .getElementById("select-card")
+                .addEventListener("change", (e) => {
+                    selectedCardId = e.target.value || null;
+                    updateFinalizeButton();
+                });
+
+            document
+                .getElementById("btn-apply-coupon")
+                .addEventListener("click", async () => {
+                    const code = document
+                        .getElementById("coupon-input")
+                        .value.trim();
+                    const msgEl = document.getElementById("coupon-msg");
+
+                    if (!code) return;
+
+                    msgEl.style.display = "block";
+                    msgEl.style.color = "var(--color-neutro60)";
+                    msgEl.textContent = "Validando cupom...";
+
+                    try {
+                        const result = await applyCoupon(code);
+                        const discount = Number(
+                            result.discount || result.value || 0,
+                        );
+                        appliedDiscount = discount;
+                        appliedCouponCode = code;
+                        appliedCouponId = result.id;
+
+                        msgEl.style.color = "green";
+                        msgEl.textContent = `✓ Cupom aplicado! Desconto de ${formatCurrency(discount)}`;
+                        renderSummary();
+                    } catch (err) {
+                        appliedDiscount = 0;
+                        appliedCouponCode = null;
+                        appliedCouponId = null;
+                        msgEl.style.color = "var(--color-error1)";
+                        msgEl.textContent = "✗ " + err.message;
+                        renderSummary();
+                    }
+                });
+
+            document
+                .getElementById("btn-finalize")
+                .addEventListener("click", async () => {
+                    const btn = document.getElementById("btn-finalize");
+                    btn.disabled = true;
+                    btn.textContent = "Processando...";
+
+                    try {
+                        await finalizeOrder();
+                        alert("Compra finalizada com sucesso!");
+                        window.location.href =
+                            "/pages/client/orders/index.html";
+                    } catch (err) {
+                        alert("Erro ao finalizar: " + err.message);
+                        btn.disabled = false;
+                        btn.textContent = "Finalizar compra";
+                    }
+                });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+
+            (async () => {
+                await Promise.all([
+                    fetchCart(),
+                    fetchAddresses(),
+                    fetchCards(),
+                ]);
+                renderAddresses();
+                renderCards();
+                renderCartItems();
+                renderSummary();
+            })();
+        </script>
+    </body>
+</html>

@@ -1,4 +1,5 @@
 const cartDao = require("../models/dao/cartDao");
+const bookDao = require("../models/dao/booksDao");
 
 exports.createCart = async (req, res) => {
     try {
@@ -9,27 +10,31 @@ exports.createCart = async (req, res) => {
         const { book_id, quantity } = req.body;
         const user_id = req.user.id;
 
-        // 2. Tenta encontrar o carrinho aberto do usuário
+        if (!book_id || !quantity) {
+            return res.status(400).json({ error: "book_id e quantity são obrigatórios" });
+        }
+
+        const book = await bookDao.findById(book_id);
+        if (!book) {
+            return res.status(404).json({ error: "Livro não encontrado" });
+        }
+
         let cart = await cartDao.findCartByUserId(user_id);
 
-        // 3. Se não existir, cria um novo
         if (!cart) {
             cart = await cartDao.createCart(user_id);
         }
 
-        // 4. Verifica se ESSE livro já está dentro DAQUELE carrinho
         const itemExistente = await cartDao.findItemInCart(cart.id, book_id);
 
         let finalItem;
 
         if (itemExistente) {
-            // 5A. Se já existe, apenas soma a quantidade enviada com a que já estava lá
             finalItem = await cartDao.updateItemQuantity(
                 itemExistente.id,
                 quantity,
             );
         } else {
-            // 5B. Se não existe, cria a linha nova na tabela de itens
             finalItem = await cartDao.createCartItem(
                 cart.id,
                 book_id,
@@ -37,7 +42,6 @@ exports.createCart = async (req, res) => {
             );
         }
 
-        // 6. Devolve a resposta de sucesso uma única vez no final!
         res.status(201).json(finalItem);
     } catch (error) {
         console.error("Erro na criação/atualização do carrinho:", error);
@@ -100,5 +104,20 @@ exports.updateCartItem = async (req, res) => {
             error: "Erro ao atualizar item do carrinho no banco de dados",
             details: error.message,
         });
+    }
+};
+
+exports.getCartCount = async (req, res) => {
+    try {
+        const cart = await cartDao.findCartByUserId(req.user.id);
+        if (!cart) {
+            return res.status(200).json({ count: 0 });
+        }
+        const items = await cartDao.getCartItems(cart.id);
+        const count = items.length;
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Erro ao contar itens do carrinho:", error);
+        res.status(500).json({ error: "Erro ao contar itens do carrinho" });
     }
 };

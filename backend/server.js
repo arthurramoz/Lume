@@ -7,18 +7,22 @@ const cardRoutes = require("./routes/cardRoutes");
 const authRoutes = require("./routes/authRoutes");
 const booksRoutes = require("./routes/booksRoutes");
 const cartRoutes = require("./routes/cartRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const couponRoutes = require("./routes/couponRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRoutes); // Novas rotas públicas
+app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", addressesRoutes);
 app.use("/api", cardRoutes);
 app.use("/api", booksRoutes);
 app.use("/api", cartRoutes);
+app.use("/api", orderRoutes);
+app.use("/api", couponRoutes);
 
 const PORT = process.env.PORT || 3333;
 
