@@ -37,6 +37,39 @@ exports.registerClient = async (req, res) => {
     }
 };
 
+exports.getProfile = async (req, res) => {
+    try {
+        const user = await userDao.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Erro ao buscar perfil:", error);
+        res.status(500).json({ error: "Erro ao buscar perfil" });
+    }
+};
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const updateData = { ...req.body };
+        // Cliente não pode alterar role, status, email e cpf
+        delete updateData.role;
+        delete updateData.status;
+        delete updateData.email;
+        delete updateData.cpf;
+
+        const updatedUser = await userDao.update(req.user.id, updateData);
+        if (!updatedUser) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error("Erro ao atualizar perfil:", error);
+        res.status(500).json({ error: "Erro ao atualizar perfil" });
+    }
+};
+
 exports.createUser = async (req, res) => {
     try {
         if (req.user && req.user.role !== "admin") {

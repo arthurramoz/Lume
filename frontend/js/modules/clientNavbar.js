@@ -1,3 +1,5 @@
+import { getUser, logout } from "../hooks/useAuth.js";
+
 export const initClientNavbar = () => {
   const sidebar = document.querySelector(".client-sidebar");
   if (!sidebar) return;
@@ -36,6 +38,9 @@ export const initClientTopbar = () => {
   const topbar = document.querySelector(".client-topbar");
   if (!topbar) return;
 
+  const user = getUser();
+  const userName = user?.full_name || user?.name || "Usuário";
+
   topbar.innerHTML = `
     <div class="client-topbar__left">
       <a href="/">
@@ -48,7 +53,7 @@ export const initClientTopbar = () => {
       </a>
       <div class="client-topbar__divider"></div>
       <a href="/pages/client/profile/index.html">
-        <span>Usuário</span>
+        <span>${userName}</span>
         <img src="/assets/icons/home-profile.svg" alt="Perfil" width="22" />
       </a>
       <div class="client-topbar__divider"></div>
@@ -62,7 +67,7 @@ export const initClientTopbar = () => {
   const logoutBtn = document.querySelector("#client-logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-      window.location.href = "/pages/login.html";
+      logout();
     });
   }
 };

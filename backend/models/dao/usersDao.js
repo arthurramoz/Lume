@@ -60,15 +60,36 @@ class UserDao {
         return result.rows[0];
     }
 
-    async update(id, user) {
-        const query =
-            "UPDATE users SET full_name = $1, email = $2 WHERE id = $3 RETURNING *";
-        const result = await pool.query(query, [
-            user.full_name,
-            user.email,
-            id,
-        ]);
-        return result.rows[0];
+    async update(id, data) {
+        const user = await this.findById(id);
+        if (!user) return null;
+
+        const name = data.full_name !== undefined ? data.full_name : user.full_name;
+        const email = data.email !== undefined ? data.email : user.email;
+        const gender = data.gender !== undefined ? data.gender : user.gender;
+        const birthDate = data.birth_date !== undefined ? data.birth_date : user.birth_date;
+        const cpf = data.cpf !== undefined ? data.cpf : user.cpf;
+        const phoneType = data.phone_type !== undefined ? data.phone_type : user.phone_type;
+        const phoneDdd = data.phone_ddd !== undefined ? data.phone_ddd : user.phone_ddd;
+        const phoneNumber = data.phone_number !== undefined ? data.phone_number : user.phone_number;
+
+        const query = `
+            UPDATE users 
+            SET full_name = $1, email = $2, gender = $3, birth_date = $4, 
+                cpf = $5, phone_type = $6, phone_ddd = $7, phone_number = $8
+            WHERE id = $9 
+            RETURNING *
+        `;
+
+        const values = [name, email, gender, birthDate, cpf, phoneType, phoneDdd, phoneNumber, id];
+        const result = await pool.query(query, values);
+        const updated = result.rows[0];
+
+        if (updated) {
+            delete updated.password_hash;
+        }
+
+        return updated;
     }
 
     async updateStatus(id, status) {

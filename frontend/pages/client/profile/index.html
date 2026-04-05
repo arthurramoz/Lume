@@ -85,7 +85,7 @@
             <div class="profile-field">
               <label class="label-admin" for="edit-email">E-mail</label>
               <div class="input-wrapper" style="margin-top: 8px;">
-                <input type="email" id="edit-email" placeholder="exemplo@gmail.com" />
+                <input type="email" id="edit-email" placeholder="exemplo@gmail.com" readonly style="opacity: 0.5; cursor: not-allowed;" />
               </div>
             </div>
 
@@ -99,7 +99,7 @@
             <div class="profile-field">
               <label class="label-admin" for="edit-cpf">CPF</label>
               <div class="input-wrapper" style="margin-top: 8px;">
-                <input type="text" id="edit-cpf" placeholder="000.000.000-00" maxlength="14" />
+                <input type="text" id="edit-cpf" placeholder="000.000.000-00" maxlength="14" readonly style="opacity: 0.5; cursor: not-allowed;" />
               </div>
             </div>
 
@@ -203,24 +203,26 @@
       let profileData = null;
 
       function fillViewMode(data) {
-        document.getElementById("view-name").value = data.name || "";
+        document.getElementById("view-name").value = data.full_name || "";
         document.getElementById("view-email").value = data.email || "";
-        document.getElementById("view-phone").value = data.phone ? formatPhone(data.phone) : "";
+        // Combina DDD + número
+        const phone = (data.phone_ddd || "") + (data.phone_number || "");
+        document.getElementById("view-phone").value = phone ? formatPhone(phone) : "";
         document.getElementById("view-cpf").value = data.cpf ? formatCPF(data.cpf) : "";
-        document.getElementById("view-birthdate").value = formatDate(data.birth_date || data.birthdate || "");
+        document.getElementById("view-birthdate").value = formatDate(data.birth_date || "");
         document.getElementById("view-gender").value = data.gender || "";
       }
 
       function fillEditMode(data) {
-        document.getElementById("edit-name").value = data.name || "";
+        document.getElementById("edit-name").value = data.full_name || "";
         document.getElementById("edit-email").value = data.email || "";
-        document.getElementById("edit-phone").value = data.phone ? formatPhone(data.phone) : "";
+        const phone = (data.phone_ddd || "") + (data.phone_number || "");
+        document.getElementById("edit-phone").value = phone ? formatPhone(phone) : "";
         document.getElementById("edit-cpf").value = data.cpf ? formatCPF(data.cpf) : "";
 
         // Format date for input[type=date] → YYYY-MM-DD
-        if (data.birth_date || data.birthdate) {
-          const raw = data.birth_date || data.birthdate;
-          const d = new Date(raw);
+        if (data.birth_date) {
+          const d = new Date(data.birth_date);
           if (!isNaN(d)) {
             document.getElementById("edit-birthdate").value = d.toISOString().split("T")[0];
           }
@@ -259,13 +261,17 @@
         e.preventDefault();
         const btn = document.getElementById("btn-save-profile");
         btn.disabled = true;
-        btn.textContent = "Salvando...";
 
         try {
+          const phoneDigits = document.getElementById("edit-phone").value.replace(/\D/g, "");
+          const phoneDDD = phoneDigits.slice(0, 2);
+          const phoneNumber = phoneDigits.slice(2);
+
           const payload = {
-            name: document.getElementById("edit-name").value.trim(),
+            full_name: document.getElementById("edit-name").value.trim(),
             email: document.getElementById("edit-email").value.trim(),
-            phone: document.getElementById("edit-phone").value.replace(/\D/g, ""),
+            phone_ddd: phoneDDD,
+            phone_number: phoneNumber,
             cpf: document.getElementById("edit-cpf").value.replace(/\D/g, ""),
             birth_date: document.getElementById("edit-birthdate").value,
             gender: document.getElementById("edit-gender").value,
@@ -280,7 +286,7 @@
           alert("Erro ao salvar: " + error.message);
         } finally {
           btn.disabled = false;
-          btn.innerHTML = `<img src="/assets/icons/users-edit-blue.svg" alt="Editar" width="18" style="filter: brightness(0) invert(1);" /> Salvar`;
+          btn.textContent = "Salvar";
         }
       });
 

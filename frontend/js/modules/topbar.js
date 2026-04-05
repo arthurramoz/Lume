@@ -25,7 +25,7 @@ export const initTopbar = () => {
 
         <div class="topbar__divider"></div>
 
-        <a href="/pages/client/addresses/index.html" class="topbar__action-link" aria-label="Perfil">
+        <a href="/pages/client/profile/index.html" class="topbar__action-link" aria-label="Perfil">
           <span>${userName}</span>
           <img src="/assets/icons/home-profile.svg" alt="Perfil" width="24" />
         </a>

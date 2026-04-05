@@ -3,6 +3,9 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const { authMiddleware } = require("../middlewares/authMiddleware");
 
+router.get("/users/profile", authMiddleware, userController.getProfile);
+router.put("/users/profile", authMiddleware, userController.updateProfile);
+
 router.post("/users", authMiddleware, userController.createUser);
 router.get("/users", authMiddleware, userController.getUsers);
 router.get("/users/:id", authMiddleware, userController.getUserById);
