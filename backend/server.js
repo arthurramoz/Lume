@@ -6,6 +6,7 @@ const addressesRoutes = require("./routes/addressesRoutes");
 const cardRoutes = require("./routes/cardRoutes");
 const authRoutes = require("./routes/authRoutes");
 const booksRoutes = require("./routes/booksRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/api", userRoutes);
 app.use("/api", addressesRoutes);
 app.use("/api", cardRoutes);
 app.use("/api", booksRoutes);
+app.use("/api", cartRoutes);
 
 const PORT = process.env.PORT || 3333;
 
