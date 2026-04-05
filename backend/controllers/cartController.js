@@ -47,3 +47,58 @@ exports.createCart = async (req, res) => {
         });
     }
 };
+
+exports.getCartItems = async (req, res) => {
+    try {
+        const cart = await cartDao.findCartByUserId(req.user.id);
+        if (!cart) {
+            // Se não tem, o carrinho está vazio. Devolvemos uma lista vazia e encerramos aqui.
+            return res.status(200).json([]);
+        }
+        const items = await cartDao.getCartItems(cart.id);
+        res.status(200).json(items);
+    } catch (error) {
+        console.error("Erro ao buscar itens do carrinho:", error);
+        res.status(500).json({
+            error: "Erro ao buscar itens do carrinho no banco de dados",
+            details: error.message,
+        });
+    }
+};
+
+exports.deleteCartItem = async (req, res) => {
+    try {
+        const cart = await cartDao.findCartByUserId(req.user.id);
+        if (!cart) {
+            return res.status(404).json({ error: "Carrinho não encontrado" });
+        }
+        const deletedItem = await cartDao.deleteCartItem(req.params.id);
+        res.status(200).json(deletedItem);
+    } catch (error) {
+        console.error("Erro ao deletar item do carrinho:", error);
+        res.status(500).json({
+            error: "Erro ao deletar item do carrinho no banco de dados",
+            details: error.message,
+        });
+    }
+};
+
+exports.updateCartItem = async (req, res) => {
+    try {
+        const cart = await cartDao.findCartByUserId(req.user.id);
+        if (!cart) {
+            return res.status(404).json({ error: "Carrinho não encontrado" });
+        }
+        const updatedItem = await cartDao.updateCartItem(
+            req.params.id,
+            req.body.quantity,
+        );
+        res.status(200).json(updatedItem);
+    } catch (error) {
+        console.error("Erro ao atualizar item do carrinho:", error);
+        res.status(500).json({
+            error: "Erro ao atualizar item do carrinho no banco de dados",
+            details: error.message,
+        });
+    }
+};

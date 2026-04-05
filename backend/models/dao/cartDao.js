@@ -44,5 +44,23 @@ class CartDao {
         const result = await pool.query(query, [added_quantity, item_id]);
         return result.rows[0];
     }
+
+    async getCartItems(cart_id) {
+        const query = `SELECT * FROM cart_items WHERE cart_id = $1`;
+        const result = await pool.query(query, [cart_id]);
+        return result.rows;
+    }
+
+    async deleteCartItem(item_id) {
+        const query = `DELETE FROM cart_items WHERE id = $1 RETURNING *`;
+        const result = await pool.query(query, [item_id]);
+        return result.rows[0];
+    }
+
+    async updateCartItem(item_id, quantity) {
+        const query = `UPDATE cart_items SET quantity = $1 WHERE id = $2 RETURNING *`;
+        const result = await pool.query(query, [quantity, item_id]);
+        return result.rows[0];
+    }
 }
 module.exports = new CartDao();
