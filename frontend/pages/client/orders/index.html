@@ -235,7 +235,7 @@
                         .map((item) => {
                             const coverRaw = item.cover_image || "";
                             const cover = coverRaw
-                                ? coverRaw.startsWith("/") ? coverRaw : "/" + coverRaw
+                                ? (coverRaw.startsWith("/") ? `/assets${coverRaw}` : coverRaw)
                                 : "/assets/books/upload.svg";
                             const itemTotal = Number(item.price) * Number(item.quantity);
                             return `

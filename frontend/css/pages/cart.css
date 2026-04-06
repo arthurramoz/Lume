@@ -270,3 +270,98 @@
     margin-top: 12px;
     line-height: 1.5;
 }
+
+/* ======= MULTI-CARD PAYMENT ======= */
+
+.cart-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.cart-card-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-card-row .input-wrapper {
+    flex: 1;
+}
+
+.cart-card-amount-wrapper {
+    width: 130px;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cart-card-prefix {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-neutro60);
+    pointer-events: none;
+}
+
+.cart-card-amount-wrapper input {
+    width: 100%;
+    text-align: right;
+    font-weight: 600;
+    padding-left: 36px;
+    border: none;
+    outline: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+.cart-card-remove {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutro20);
+    background-color: var(--color-white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.cart-card-remove:hover {
+    background-color: #ffe0e0;
+    border-color: #e74c3c;
+}
+
+.cart-card-remove img {
+    width: 16px;
+    height: 16px;
+}
+
+.cart-cards-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--color-neutro60);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-neutro20);
+}
+
+.cart-cards-total.is-valid {
+    color: green;
+}
+
+.cart-cards-total.is-invalid {
+    color: var(--color-error1, #e74c3c);
+}
+
+.cart-card-error {
+    font-size: 12px;
+    color: var(--color-error1, #e74c3c);
+    margin-top: 4px;
+}

@@ -16,6 +16,30 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+  // ========== MASKS ==========
+  document.addEventListener("input", (e) => {
+    if (e.target.name && e.target.name.endsWith("_cep")) {
+      let v = e.target.value.replace(/\D/g, "");
+      v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+      e.target.value = v;
+    }
+    if (e.target.name && e.target.name.endsWith("_numero")) {
+      e.target.value = e.target.value.replace(/\D/g, "");
+    }
+    if (e.target.id === "cpf") {
+      let v = e.target.value.replace(/\D/g, "");
+      v = v.replace(/(\d{3})(\d)/, "$1.$2");
+      v = v.replace(/(\d{3})(\d)/, "$1.$2");
+      v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+      e.target.value = v;
+    }
+    if (e.target.id === "telefone") {
+      let v = e.target.value.replace(/\D/g, "");
+      v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+      v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+      e.target.value = v;
+    }
+  });
 
   // ========== DYNAMIC ADDRESS BLOCKS ==========
   let entregaCount = 0;
@@ -62,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="form-group">
             <label class="label-admin">Número <span style="color: red">*</span></label>
-            <input type="text" name="${prefix}_numero" placeholder="123" required />
+            <input type="text" name="${prefix}_numero" placeholder="123" maxlength="10" required />
           </div>
 
           <div class="form-group">
@@ -72,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="form-group">
             <label class="label-admin">CEP <span style="color: red">*</span></label>
-            <input type="text" name="${prefix}_cep" placeholder="00000-000" required />
+            <input type="text" name="${prefix}_cep" placeholder="00000-000" maxlength="9" required />
           </div>
 
           <div class="form-group">
@@ -211,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
       street_name: get("logradouro"),
       street_number: get("numero"),
       neighborhood: get("bairro"),
-      zip_code: get("cep"),
+      zip_code: get("cep").replace(/\D/g, ""),
       city: get("cidade"),
       state: get("estado"),
       country: get("pais"),
@@ -256,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const telefoneRaw = document.getElementById("telefone").value;
+    const telefoneRaw = document.getElementById("telefone").value.replace(/\D/g, "");
     let phone_ddd = "";
     let phone_number = "";
     if (telefoneRaw.length >= 10) {
@@ -272,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
       gender: document.getElementById("genero").value,
       full_name: document.getElementById("nome").value,
       birth_date: document.getElementById("data_nascimento").value,
-      cpf: document.getElementById("cpf").value,
+      cpf: document.getElementById("cpf").value.replace(/\D/g, ""),
       phone_type: phone_type,
       phone_ddd: phone_ddd,
       phone_number: phone_number,

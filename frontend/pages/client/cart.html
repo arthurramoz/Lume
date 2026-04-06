@@ -81,22 +81,26 @@
                                 Escolha o método de pagamento:
                             </p>
 
-                            <label class="label-admin">Cartão de crédito</label>
-                            <div
-                                class="input-wrapper select-wrapper"
-                                style="margin-top: 8px"
-                            >
-                                <select id="select-card">
-                                    <option value="">Selecione</option>
-                                </select>
+                            <label class="label-admin">Cartões de crédito</label>
+                            <div class="cart-cards-list" id="cards-list"></div>
+                            <div class="cart-cards-total" id="cards-total-info" style="display: none">
+                                <span>Distribuído nos cartões:</span>
+                                <span id="cards-total-value">R$ 0,00</span>
                             </div>
+                            <div id="cards-error" class="cart-card-error"></div>
 
+                            <div class="client-add-btn" style="margin-top: 12px">
+                                <button type="button" class="btn-primary cart-add-link" id="btn-add-card" style="white-space: nowrap; min-width: 220px;">
+                                    + Adicionar cartão
+                                </button>
+                            </div>
                             <div class="client-add-btn">
                                 <a
                                     href="/pages/client/cards/create/index.html"
                                     class="btn-primary cart-add-link"
+                                    style="white-space: nowrap; min-width: 220px;"
                                 >
-                                    + Adicionar
+                                    + Cadastrar novo cartão
                                 </a>
                             </div>
                             <div class="cart-coupon-section">
@@ -214,7 +218,7 @@
             let addresses = [];
             let cards = [];
             let selectedAddressId = null;
-            let selectedCardId = null;
+            let selectedCards = []; // Array de { card_id, amount }
             let appliedDiscount = 0;
             let appliedCouponCode = null;
             let appliedCouponId = null;
@@ -311,7 +315,7 @@
             async function finalizeOrder() {
                 const body = {
                     address_id: selectedAddressId,
-                    card_id: selectedCardId,
+                    cards: selectedCards,
                     coupon_id: appliedCouponId || undefined,
                     coupon_code: appliedCouponCode || undefined,
                 };
@@ -349,18 +353,158 @@
                 });
             }
 
-            function renderCards() {
-                const sel = document.getElementById("select-card");
-                sel.innerHTML = `<option value="">Selecione</option>`;
-                cards.forEach((card) => {
+            function getCardOptionsHtml(selectedId, currentIndex) {
+                // Pega os IDs dos cartões já selecionados nas outras linhas
+                var usedIds = [];
+                for (var j = 0; j < selectedCards.length; j++) {
+                    if (j !== currentIndex && selectedCards[j].card_id) {
+                        usedIds.push(String(selectedCards[j].card_id));
+                    }
+                }
+
+                let html = '<option value="">Selecione</option>';
+                for (let i = 0; i < cards.length; i++) {
+                    const card = cards[i];
+
+                    // Pula cartões já usados em outras linhas
+                    if (usedIds.indexOf(String(card.id)) !== -1) {
+                        continue;
+                    }
+
                     const last4 = (card.card_number || "").slice(-4) || "****";
-                    const flag = card.card_flag ? `${card.card_flag} — ` : "";
-                    const label = `${flag}${card.printed_name} •••• ${last4}`;
-                    const opt = document.createElement("option");
-                    opt.value = card.id;
-                    opt.textContent = label;
-                    sel.appendChild(opt);
+                    const flag = card.card_flag ? card.card_flag + " — " : "";
+                    const label = flag + card.printed_name + " •••• " + last4;
+                    const selected = String(card.id) === String(selectedId) ? " selected" : "";
+                    html += '<option value="' + card.id + '"' + selected + '>' + label + '</option>';
+                }
+                return html;
+            }
+
+            function renderCardRows() {
+                const container = document.getElementById("cards-list");
+                container.innerHTML = "";
+
+                for (let i = 0; i < selectedCards.length; i++) {
+                    const entry = selectedCards[i];
+                    const rowEl = document.createElement("div");
+                    rowEl.className = "cart-card-row";
+
+                    let removeBtn = "";
+                    if (selectedCards.length > 1) {
+                        removeBtn = '<button type="button" class="cart-card-remove" data-index="' + i + '" title="Remover cartão">' +
+                            '<img src="/assets/icons/users-trash.svg" alt="Remover" />' +
+                            '</button>';
+                    }
+
+                    rowEl.innerHTML =
+                        '<div class="input-wrapper select-wrapper">' +
+                            '<select class="card-select" data-index="' + i + '">' +
+                                getCardOptionsHtml(entry.card_id, i) +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="input-wrapper cart-card-amount-wrapper">' +
+                            '<span class="cart-card-prefix">R$</span>' +
+                            '<input type="text" class="card-amount" data-index="' + i + '" ' +
+                                'placeholder="0,00" inputmode="decimal" value="' + (entry.amount ? entry.amount.toFixed(2).replace(".", ",") : "") + '" />' +
+                        '</div>' +
+                        removeBtn;
+
+                    container.appendChild(rowEl);
+                }
+
+                // Attach select change events
+                container.querySelectorAll(".card-select").forEach(function (sel) {
+                    sel.addEventListener("change", function () {
+                        const idx = Number(sel.dataset.index);
+                        selectedCards[idx].card_id = sel.value || null;
+                        renderCardRows();
+                        updateFinalizeButton();
+                    });
                 });
+
+                // Attach amount change events
+                container.querySelectorAll(".card-amount").forEach(function (inp) {
+                    inp.addEventListener("input", function () {
+                        // Permite apenas números e vírgula
+                        inp.value = inp.value.replace(/[^0-9,]/g, "");
+
+                        const idx = Number(inp.dataset.index);
+                        const parsed = parseFloat(inp.value.replace(",", ".")) || 0;
+                        selectedCards[idx].amount = parsed;
+                        updateCardsTotal();
+                        updateFinalizeButton();
+                    });
+
+                    inp.addEventListener("blur", function () {
+                        const idx = Number(inp.dataset.index);
+                        const val = selectedCards[idx].amount;
+                        if (val > 0) {
+                            inp.value = val.toFixed(2).replace(".", ",");
+                        } else {
+                            inp.value = "";
+                        }
+                    });
+                });
+
+                // Attach remove events
+                container.querySelectorAll(".cart-card-remove").forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        const idx = Number(btn.dataset.index);
+                        selectedCards.splice(idx, 1);
+                        autoFillSingleCard();
+                        renderCardRows();
+                        updateCardsTotal();
+                        updateFinalizeButton();
+                    });
+                });
+
+                updateCardsTotal();
+            }
+
+            function autoFillSingleCard() {
+                if (selectedCards.length === 1) {
+                    const total = getTotal();
+                    selectedCards[0].amount = Math.round(total * 100) / 100;
+                }
+            }
+
+            function getTotal() {
+                const subtotal = getSubtotal();
+                const freight = 0;
+                const discount = appliedDiscount;
+                let total = subtotal - discount + freight;
+                if (total < 0) total = 0;
+                return Math.round(total * 100) / 100;
+            }
+
+            function updateCardsTotal() {
+                const infoEl = document.getElementById("cards-total-info");
+                const valueEl = document.getElementById("cards-total-value");
+                const errorEl = document.getElementById("cards-error");
+
+                if (selectedCards.length === 0) {
+                    infoEl.style.display = "none";
+                    errorEl.textContent = "";
+                    return;
+                }
+
+                let soma = 0;
+                for (let i = 0; i < selectedCards.length; i++) {
+                    soma = soma + (Number(selectedCards[i].amount) || 0);
+                }
+                soma = Math.round(soma * 100) / 100;
+                const total = getTotal();
+
+                infoEl.style.display = "flex";
+                valueEl.textContent = formatCurrency(soma);
+
+                if (soma === total) {
+                    infoEl.className = "cart-cards-total is-valid";
+                    errorEl.textContent = "";
+                } else {
+                    infoEl.className = "cart-cards-total is-invalid";
+                    errorEl.textContent = "A soma deve ser igual ao total: " + formatCurrency(total);
+                }
             }
 
             function getSubtotal() {
@@ -392,16 +536,53 @@
                 document.getElementById("summary-total").textContent =
                     formatCurrency(total);
 
+                updateCardsTotal();
                 updateFinalizeButton();
             }
 
             function updateFinalizeButton() {
                 const btn = document.getElementById("btn-finalize");
                 const warning = document.getElementById("finalize-warning");
-                const ready =
-                    selectedAddressId && selectedCardId && cartItems.length > 0;
-                btn.disabled = !ready;
-                warning.style.display = ready ? "none" : "block";
+
+                // Verifica se tem endereço selecionado
+                if (!selectedAddressId || cartItems.length === 0) {
+                    btn.disabled = true;
+                    warning.style.display = "block";
+                    return;
+                }
+
+                // Verifica se tem pelo menos um cartão
+                if (selectedCards.length === 0) {
+                    btn.disabled = true;
+                    warning.style.display = "block";
+                    return;
+                }
+
+                // Verifica se todos os cartões têm seleção
+                for (let i = 0; i < selectedCards.length; i++) {
+                    if (!selectedCards[i].card_id) {
+                        btn.disabled = true;
+                        warning.style.display = "block";
+                        return;
+                    }
+                }
+
+                // Verifica se a soma dos valores bate com o total
+                let soma = 0;
+                for (let i = 0; i < selectedCards.length; i++) {
+                    soma = soma + (Number(selectedCards[i].amount) || 0);
+                }
+                soma = Math.round(soma * 100) / 100;
+                const total = getTotal();
+
+                if (soma !== total) {
+                    btn.disabled = true;
+                    warning.style.display = "none";
+                    return;
+                }
+
+                btn.disabled = false;
+                warning.style.display = "none";
             }
 
             function renderCartItems() {
@@ -429,7 +610,7 @@
                     const price = Number(item.price || 0);
                     const qty = Number(item.quantity || 1);
                     const coverRaw = item.cover_image || "";
-                    const cover = coverRaw ? (coverRaw.startsWith("/") ? coverRaw : "/" + coverRaw) : "/assets/books/upload.svg";
+                    const cover = coverRaw ? (coverRaw.startsWith("/") ? `/assets${coverRaw}` : coverRaw) : "/assets/books/upload.svg";
                     const itemId = item.id;
 
                     const el = document.createElement("div");
@@ -521,9 +702,10 @@
                 });
 
             document
-                .getElementById("select-card")
-                .addEventListener("change", (e) => {
-                    selectedCardId = e.target.value || null;
+                .getElementById("btn-add-card")
+                .addEventListener("click", () => {
+                    selectedCards.push({ card_id: null, amount: 0 });
+                    renderCardRows();
                     updateFinalizeButton();
                 });
 
@@ -552,6 +734,8 @@
 
                         msgEl.style.color = "green";
                         msgEl.textContent = `✓ Cupom aplicado! Desconto de ${formatCurrency(discount)}`;
+                        autoFillSingleCard();
+                        renderCardRows();
                         renderSummary();
                     } catch (err) {
                         appliedDiscount = 0;
@@ -559,6 +743,8 @@
                         appliedCouponId = null;
                         msgEl.style.color = "var(--color-error1)";
                         msgEl.textContent = "✗ " + err.message;
+                        autoFillSingleCard();
+                        renderCardRows();
                         renderSummary();
                     }
                 });
@@ -593,7 +779,12 @@
                     fetchCards(),
                 ]);
                 renderAddresses();
-                renderCards();
+
+                // Adiciona a primeira linha de cartão automaticamente
+                selectedCards.push({ card_id: null, amount: 0 });
+                autoFillSingleCard();
+                renderCardRows();
+
                 renderCartItems();
                 renderSummary();
             })();

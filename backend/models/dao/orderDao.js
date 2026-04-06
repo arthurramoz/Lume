@@ -5,7 +5,7 @@ class OrderDao {
         const query = `
             INSERT INTO orders (user_id, address_id, coupon_id, total_amount, status)
             VALUES ($1, $2, $3, $4, 'aguardando_pagamento')
-            RETURNING *;
+            RETURNING *
         `;
         const result = await pool.query(query, [user_id, address_id, coupon_id, total_amount]);
         return result.rows[0];
@@ -15,24 +15,24 @@ class OrderDao {
         const query = `
             INSERT INTO order_items (order_id, book_id, quantity, price)
             VALUES ($1, $2, $3, $4)
-            RETURNING *;
+            RETURNING *
         `;
         const result = await pool.query(query, [order_id, book_id, quantity, price]);
         return result.rows[0];
     }
 
-    async createPayment(order_id) {
+    async createPayment(order_id, card_id, amount) {
         const query = `
-            INSERT INTO payments (order_id, payment_method, payment_status)
-            VALUES ($1, 'cartao', 'aprovado')
-            RETURNING *;
+            INSERT INTO payments (order_id, card_id, amount, payment_method, payment_status)
+            VALUES ($1, $2, $3, 'cartao', 'aprovado')
+            RETURNING *
         `;
-        const result = await pool.query(query, [order_id]);
+        const result = await pool.query(query, [order_id, card_id, amount]);
         return result.rows[0];
     }
 
     async updateOrderStatus(order_id, status) {
-        const query = `UPDATE orders SET status = $1 WHERE id = $2 RETURNING *`;
+        const query = "UPDATE orders SET status = $1 WHERE id = $2 RETURNING *";
         const result = await pool.query(query, [status, order_id]);
         return result.rows[0];
     }
@@ -80,13 +80,18 @@ class OrderDao {
     }
 
     async clearCart(user_id) {
-        const cartQuery = `SELECT id FROM carts WHERE user_id = $1 AND status = 'aberto'`;
+        const cartQuery = "SELECT id FROM carts WHERE user_id = $1 AND status = 'aberto'";
         const cartResult = await pool.query(cartQuery, [user_id]);
-        if (cartResult.rows.length === 0) return;
+
+        if (cartResult.rows.length === 0) {
+            return;
+        }
 
         const cart_id = cartResult.rows[0].id;
-        await pool.query(`DELETE FROM cart_items WHERE cart_id = $1`, [cart_id]);
-        await pool.query(`UPDATE carts SET status = 'finalizado' WHERE id = $1`, [cart_id]);
+
+        await pool.query("DELETE FROM cart_items WHERE cart_id = $1", [cart_id]);
+
+        await pool.query("UPDATE carts SET status = 'finalizado' WHERE id = $1", [cart_id]);
     }
 }
 

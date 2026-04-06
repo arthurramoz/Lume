@@ -1,45 +1,47 @@
 const cartDao = require("../models/dao/cartDao");
 const bookDao = require("../models/dao/booksDao");
 
-exports.createCart = async (req, res) => {
+exports.createCart = async function (req, res) {
     try {
+        // Se é um cliente, usa o ID dele automaticamente
         if (req.user && req.user.role === "client") {
             req.body.user_id = req.user.id;
         }
 
-        const { book_id, quantity } = req.body;
-        const user_id = req.user.id;
+        var book_id = req.body.book_id;
+        var quantity = req.body.quantity;
+        var user_id = req.user.id;
 
+        // Verifica se os campos obrigatórios foram enviados
         if (!book_id || !quantity) {
             return res.status(400).json({ error: "book_id e quantity são obrigatórios" });
         }
 
-        const book = await bookDao.findById(book_id);
+        // Verifica se o livro existe
+        var book = await bookDao.findById(book_id);
         if (!book) {
             return res.status(404).json({ error: "Livro não encontrado" });
         }
 
-        let cart = await cartDao.findCartByUserId(user_id);
+        // Busca o carrinho do usuário
+        var cart = await cartDao.findCartByUserId(user_id);
 
+        // Se não tem carrinho, cria um novo
         if (!cart) {
             cart = await cartDao.createCart(user_id);
         }
 
-        const itemExistente = await cartDao.findItemInCart(cart.id, book_id);
+        // Verifica se o livro já está no carrinho
+        var itemExistente = await cartDao.findItemInCart(cart.id, book_id);
 
-        let finalItem;
+        var finalItem;
 
         if (itemExistente) {
-            finalItem = await cartDao.updateItemQuantity(
-                itemExistente.id,
-                quantity,
-            );
+            // Se já existe, aumenta a quantidade
+            finalItem = await cartDao.updateItemQuantity(itemExistente.id, quantity);
         } else {
-            finalItem = await cartDao.createCartItem(
-                cart.id,
-                book_id,
-                quantity,
-            );
+            // Se não existe, adiciona como novo item
+            finalItem = await cartDao.createCartItem(cart.id, book_id, quantity);
         }
 
         res.status(201).json(finalItem);
@@ -52,14 +54,19 @@ exports.createCart = async (req, res) => {
     }
 };
 
-exports.getCartItems = async (req, res) => {
+// Busca todos os itens do carrinho do usuário
+exports.getCartItems = async function (req, res) {
     try {
-        const cart = await cartDao.findCartByUserId(req.user.id);
+        // Busca o carrinho do usuário
+        var cart = await cartDao.findCartByUserId(req.user.id);
+
+        // Se não tem carrinho, retorna lista vazia
         if (!cart) {
-            // Se não tem, o carrinho está vazio. Devolvemos uma lista vazia e encerramos aqui.
             return res.status(200).json([]);
         }
-        const items = await cartDao.getCartItems(cart.id);
+
+        // Busca os itens do carrinho
+        var items = await cartDao.getCartItems(cart.id);
         res.status(200).json(items);
     } catch (error) {
         console.error("Erro ao buscar itens do carrinho:", error);
@@ -70,13 +77,17 @@ exports.getCartItems = async (req, res) => {
     }
 };
 
-exports.deleteCartItem = async (req, res) => {
+// Remove um item do carrinho
+exports.deleteCartItem = async function (req, res) {
     try {
-        const cart = await cartDao.findCartByUserId(req.user.id);
+        // Verifica se o usuário tem carrinho
+        var cart = await cartDao.findCartByUserId(req.user.id);
         if (!cart) {
             return res.status(404).json({ error: "Carrinho não encontrado" });
         }
-        const deletedItem = await cartDao.deleteCartItem(req.params.id);
+
+        // Deleta o item
+        var deletedItem = await cartDao.deleteCartItem(req.params.id);
         res.status(200).json(deletedItem);
     } catch (error) {
         console.error("Erro ao deletar item do carrinho:", error);
@@ -87,16 +98,17 @@ exports.deleteCartItem = async (req, res) => {
     }
 };
 
-exports.updateCartItem = async (req, res) => {
+// Atualiza a quantidade de um item do carrinho
+exports.updateCartItem = async function (req, res) {
     try {
-        const cart = await cartDao.findCartByUserId(req.user.id);
+        // Verifica se o usuário tem carrinho
+        var cart = await cartDao.findCartByUserId(req.user.id);
         if (!cart) {
             return res.status(404).json({ error: "Carrinho não encontrado" });
         }
-        const updatedItem = await cartDao.updateCartItem(
-            req.params.id,
-            req.body.quantity,
-        );
+
+        // Atualiza a quantidade
+        var updatedItem = await cartDao.updateCartItem(req.params.id, req.body.quantity);
         res.status(200).json(updatedItem);
     } catch (error) {
         console.error("Erro ao atualizar item do carrinho:", error);
@@ -107,15 +119,21 @@ exports.updateCartItem = async (req, res) => {
     }
 };
 
-exports.getCartCount = async (req, res) => {
+// Conta quantos itens tem no carrinho
+exports.getCartCount = async function (req, res) {
     try {
-        const cart = await cartDao.findCartByUserId(req.user.id);
+        // Busca o carrinho do usuário
+        var cart = await cartDao.findCartByUserId(req.user.id);
+
+        // Se não tem carrinho, retorna 0
         if (!cart) {
             return res.status(200).json({ count: 0 });
         }
-        const items = await cartDao.getCartItems(cart.id);
-        const count = items.length;
-        res.status(200).json({ count });
+
+        // Conta os itens
+        var items = await cartDao.getCartItems(cart.id);
+        var count = items.length;
+        res.status(200).json({ count: count });
     } catch (error) {
         console.error("Erro ao contar itens do carrinho:", error);
         res.status(500).json({ error: "Erro ao contar itens do carrinho" });

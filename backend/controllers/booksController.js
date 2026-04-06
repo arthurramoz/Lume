@@ -1,6 +1,6 @@
 const booksDao = require("../models/dao/booksDao");
 
-exports.getBooks = async (req, res) => {
+exports.getBooks = async function (req, res) {
     try {
         const books = await booksDao.findAll();
         return res.status(200).json(books);
@@ -10,7 +10,7 @@ exports.getBooks = async (req, res) => {
     }
 };
 
-exports.getFindBooksCards = async (req, res) => {
+exports.getFindBooksCards = async function (req, res) {
     try {
         const books = await booksDao.findBooksCards();
         return res.status(200).json(books);

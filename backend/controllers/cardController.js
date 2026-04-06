@@ -1,6 +1,6 @@
 const cardsDao = require("../models/dao/cardsDao");
 
-exports.createCard = async (req, res) => {
+exports.createCard = async function (req, res) {
     try {
         if (req.user && req.user.role === "client") {
             req.body.user_id = req.user.id;
@@ -17,15 +17,21 @@ exports.createCard = async (req, res) => {
     }
 };
 
-exports.getCards = async (req, res) => {
+exports.getCards = async function (req, res) {
     try {
-        let cards = await cardsDao.findAll();
+        var allCards = await cardsDao.findAll();
 
         if (req.user && req.user.role === "client") {
-            cards = cards.filter((c) => c.user_id === req.user.id);
+            var userCards = [];
+            for (var i = 0; i < allCards.length; i++) {
+                if (allCards[i].user_id === req.user.id) {
+                    userCards.push(allCards[i]);
+                }
+            }
+            return res.status(200).json(userCards);
         }
 
-        res.status(200).json(cards);
+        res.status(200).json(allCards);
     } catch (error) {
         res.status(500).json({
             error: "Erro ao buscar cartões no banco de dados",
@@ -33,16 +39,20 @@ exports.getCards = async (req, res) => {
     }
 };
 
-exports.deleteCard = async (req, res) => {
+exports.deleteCard = async function (req, res) {
     try {
         if (req.user && req.user.role === "client") {
-            const card = await cardsDao.findById(req.params.id);
-            if (!card || card.user_id !== req.user.id) {
+            var card = await cardsDao.findById(req.params.id);
+
+            if (!card) {
+                return res.status(403).json({ error: "Acesso negado." });
+            }
+            if (card.user_id !== req.user.id) {
                 return res.status(403).json({ error: "Acesso negado." });
             }
         }
 
-        const deletedCard = await cardsDao.delete(req.params.id);
+        var deletedCard = await cardsDao.delete(req.params.id);
         res.status(200).json(deletedCard);
     } catch (error) {
         res.status(500).json({

@@ -3,11 +3,11 @@ const pool = require("../../config/database");
 class CardDao {
     async create(card) {
         const query = `
-        INSERT INTO credit_cards(
-            user_id, card_number, printed_name, card_flag, security_code, expiration_date
-        )
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *;
+            INSERT INTO credit_cards(
+                user_id, card_number, printed_name, card_flag, security_code, expiration_date
+            )
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *;
         `;
 
         const values = [
@@ -24,7 +24,7 @@ class CardDao {
     }
 
     async findAll() {
-        const query = `SELECT * FROM credit_cards`;
+        const query = "SELECT * FROM credit_cards";
         const result = await pool.query(query);
         return result.rows;
     }

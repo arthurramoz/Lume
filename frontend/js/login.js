@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Redireciona baseado no role do usuário (admin vs client)
         if (data.user.role === "admin") {
-          window.location.replace("/pages/admin/dashboard/index.html");
+          window.location.replace("/pages/admin/users/index.html");
         } else {
           window.location.replace("/"); 
         }
