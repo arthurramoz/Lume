@@ -91,16 +91,15 @@
 
                             <div class="client-add-btn" style="margin-top: 12px">
                                 <button type="button" class="btn-primary cart-add-link" id="btn-add-card" style="white-space: nowrap; min-width: 220px;">
-                                    + Adicionar cartão
+                                    + Pagar com mais cartões
                                 </button>
                             </div>
-                            <div class="client-add-btn">
+                            <div class="client-add-btn" style="margin-top: 4px">
                                 <a
                                     href="/pages/client/cards/create/index.html"
-                                    class="btn-primary cart-add-link"
-                                    style="white-space: nowrap; min-width: 220px;"
+                                    class="cart-secondary-link"
                                 >
-                                    + Cadastrar novo cartão
+                                    Não tem cartão? Cadastre um novo
                                 </a>
                             </div>
                             <div class="cart-coupon-section">
@@ -210,22 +209,16 @@
                 });
             }
 
-            // ============================================================
-            // CART STATE
-            // ============================================================
-
             let cartItems = [];
             let addresses = [];
             let cards = [];
             let selectedAddressId = null;
-            let selectedCards = []; // Array de { card_id, amount }
+            let selectedCards = [];
             let appliedDiscount = 0;
             let appliedCouponCode = null;
             let appliedCouponId = null;
-
-            // ============================================================
-            // FETCH FUNCTIONS
-            // ============================================================
+            let currentFreight = 0;
+            let currentEstimatedDays = 0;
 
             async function fetchCart() {
                 try {
@@ -316,6 +309,7 @@
                 const body = {
                     address_id: selectedAddressId,
                     cards: selectedCards,
+                    freight: currentFreight,
                     coupon_id: appliedCouponId || undefined,
                     coupon_code: appliedCouponCode || undefined,
                 };
@@ -335,10 +329,6 @@
                 }
                 return await res.json();
             }
-
-            // ============================================================
-            // RENDER FUNCTIONS
-            // ============================================================
 
             function renderAddresses() {
                 const sel = document.getElementById("select-address");
@@ -455,6 +445,8 @@
                         renderCardRows();
                         updateCardsTotal();
                         updateFinalizeButton();
+                        document.getElementById("btn-add-card").style.display =
+                            selectedCards.length >= 2 ? "none" : "";
                     });
                 });
 
@@ -470,9 +462,9 @@
 
             function getTotal() {
                 const subtotal = getSubtotal();
-                const freight = 0;
+                const freight = currentFreight;
                 const discount = appliedDiscount;
-                let total = subtotal - discount + freight;
+                let total = subtotal + freight - discount;
                 if (total < 0) total = 0;
                 return Math.round(total * 100) / 100;
             }
@@ -517,9 +509,9 @@
 
             function renderSummary() {
                 const subtotal = getSubtotal();
-                const freight = 0; // grátis por enquanto
+                const freight = currentFreight;
                 const discount = appliedDiscount;
-                const total = Math.max(0, subtotal - discount + freight);
+                const total = Math.max(0, subtotal + freight - discount);
                 const count = cartItems.reduce(
                     (s, i) => s + Number(i.quantity || 1),
                     0,
@@ -530,7 +522,7 @@
                 document.getElementById("summary-products-value").textContent =
                     formatCurrency(subtotal);
                 document.getElementById("summary-freight").textContent =
-                    formatCurrency(freight);
+                    freight > 0 ? formatCurrency(freight) : "Grátis";
                 document.getElementById("summary-discount").textContent =
                     `R$-${discount.toFixed(2).replace(".", ",")}`;
                 document.getElementById("summary-total").textContent =
@@ -696,17 +688,43 @@
 
             document
                 .getElementById("select-address")
-                .addEventListener("change", (e) => {
+                .addEventListener("change", async (e) => {
                     selectedAddressId = e.target.value || null;
+
+                    if (selectedAddressId) {
+                        try {
+                            const res = await fetch(`${API}/shipping/${selectedAddressId}`, {
+                                headers: { Authorization: `Bearer ${getToken()}` },
+                            });
+                            const data = await res.json();
+                            currentFreight = Number(data.rate) || 0;
+                            currentEstimatedDays = data.estimated_days || 0;
+                        } catch (err) {
+                            console.error("Erro ao buscar frete:", err);
+                            currentFreight = 0;
+                            currentEstimatedDays = 0;
+                        }
+                    } else {
+                        currentFreight = 0;
+                        currentEstimatedDays = 0;
+                    }
+
+                    autoFillSingleCard();
+                    renderCardRows();
+                    renderSummary();
                     updateFinalizeButton();
                 });
 
             document
                 .getElementById("btn-add-card")
                 .addEventListener("click", () => {
+                    if (selectedCards.length >= 2) return;
                     selectedCards.push({ card_id: null, amount: 0 });
                     renderCardRows();
                     updateFinalizeButton();
+                    // Esconde o botão ao atingir 2 cartões
+                    document.getElementById("btn-add-card").style.display =
+                        selectedCards.length >= 2 ? "none" : "";
                 });
 
             document

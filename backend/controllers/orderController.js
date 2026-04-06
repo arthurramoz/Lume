@@ -1,6 +1,8 @@
 const orderDao = require("../models/dao/orderDao");
 const cartDao = require("../models/dao/cartDao");
 const couponDao = require("../models/dao/couponDao");
+const shippingDao = require("../models/dao/shippingDao");
+const addressDao = require("../models/dao/addressDao");
 
 exports.createOrder = async function (req, res) {
     try {
@@ -9,6 +11,7 @@ exports.createOrder = async function (req, res) {
         var cardsPayment = req.body.cards; // Array de { card_id, amount }
         var body_coupon_id = req.body.coupon_id;
         var coupon_code = req.body.coupon_code;
+        var body_freight = req.body.freight;
 
         // Verifica se endereço foi enviado
         if (!address_id) {
@@ -18,6 +21,11 @@ exports.createOrder = async function (req, res) {
         // Verifica se pelo menos um cartão foi enviado
         if (!cardsPayment || cardsPayment.length === 0) {
             return res.status(400).json({ error: "Pelo menos um cartão é obrigatório" });
+        }
+
+        // Verifica se não ultrapassou o limite de 2 cartões
+        if (cardsPayment.length > 2) {
+            return res.status(400).json({ error: "É permitido pagar com no máximo 2 cartões" });
         }
 
         // Busca o carrinho do usuário
@@ -70,8 +78,18 @@ exports.createOrder = async function (req, res) {
             discount = Number(coupon.value);
         }
 
-        // Calcula o total (subtotal - desconto, mínimo 0)
-        var total_amount = subtotal - discount;
+        // Calcula o frete baseado no endereço
+        var freight = 0;
+        var address = await addressDao.findById(address_id);
+        if (address && address.state) {
+            var shippingRate = await shippingDao.findByState(address.state);
+            if (shippingRate) {
+                freight = Number(shippingRate.rate);
+            }
+        }
+
+        // Calcula o total (subtotal + frete - desconto, mínimo 0)
+        var total_amount = subtotal + freight - discount;
         if (total_amount < 0) {
             total_amount = 0;
         }
@@ -119,7 +137,7 @@ exports.createOrder = async function (req, res) {
         }
 
         // Cria o pedido no banco
-        var order = await orderDao.createOrder(user_id, address_id, coupon_id, total_amount);
+        var order = await orderDao.createOrder(user_id, address_id, coupon_id, total_amount, freight);
 
         // Adiciona cada item do carrinho ao pedido
         for (var k = 0; k < items.length; k++) {
@@ -157,6 +175,7 @@ exports.createOrder = async function (req, res) {
             message: "Pedido realizado com sucesso!",
             order_id: order.id,
             total: total_amount,
+            freight: freight,
             status: "em_processamento",
         });
     } catch (error) {

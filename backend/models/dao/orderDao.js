@@ -1,13 +1,13 @@
 const pool = require("../../config/database");
 
 class OrderDao {
-    async createOrder(user_id, address_id, coupon_id, total_amount) {
+    async createOrder(user_id, address_id, coupon_id, total_amount, freight) {
         const query = `
-            INSERT INTO orders (user_id, address_id, coupon_id, total_amount, status)
-            VALUES ($1, $2, $3, $4, 'aguardando_pagamento')
+            INSERT INTO orders (user_id, address_id, coupon_id, total_amount, freight, status)
+            VALUES ($1, $2, $3, $4, $5, 'aguardando_pagamento')
             RETURNING *
         `;
-        const result = await pool.query(query, [user_id, address_id, coupon_id, total_amount]);
+        const result = await pool.query(query, [user_id, address_id, coupon_id, total_amount, freight || 0]);
         return result.rows[0];
     }
 

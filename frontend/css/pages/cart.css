@@ -365,3 +365,30 @@
     color: var(--color-error1, #e74c3c);
     margin-top: 4px;
 }
+
+/* ======= FREIGHT / FRETE ======= */
+
+.cart-freight-text {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.cart-freight-loading {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--color-neutro60);
+}
+
+.cart-secondary-link {
+    font-size: 13px;
+    color: var(--color-primaria100);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cart-secondary-link:hover {
+    opacity: 0.8;
+}
+

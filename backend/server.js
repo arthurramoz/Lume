@@ -9,6 +9,7 @@ const booksRoutes = require("./routes/booksRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const couponRoutes = require("./routes/couponRoutes");
+const shippingRoutes = require("./routes/shippingRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api", booksRoutes);
 app.use("/api", cartRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", couponRoutes);
+app.use("/api", shippingRoutes);
 
 const PORT = process.env.PORT || 3333;
 
