@@ -345,8 +345,8 @@
 
             function getCardOptionsHtml(selectedId, currentIndex) {
                 // Pega os IDs dos cartões já selecionados nas outras linhas
-                var usedIds = [];
-                for (var j = 0; j < selectedCards.length; j++) {
+                const usedIds = [];
+                for (let j = 0; j < selectedCards.length; j++) {
                     if (j !== currentIndex && selectedCards[j].card_id) {
                         usedIds.push(String(selectedCards[j].card_id));
                     }

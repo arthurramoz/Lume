@@ -3,10 +3,10 @@ const addressDao = require("../models/dao/addressDao");
 
 exports.getShippingByAddress = async function (req, res) {
     try {
-        var address_id = req.params.address_id;
+        const address_id = req.params.address_id;
 
         // Busca o endereço
-        var address = await addressDao.findById(address_id);
+        const address = await addressDao.findById(address_id);
         if (!address) {
             return res.status(404).json({ error: "Endereço não encontrado" });
         }
@@ -17,7 +17,7 @@ exports.getShippingByAddress = async function (req, res) {
         }
 
         // Busca a taxa de frete pelo estado
-        var shipping = await shippingDao.findByState(address.state);
+        const shipping = await shippingDao.findByState(address.state);
         if (!shipping) {
             return res.status(200).json({
                 rate: 0,
@@ -40,7 +40,7 @@ exports.getShippingByAddress = async function (req, res) {
 
 exports.getAllRates = async function (req, res) {
     try {
-        var rates = await shippingDao.findAll();
+        const rates = await shippingDao.findAll();
         res.status(200).json(rates);
     } catch (error) {
         console.error("Erro ao buscar taxas de frete:", error);

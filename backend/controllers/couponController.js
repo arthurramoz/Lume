@@ -3,7 +3,7 @@ const couponDao = require("../models/dao/couponDao");
 // Busca todos os cupons
 exports.getCoupons = async function (req, res) {
     try {
-        var coupons = await couponDao.findAll();
+        const coupons = await couponDao.findAll();
         res.status(200).json(coupons);
     } catch (error) {
         console.error("Erro ao buscar cupons:", error);
@@ -14,7 +14,7 @@ exports.getCoupons = async function (req, res) {
 // Valida se um cupom pode ser usado
 exports.validateCoupon = async function (req, res) {
     try {
-        var code = req.body.code;
+        const code = req.body.code;
 
         // Verifica se o código foi enviado
         if (!code) {
@@ -22,7 +22,7 @@ exports.validateCoupon = async function (req, res) {
         }
 
         // Busca o cupom pelo código
-        var coupon = await couponDao.findByCode(code);
+        const coupon = await couponDao.findByCode(code);
 
         // Se não encontrou, retorna erro
         if (!coupon) {
@@ -36,8 +36,8 @@ exports.validateCoupon = async function (req, res) {
 
         // Verifica se o cupom tem data de expiração e se já expirou
         if (coupon.expires_at) {
-            var dataExpiracao = new Date(coupon.expires_at);
-            var dataAtual = new Date();
+            const dataExpiracao = new Date(coupon.expires_at);
+            const dataAtual = new Date();
 
             if (dataExpiracao < dataAtual) {
                 return res.status(400).json({ error: "Cupom expirado" });

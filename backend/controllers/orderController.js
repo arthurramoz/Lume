@@ -6,12 +6,12 @@ const addressDao = require("../models/dao/addressDao");
 
 exports.createOrder = async function (req, res) {
     try {
-        var user_id = req.user.id;
-        var address_id = req.body.address_id;
-        var cardsPayment = req.body.cards; // Array de { card_id, amount }
-        var body_coupon_id = req.body.coupon_id;
-        var coupon_code = req.body.coupon_code;
-        var body_freight = req.body.freight;
+        const user_id = req.user.id;
+        const address_id = req.body.address_id;
+        const cardsPayment = req.body.cards; // Array de { card_id, amount }
+        const body_coupon_id = req.body.coupon_id;
+        const coupon_code = req.body.coupon_code;
+        const body_freight = req.body.freight;
 
         // Verifica se endereço foi enviado
         if (!address_id) {
@@ -29,29 +29,29 @@ exports.createOrder = async function (req, res) {
         }
 
         // Busca o carrinho do usuário
-        var cart = await cartDao.findCartByUserId(user_id);
+        const cart = await cartDao.findCartByUserId(user_id);
         if (!cart) {
             return res.status(400).json({ error: "Carrinho vazio" });
         }
 
         // Busca os itens do carrinho
-        var items = await cartDao.getCartItems(cart.id);
+        const items = await cartDao.getCartItems(cart.id);
         if (items.length === 0) {
             return res.status(400).json({ error: "Carrinho vazio" });
         }
 
         // Calcula o subtotal somando preço * quantidade de cada item
-        var subtotal = 0;
-        for (var i = 0; i < items.length; i++) {
-            var preco = Number(items[i].price);
-            var quantidade = Number(items[i].quantity);
+        let subtotal = 0;
+        for (let i = 0; i < items.length; i++) {
+            const preco = Number(items[i].price);
+            const quantidade = Number(items[i].quantity);
             subtotal = subtotal + (preco * quantidade);
         }
 
         // Tenta buscar o cupom (se foi enviado)
-        var coupon_id = null;
-        var discount = 0;
-        var coupon = null;
+        let coupon_id = null;
+        let discount = 0;
+        let coupon = null;
 
         if (body_coupon_id) {
             coupon = await couponDao.findById(body_coupon_id);
@@ -66,8 +66,8 @@ exports.createOrder = async function (req, res) {
             }
 
             if (coupon.expires_at) {
-                var dataExpiracao = new Date(coupon.expires_at);
-                var dataAtual = new Date();
+                const dataExpiracao = new Date(coupon.expires_at);
+                const dataAtual = new Date();
 
                 if (dataExpiracao < dataAtual) {
                     return res.status(400).json({ error: "Cupom expirado" });
@@ -79,25 +79,25 @@ exports.createOrder = async function (req, res) {
         }
 
         // Calcula o frete baseado no endereço
-        var freight = 0;
-        var address = await addressDao.findById(address_id);
+        let freight = 0;
+        const address = await addressDao.findById(address_id);
         if (address && address.state) {
-            var shippingRate = await shippingDao.findByState(address.state);
+            const shippingRate = await shippingDao.findByState(address.state);
             if (shippingRate) {
                 freight = Number(shippingRate.rate);
             }
         }
 
         // Calcula o total (subtotal + frete - desconto, mínimo 0)
-        var total_amount = subtotal + freight - discount;
+        let total_amount = subtotal + freight - discount;
         if (total_amount < 0) {
             total_amount = 0;
         }
 
         // Valida a soma dos valores dos cartões
-        var somaCartoes = 0;
-        for (var j = 0; j < cardsPayment.length; j++) {
-            var cardAmount = Number(cardsPayment[j].amount);
+        let somaCartoes = 0;
+        for (let j = 0; j < cardsPayment.length; j++) {
+            const cardAmount = Number(cardsPayment[j].amount);
 
             if (!cardsPayment[j].card_id) {
                 return res.status(400).json({ error: "Selecione um cartão em todas as linhas" });
@@ -137,11 +137,11 @@ exports.createOrder = async function (req, res) {
         }
 
         // Cria o pedido no banco
-        var order = await orderDao.createOrder(user_id, address_id, coupon_id, total_amount, freight);
+        const order = await orderDao.createOrder(user_id, address_id, coupon_id, total_amount, freight);
 
         // Adiciona cada item do carrinho ao pedido
-        for (var k = 0; k < items.length; k++) {
-            var item = items[k];
+        for (let k = 0; k < items.length; k++) {
+            const item = items[k];
             await orderDao.createOrderItem(
                 order.id,
                 item.book_id,
@@ -151,7 +151,7 @@ exports.createOrder = async function (req, res) {
         }
 
         // Cria um pagamento para cada cartão
-        for (var m = 0; m < cardsPayment.length; m++) {
+        for (let m = 0; m < cardsPayment.length; m++) {
             await orderDao.createPayment(
                 order.id,
                 Number(cardsPayment[m].card_id),
@@ -189,7 +189,7 @@ exports.createOrder = async function (req, res) {
 
 exports.getOrders = async function (req, res) {
     try {
-        var orders = await orderDao.getOrdersByUserId(req.user.id);
+        const orders = await orderDao.getOrdersByUserId(req.user.id);
         res.status(200).json(orders);
     } catch (error) {
         console.error("Erro ao buscar pedidos:", error);
@@ -199,7 +199,7 @@ exports.getOrders = async function (req, res) {
 
 exports.getOrderById = async function (req, res) {
     try {
-        var order = await orderDao.getOrderById(req.params.id, req.user.id);
+        const order = await orderDao.getOrderById(req.params.id, req.user.id);
 
         if (!order) {
             return res.status(404).json({ error: "Pedido não encontrado" });
@@ -214,9 +214,9 @@ exports.getOrderById = async function (req, res) {
 
 exports.requestExchange = async function (req, res) {
     try {
-        var reason = req.body.reason;
+        const reason = req.body.reason;
 
-        var order = await orderDao.getOrderById(req.params.id, req.user.id);
+        const order = await orderDao.getOrderById(req.params.id, req.user.id);
 
         if (!order) {
             return res.status(404).json({ error: "Pedido não encontrado" });
@@ -236,7 +236,7 @@ exports.requestExchange = async function (req, res) {
             return res.status(400).json({ error: "Motivo da troca é obrigatório" });
         }
 
-        var updated = await orderDao.updateOrderStatus(order.id, "em_troca");
+        const updated = await orderDao.updateOrderStatus(order.id, "em_troca");
 
         res.status(200).json({
             message: "Troca solicitada com sucesso",

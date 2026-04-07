@@ -72,6 +72,10 @@
                 <div class="modal-items" id="modal-items-list"></div>
                 <div class="modal-footer-info">
                     <div class="modal-footer-row">
+                        <span class="modal-footer-label">Frete</span>
+                        <span class="modal-footer-value" id="modal-freight"></span>
+                    </div>
+                    <div class="modal-footer-row">
                         <span class="modal-footer-label">Total</span>
                         <span class="modal-footer-value" id="modal-total"></span>
                     </div>
@@ -254,6 +258,8 @@
                         .join("");
 
                     document.getElementById("modal-items-list").innerHTML = itemsHtml;
+                    const freight = Number(order.freight || 0);
+                    document.getElementById("modal-freight").textContent = freight > 0 ? formatCurrency(freight) : "Grátis";
                     document.getElementById("modal-total").textContent = formatCurrency(order.total_amount);
                     document.getElementById("modal-details").style.display = "flex";
                 } catch (err) {

@@ -19,11 +19,11 @@ exports.createCard = async function (req, res) {
 
 exports.getCards = async function (req, res) {
     try {
-        var allCards = await cardsDao.findAll();
+        const allCards = await cardsDao.findAll();
 
         if (req.user && req.user.role === "client") {
-            var userCards = [];
-            for (var i = 0; i < allCards.length; i++) {
+            const userCards = [];
+            for (let i = 0; i < allCards.length; i++) {
                 if (allCards[i].user_id === req.user.id) {
                     userCards.push(allCards[i]);
                 }
@@ -42,7 +42,7 @@ exports.getCards = async function (req, res) {
 exports.deleteCard = async function (req, res) {
     try {
         if (req.user && req.user.role === "client") {
-            var card = await cardsDao.findById(req.params.id);
+            const card = await cardsDao.findById(req.params.id);
 
             if (!card) {
                 return res.status(403).json({ error: "Acesso negado." });
@@ -52,7 +52,7 @@ exports.deleteCard = async function (req, res) {
             }
         }
 
-        var deletedCard = await cardsDao.delete(req.params.id);
+        const deletedCard = await cardsDao.delete(req.params.id);
         res.status(200).json(deletedCard);
     } catch (error) {
         res.status(500).json({
