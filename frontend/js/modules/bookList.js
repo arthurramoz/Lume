@@ -128,15 +128,89 @@ export const initBookList = async () => {
 
     if (container && items.length > 0) {
         container.innerHTML = items
+            .slice(0, 5)
             .map((book) => createBookCard(book, false))
             .join("");
         attachBuyButtons(container);
     }
 
     if (catalogContainer && items.length > 0) {
-        catalogContainer.innerHTML = items
-            .map((book) => createBookCard(book, true))
-            .join("");
-        attachBuyButtons(catalogContainer);
+        const itemsPerPage = 6;
+        let currentPage = 1;
+        const totalItems = items.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        const renderCatalogPage = (page) => {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = items.slice(start, end);
+
+            catalogContainer.innerHTML = pageItems
+                .map((book) => createBookCard(book, true))
+                .join("");
+            attachBuyButtons(catalogContainer);
+
+            const paginationInfo = document.querySelector(".pagination-info");
+            const paginationControls = document.querySelector(".pagination-controls");
+
+            if (paginationInfo) {
+                const showingCount = pageItems.length;
+                paginationInfo.textContent = `Mostrando ${showingCount.toString().padStart(2, '0')} de ${totalItems.toString().padStart(2, '0')}`;
+            }
+
+            if (paginationControls) {
+                let controlsHTML = `
+                    <button class="page-number" data-page="${page > 1 ? page - 1 : 1}" ${page === 1 ? 'disabled' : ''}>
+                        <img src="/assets/icons/users-pagination-left.svg" alt="Anterior" />
+                    </button>
+                `;
+
+                let startPage = Math.max(1, page - 2);
+                let endPage = Math.min(totalPages, page + 2);
+                
+                if (startPage > 1) {
+                    controlsHTML += `<button class="page-number" data-page="1">1</button>`;
+                    if (startPage > 2) {
+                        controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    controlsHTML += `
+                        <button class="page-number ${i === page ? 'active' : ''}" data-page="${i}">${i}</button>
+                    `;
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
+                    }
+                    controlsHTML += `<button class="page-number" data-page="${totalPages}">${totalPages}</button>`;
+                }
+
+                controlsHTML += `
+                    <button class="page-number" data-page="${page < totalPages ? page + 1 : totalPages}" ${page === totalPages ? 'disabled' : ''}>
+                        <img src="/assets/icons/users-pagination-right.svg" alt="Próximo" />
+                    </button>
+                `;
+
+                paginationControls.innerHTML = controlsHTML;
+
+                paginationControls.querySelectorAll("button[data-page]").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        if (btn.disabled) return;
+                        const newPage = parseInt(btn.dataset.page);
+                        if (newPage && newPage !== currentPage) {
+                            currentPage = newPage;
+                            renderCatalogPage(currentPage);
+                            const sectionTitle = document.querySelector('.catalog-title');
+                            if (sectionTitle) sectionTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+                });
+            }
+        };
+
+        renderCatalogPage(currentPage);
     }
 };

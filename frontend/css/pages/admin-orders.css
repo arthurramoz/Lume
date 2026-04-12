@@ -1,0 +1,237 @@
+/* =============================================
+   ADMIN ORDERS PAGE - CSS
+   ============================================= */
+
+/* ---- List Header ---- */
+.list-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list-subtitle {
+  font-family: var(--font-primaria);
+  font-size: 15px;
+  color: var(--color-neutro80);
+}
+
+/* ---- Status Filter Wrapper (select + icon) ---- */
+.select-filter-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutro40);
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 14px;
+  gap: 10px;
+  min-width: 200px;
+}
+
+.select-filter-wrapper select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-primaria);
+  font-size: 15px;
+  color: var(--color-neutro80);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1;
+  padding: 0;
+  width: 100%;
+}
+
+.filter-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-neutro80);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ---- Orders Table Grid ---- */
+.orders-table {
+  grid-template-columns: 80px 120px 2fr 120px 1.5fr 1fr 120px !important;
+}
+
+/* ---- Action Buttons ---- */
+.col-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--color-primaria100);
+  transition: opacity 0.2s, transform 0.15s;
+  border-radius: 6px;
+}
+
+.action-btn:hover {
+  opacity: 0.75;
+  transform: scale(1.1);
+}
+
+/* ---- Status Badge ---- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-primaria);
+  font-size: 14px;
+  color: var(--color-neutro100);
+}
+
+/* ---- Edit Order Page ---- */
+.edit-order-wrapper {
+  max-width: 500px;
+  padding: 10px 0;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-secundaria);
+  font-size: 16px;
+  color: var(--color-primaria100);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.75;
+}
+
+.edit-order-title {
+  font-family: var(--font-secundaria);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-neutro100);
+  margin-bottom: 6px;
+}
+
+.edit-order-subtitle {
+  font-family: var(--font-primaria);
+  font-size: 15px;
+  color: var(--color-neutro80);
+  margin-bottom: 28px;
+}
+
+.edit-order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---- Select with Chevron (Edit page) ---- */
+.select-edit-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutro40);
+  border-radius: 12px;
+  height: 52px;
+  padding: 0 16px;
+}
+
+.select-edit-wrapper select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-primaria);
+  font-size: 16px;
+  color: var(--color-neutro100);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1;
+  padding: 0;
+  width: 100%;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  color: var(--color-primaria100);
+  pointer-events: none;
+}
+
+/* ---- Form Actions ---- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/* ---- List page header/actions layout ---- */
+.list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.list-title {
+  font-family: var(--font-secundaria);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-primaria100);
+}
+
+.list-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ---- Empty state ---- */
+.orders-empty {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--color-neutro60);
+  font-size: 15px;
+  font-family: var(--font-primaria);
+}
+
+/* ---- Modal back-link (shared with client) ---- */
+.client-back-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-secundaria);
+  font-size: 18px;
+  color: var(--color-primaria100);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.client-back-link:hover {
+  opacity: 0.8;
+}
+

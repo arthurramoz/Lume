@@ -5,18 +5,15 @@ exports.getShippingByAddress = async function (req, res) {
     try {
         const address_id = req.params.address_id;
 
-        // Busca o endereço
         const address = await addressDao.findById(address_id);
         if (!address) {
             return res.status(404).json({ error: "Endereço não encontrado" });
         }
 
-        // Verifica se o endereço é do usuário
         if (req.user && req.user.role === "client" && address.user_id !== req.user.id) {
             return res.status(403).json({ error: "Acesso negado" });
         }
 
-        // Busca a taxa de frete pelo estado
         const shipping = await shippingDao.findByState(address.state);
         if (!shipping) {
             return res.status(200).json({

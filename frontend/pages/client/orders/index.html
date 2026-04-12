@@ -238,9 +238,13 @@
                     const itemsHtml = (order.items || [])
                         .map((item) => {
                             const coverRaw = item.cover_image || "";
-                            const cover = coverRaw
-                                ? (coverRaw.startsWith("/") ? `/assets${coverRaw}` : coverRaw)
-                                : "/assets/books/upload.svg";
+                            let cover = "/assets/books/upload.svg";
+                            if (coverRaw) {
+                                cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                                if (!cover.startsWith("/assets")) {
+                                    cover = `/assets${cover}`;
+                                }
+                            }
                             const itemTotal = Number(item.price) * Number(item.quantity);
                             return `
                                 <div class="modal-item">

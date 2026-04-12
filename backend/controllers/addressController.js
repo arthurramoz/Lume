@@ -19,12 +19,9 @@ exports.createAddress = async (req, res) => {
 exports.getAddresses = async (req, res) => {
     try {
         let addresses = await addressDao.findAll();
-
-        // Se for cliente, filtra apenas os endereços dele
         if (req.user && req.user.role === "client") {
             addresses = addresses.filter((a) => a.user_id === req.user.id);
         }
-
         res.status(200).json(addresses);
     } catch (error) {
         res.status(500).json({
@@ -40,7 +37,6 @@ exports.getAddressById = async (req, res) => {
             return res.status(404).json({ error: "Endereço não encontrado" });
         }
 
-        // Se for cliente, garante que o endereço é dele
         if (
             req.user &&
             req.user.role === "client" &&

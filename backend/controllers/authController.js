@@ -15,13 +15,11 @@ exports.login = async (req, res) => {
                 .json({ error: "Email e senha são obrigatórios." });
         }
 
-        // Busca o usuário pelo email
         const user = await userDao.findByEmail(email);
         if (!user) {
             return res.status(401).json({ error: "Credenciais inválidas." });
         }
 
-        // Verifica a senha
         const isPasswordValid = await bcrypt.compare(
             password,
             user.password_hash,
@@ -31,7 +29,6 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: "Credenciais inválidas." });
         }
 
-        // Define a role
         let role;
 
         if (user.email === ADMIN_EMAIL) {
@@ -40,7 +37,6 @@ exports.login = async (req, res) => {
             role = "client";
         }
 
-        // Gera o Token
         const tokenPayload = {
             id: user.id,
             email: user.email,
@@ -48,10 +44,9 @@ exports.login = async (req, res) => {
         };
 
         const token = jwt.sign(tokenPayload, JWT_SECRET, {
-            expiresIn: "7d", // Token expira em 7 dias
+            expiresIn: "7d",
         });
 
-        // Retorna os dados
         res.status(200).json({
             message: "Login realizado com sucesso",
             token: token,

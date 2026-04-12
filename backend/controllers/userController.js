@@ -8,18 +8,17 @@ const ADMIN_EMAIL = "admin@lume.com";
 exports.registerClient = async (req, res) => {
     try {
         const data = req.body;
-        // Força o papel como "client" e status "Ativo" sempre, por segurança
+
         data.role = "client";
         data.status = "Ativo";
 
         if (data.password_hash) {
-            const salt = await bcrypt.genSalt(10); //Embaralha a senha
+            const salt = await bcrypt.genSalt(10);
             data.password_hash = await bcrypt.hash(data.password_hash, salt);
         }
 
         const newUser = await userDao.create(data);
 
-        // Gera token automaticamente após registro para usar nas chamadas seguintes
         const tokenPayload = {
             id: newUser.id,
             email: newUser.email,
@@ -53,7 +52,6 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const updateData = { ...req.body };
-        // Cliente não pode alterar role, status, email e cpf
         delete updateData.role;
         delete updateData.status;
         delete updateData.email;
@@ -102,8 +100,7 @@ exports.getUsers = async (req, res) => {
 
         const { search } = req.query;
         const users = await userDao.findAll(search);
-        // Esconde o admin da listagem
-        const filtered = users.filter(u => u.email !== ADMIN_EMAIL);
+        const filtered = users.filter((u) => u.email !== ADMIN_EMAIL);
         res.status(200).json(filtered);
     } catch (error) {
         res.status(500).json({
@@ -117,9 +114,9 @@ exports.getUserById = async (req, res) => {
         let idToSearch;
 
         if (req.user && req.user.role === "client") {
-            idToSearch = req.user.id; // Se for cliente, busca a si mesmo
+            idToSearch = req.user.id;
         } else {
-            idToSearch = req.params.id; // Se for admin, busca o ID digitado na URL
+            idToSearch = req.params.id;
         }
 
         const user = await userDao.findById(idToSearch);
@@ -147,10 +144,13 @@ exports.updateUser = async (req, res) => {
             delete updateData.status;
         }
 
-        // Bloqueia edição do admin
         const target = await userDao.findById(idToUpdate);
         if (target && target.email === ADMIN_EMAIL) {
-            return res.status(403).json({ error: "O usuário administrador não pode ser editado." });
+            return res
+                .status(403)
+                .json({
+                    error: "O usuário administrador não pode ser editado.",
+                });
         }
 
         const updatedUser = await userDao.update(idToUpdate, updateData);
@@ -168,10 +168,13 @@ exports.updateStatus = async (req, res) => {
             return res.status(403).json({ error: "Acesso negado." });
         }
 
-        // Bloqueia inativação do admin
         const target = await userDao.findById(req.params.id);
         if (target && target.email === ADMIN_EMAIL) {
-            return res.status(403).json({ error: "O usuário administrador não pode ser inativado." });
+            return res
+                .status(403)
+                .json({
+                    error: "O usuário administrador não pode ser inativado.",
+                });
         }
 
         const { status } = req.body;
@@ -198,10 +201,13 @@ exports.deleteUser = async (req, res) => {
             idToDelete = req.params.id;
         }
 
-        // Bloqueia exclusão do admin
         const target = await userDao.findById(idToDelete);
         if (target && target.email === ADMIN_EMAIL) {
-            return res.status(403).json({ error: "O usuário administrador não pode ser excluído." });
+            return res
+                .status(403)
+                .json({
+                    error: "O usuário administrador não pode ser excluído.",
+                });
         }
 
         const deletedUser = await userDao.delete(idToDelete);

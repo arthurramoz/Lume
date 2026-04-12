@@ -3,7 +3,6 @@ const bookDao = require("../models/dao/booksDao");
 
 exports.createCart = async function (req, res) {
     try {
-        // Se é um cliente, usa o ID dele automaticamente
         if (req.user && req.user.role === "client") {
             req.body.user_id = req.user.id;
         }
@@ -12,35 +11,41 @@ exports.createCart = async function (req, res) {
         const quantity = req.body.quantity;
         const user_id = req.user.id;
 
-        // Verifica se os campos obrigatórios foram enviados
         if (!book_id || !quantity) {
             return res.status(400).json({ error: "book_id e quantity são obrigatórios" });
         }
 
-        // Verifica se o livro existe
         const book = await bookDao.findById(book_id);
         if (!book) {
             return res.status(404).json({ error: "Livro não encontrado" });
         }
 
-        // Busca o carrinho do usuário
         let cart = await cartDao.findCartByUserId(user_id);
 
-        // Se não tem carrinho, cria um novo
         if (!cart) {
             cart = await cartDao.createCart(user_id);
         }
 
-        // Verifica se o livro já está no carrinho
         const itemExistente = await cartDao.findItemInCart(cart.id, book_id);
 
         let finalItem;
 
         if (itemExistente) {
-            // Se já existe, aumenta a quantidade
+            const novaQuantidade = itemExistente.quantity + quantity;
+            if (novaQuantidade > book.stock_quantity) {
+                 return res.status(400).json({ 
+                     error: "Quantidade solicitada excede o estoque disponível",
+                     maxAllowed: book.stock_quantity - itemExistente.quantity
+                 });
+            }
             finalItem = await cartDao.updateItemQuantity(itemExistente.id, quantity);
         } else {
-            // Se não existe, adiciona como novo item
+            if (quantity > book.stock_quantity) {
+                 return res.status(400).json({ 
+                     error: "Quantidade solicitada excede o estoque disponível",
+                     maxAllowed: book.stock_quantity
+                 });
+            }
             finalItem = await cartDao.createCartItem(cart.id, book_id, quantity);
         }
 
@@ -54,18 +59,14 @@ exports.createCart = async function (req, res) {
     }
 };
 
-// Busca todos os itens do carrinho do usuário
 exports.getCartItems = async function (req, res) {
     try {
-        // Busca o carrinho do usuário
         const cart = await cartDao.findCartByUserId(req.user.id);
 
-        // Se não tem carrinho, retorna lista vazia
         if (!cart) {
             return res.status(200).json([]);
         }
 
-        // Busca os itens do carrinho
         const items = await cartDao.getCartItems(cart.id);
         res.status(200).json(items);
     } catch (error) {
@@ -77,16 +78,13 @@ exports.getCartItems = async function (req, res) {
     }
 };
 
-// Remove um item do carrinho
 exports.deleteCartItem = async function (req, res) {
     try {
-        // Verifica se o usuário tem carrinho
         const cart = await cartDao.findCartByUserId(req.user.id);
         if (!cart) {
             return res.status(404).json({ error: "Carrinho não encontrado" });
         }
 
-        // Deleta o item
         const deletedItem = await cartDao.deleteCartItem(req.params.id);
         res.status(200).json(deletedItem);
     } catch (error) {
@@ -98,16 +96,30 @@ exports.deleteCartItem = async function (req, res) {
     }
 };
 
-// Atualiza a quantidade de um item do carrinho
 exports.updateCartItem = async function (req, res) {
     try {
-        // Verifica se o usuário tem carrinho
         const cart = await cartDao.findCartByUserId(req.user.id);
         if (!cart) {
             return res.status(404).json({ error: "Carrinho não encontrado" });
         }
 
-        // Atualiza a quantidade
+        const item = await cartDao.findCartItemById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ error: "Item não encontrado no carrinho" });
+        }
+
+        const book = await bookDao.findById(item.book_id);
+        if (!book) {
+            return res.status(404).json({ error: "Livro não encontrado" });
+        }
+
+        if (req.body.quantity > book.stock_quantity) {
+            return res.status(400).json({ 
+                error: "Quantidade solicitada excede o estoque disponível",
+                maxAllowed: book.stock_quantity
+            });
+        }
+
         const updatedItem = await cartDao.updateCartItem(req.params.id, req.body.quantity);
         res.status(200).json(updatedItem);
     } catch (error) {
@@ -119,18 +131,14 @@ exports.updateCartItem = async function (req, res) {
     }
 };
 
-// Conta quantos itens tem no carrinho
 exports.getCartCount = async function (req, res) {
     try {
-        // Busca o carrinho do usuário
         const cart = await cartDao.findCartByUserId(req.user.id);
 
-        // Se não tem carrinho, retorna 0
         if (!cart) {
             return res.status(200).json({ count: 0 });
         }
 
-        // Conta os itens
         const items = await cartDao.getCartItems(cart.id);
         const count = items.length;
         res.status(200).json({ count: count });

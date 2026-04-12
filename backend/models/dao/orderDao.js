@@ -93,6 +93,81 @@ class OrderDao {
 
         await pool.query("UPDATE carts SET status = 'finalizado' WHERE id = $1", [cart_id]);
     }
+
+    async getAllOrders(status = null) {
+        let query = `
+            SELECT
+                o.id,
+                o.total_amount,
+                o.freight,
+                o.status,
+                o.created_at,
+                o.user_id,
+                u.full_name AS client_name,
+                u.email    AS client_email
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+        `;
+        const params = [];
+
+        if (status) {
+            params.push(status);
+            query += ` WHERE o.status = $${params.length}`;
+        }
+
+        query += " ORDER BY o.created_at DESC";
+
+        const result = await pool.query(query, params);
+        return result.rows;
+    }
+
+    async getOrderByIdAdmin(order_id) {
+        const query = `
+            SELECT
+                o.id,
+                o.user_id,
+                o.address_id,
+                o.coupon_id,
+                o.total_amount,
+                o.freight,
+                o.status,
+                o.created_at,
+                u.full_name  AS client_name,
+                u.email      AS client_email,
+                addr.street_type, addr.street_name, addr.street_number, addr.neighborhood,
+                json_agg(json_build_object(
+                    'id',           oi.id,
+                    'book_id',      oi.book_id,
+                    'quantity',     oi.quantity,
+                    'price',        oi.price,
+                    'title',        b.title,
+                    'cover_image',  b.cover_image,
+                    'author_name',  a.name
+                )) AS items
+            FROM orders o
+            LEFT JOIN users   u    ON o.user_id    = u.id
+            LEFT JOIN addresses addr ON o.address_id = addr.id
+            LEFT JOIN order_items oi  ON oi.order_id  = o.id
+            LEFT JOIN books b         ON oi.book_id   = b.id
+            LEFT JOIN authors a        ON b.author_id  = a.id
+            WHERE o.id = $1
+            GROUP BY o.id, u.full_name, u.email,
+                     addr.street_type, addr.street_name, addr.street_number, addr.neighborhood
+        `;
+        const result = await pool.query(query, [order_id]);
+        return result.rows[0];
+    }
+
+    async updateDeliveryStatus(order_id, status) {
+        const query = `
+            UPDATE orders
+            SET status = $1
+            WHERE id = $2
+            RETURNING *
+        `;
+        const result = await pool.query(query, [status, order_id]);
+        return result.rows[0];
+    }
 }
 
 module.exports = new OrderDao();

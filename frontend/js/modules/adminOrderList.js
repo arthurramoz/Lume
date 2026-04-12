@@ -1,0 +1,473 @@
+import { localStorageKeys } from "../hooks/useAuth.js";
+
+const API_BASE = "http://localhost:3333/api";
+const ORDERS_PER_PAGE = 10;
+
+let currentPage = 1;
+let allOrders = [];
+let filteredOrders = [];
+
+// ── Mapa de status (banco → label legível) ──────────────────────────────────
+const STATUS_LABEL = {
+    em_processamento:    "Em processamento",
+    em_transito:         "Em trânsito",
+    entregue:            "Entregue",
+    em_troca:            "Em troca",
+    solicitacao_de_troca:"Solicitação de troca",
+    troca_autorizada:    "Troca autorizada",
+    troca_concluida:     "Troca concluída",
+    // fallback (caso a string já venha legível da API)
+    "Em processamento":   "Em processamento",
+    "Em trânsito":        "Em trânsito",
+    "Entregue":           "Entregue",
+    "Em troca":           "Em troca",
+    "Solicitação de troca":"Solicitação de troca",
+    "Troca autorizada":   "Troca autorizada",
+    "Troca concluída":    "Troca concluída",
+};
+
+// Status que o admin pode alterar manualmente (troca é fluxo de cliente)
+const EDITABLE_STATUSES = new Set([
+    "em_processamento",
+    "em_transito",
+    "entregue",
+    "troca_autorizada",
+    "troca_concluida",
+]);
+
+function getToken() {
+    return (
+        localStorage.getItem(localStorageKeys.accessToken) ||
+        sessionStorage.getItem(localStorageKeys.accessToken)
+    );
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "---";
+    const d = new Date(dateStr);
+    const day   = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year  = d.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function formatCurrency(value) {
+    if (value === undefined || value === null) return "---";
+    return Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function statusLabel(status) {
+    return STATUS_LABEL[status] || status || "---";
+}
+
+// ── Criação de linha da tabela ───────────────────────────────────────────────
+function createOrderRow(order) {
+    const isEditable = EDITABLE_STATUSES.has(order.status);
+
+    const editBtn = isEditable
+        ? `<button class="action-btn" aria-label="Editar" data-id="${order.id}" data-status="${order.status}" title="Editar status">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>`
+        : "";
+
+    return `
+    <div class="table-row orders-table" data-id="${order.id}">
+      <span class="col-code">#${String(order.id).padStart(2, "0")}</span>
+      <span>${formatDate(order.created_at)}</span>
+      <span>${order.client_name || "---"}</span>
+      <span>${formatCurrency(order.total_amount)}</span>
+      <span>---</span>
+      <span class="status-badge">${statusLabel(order.status)}</span>
+      <div class="col-actions">
+        ${editBtn}
+        <button class="action-btn" aria-label="Visualizar" data-id="${order.id}" title="Ver detalhes">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+// ── Renderização da tabela ───────────────────────────────────────────────────
+function renderTable() {
+    const tableBody = document.getElementById("orders-table-body");
+    if (!tableBody) return;
+
+    if (filteredOrders.length === 0) {
+        tableBody.innerHTML = `<div class="orders-empty">Nenhum pedido encontrado.</div>`;
+        updatePagination(0);
+        return;
+    }
+
+    const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const start     = (currentPage - 1) * ORDERS_PER_PAGE;
+    const pageSlice = filteredOrders.slice(start, start + ORDERS_PER_PAGE);
+
+    tableBody.innerHTML = pageSlice.map(createOrderRow).join("");
+    updatePagination(totalPages);
+}
+
+// ── Paginação ────────────────────────────────────────────────────────────────
+function updatePagination(totalPages) {
+    const info     = document.getElementById("pagination-info");
+    const numbers  = document.getElementById("page-numbers");
+    const prevBtn  = document.getElementById("prev-page");
+    const nextBtn  = document.getElementById("next-page");
+
+    const safeTotalPages = Math.max(totalPages, 1);
+
+    if (info) info.textContent = `Mostrando ${currentPage} de ${safeTotalPages}`;
+
+    if (numbers) {
+        numbers.innerHTML = "";
+
+        for (let i = 1; i <= safeTotalPages; i++) {
+            const btn = document.createElement("button");
+            btn.className = `page-number${i === currentPage ? " active" : ""}`;
+            btn.textContent = i;
+            btn.addEventListener("click", () => {
+                currentPage = i;
+                renderTable();
+            });
+            numbers.appendChild(btn);
+        }
+    }
+
+    if (prevBtn) {
+        prevBtn.disabled      = currentPage <= 1;
+        prevBtn.style.opacity = currentPage <= 1 ? "0.4" : "1";
+        prevBtn.onclick = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        };
+    }
+
+    if (nextBtn) {
+        nextBtn.disabled      = currentPage >= safeTotalPages;
+        nextBtn.style.opacity = currentPage >= safeTotalPages ? "0.4" : "1";
+        nextBtn.onclick = () => {
+            if (currentPage < safeTotalPages) {
+                currentPage++;
+                renderTable();
+            }
+        };
+    }
+}
+
+// ── Modal de edição de status ────────────────────────────────────────────────
+function openEditModal(orderId, currentStatus) {
+    // Remove modal anterior, se houver
+    const existing = document.getElementById("edit-order-modal");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "edit-order-modal";
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+        <div class="modal-content modal-content--sm">
+            <h2 class="modal-title">Editar status</h2>
+            <p class="modal-subtitle">Altere o status do pedido #${String(orderId).padStart(2, "0")}:</p>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <div class="select-edit-wrapper">
+                    <select id="modal-order-status-select">
+                        <option value="em_processamento">Em processamento</option>
+                        <option value="em_transito">Em trânsito</option>
+                        <option value="entregue">Entregue</option>
+                        <option value="em_troca">Em troca</option>
+                        <option value="solicitacao_de_troca">Solicitação de troca</option>
+                        <option value="troca_autorizada">Troca autorizada</option>
+                        <option value="troca_concluida">Troca concluída</option>
+                    </select>
+                    <span class="select-chevron">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-outline" id="modal-btn-cancelar">Cancelar</button>
+                <button class="btn-primary" id="modal-btn-salvar">Salvar</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Setar o valor atual
+    const select = document.getElementById("modal-order-status-select");
+    if (currentStatus && select) {
+        select.value = currentStatus;
+    }
+
+    // Fechar ao clicar no overlay (fora do modal)
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeEditModal();
+    });
+
+    // Fechar com ESC
+    const escHandler = (e) => {
+        if (e.key === "Escape") {
+            closeEditModal();
+            document.removeEventListener("keydown", escHandler);
+        }
+    };
+    document.addEventListener("keydown", escHandler);
+
+    // Cancelar
+    document.getElementById("modal-btn-cancelar").addEventListener("click", closeEditModal);
+
+    // Salvar
+    document.getElementById("modal-btn-salvar").addEventListener("click", async () => {
+        const newStatus = select.value;
+        const btnSalvar = document.getElementById("modal-btn-salvar");
+
+        try {
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = "Salvando...";
+
+            const res = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`,
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (res.ok) {
+                // Atualiza localmente sem recarregar a página
+                const order = allOrders.find((o) => o.id == orderId);
+                if (order) order.status = newStatus;
+                filteredOrders = filteredOrders.map((o) =>
+                    o.id == orderId ? { ...o, status: newStatus } : o
+                );
+                renderTable();
+                attachTableListeners();
+                closeEditModal();
+            } else {
+                const errData = await res.json();
+                alert("Erro ao atualizar status: " + (errData.error || errData.message || ""));
+            }
+        } catch (error) {
+            console.error("Erro ao salvar status:", error);
+            alert("Erro de conexão ao salvar status.");
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = "Salvar";
+        }
+    });
+}
+
+function closeEditModal() {
+    const modal = document.getElementById("edit-order-modal");
+    if (modal) modal.remove();
+}
+
+// ── Filtro de status ─────────────────────────────────────────────────────────
+function applyFilter(statusValue) {
+    if (!statusValue) {
+        filteredOrders = [...allOrders];
+    } else {
+        // Compara com valor do banco OU label legível
+        filteredOrders = allOrders.filter(
+            (o) => o.status === statusValue || statusLabel(o.status) === statusValue
+        );
+    }
+    currentPage = 1;
+    renderTable();
+}
+
+// ── Modal de detalhes do pedido ──────────────────────────────────────────────
+async function openDetailsModal(orderId) {
+    // Remove modal anterior, se houver
+    const existing = document.getElementById("details-order-modal");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "details-order-modal";
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+        <div class="modal-content">
+            <a href="javascript:void(0)" class="client-back-link" id="modal-details-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                </svg>
+                Voltar
+            </a>
+            <h2 class="modal-title">Detalhes do pedido</h2>
+            <p class="modal-subtitle">Carregando...</p>
+            <div class="modal-items" id="modal-items-list"></div>
+            <div class="modal-footer-info" id="modal-footer-info" style="display: none;">
+                <div class="modal-footer-row">
+                    <span class="modal-footer-label">Frete</span>
+                    <span class="modal-footer-value" id="modal-freight"></span>
+                </div>
+                <div class="modal-footer-row">
+                    <span class="modal-footer-label">Total</span>
+                    <span class="modal-footer-value" id="modal-total"></span>
+                </div>
+                <div class="modal-footer-row">
+                    <span class="modal-footer-label">Pagamento</span>
+                    <span class="modal-footer-value">Cartão de crédito</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Fechar ao clicar no overlay
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeDetailsModal();
+    });
+
+    // Fechar com botão voltar
+    document.getElementById("modal-details-close").addEventListener("click", closeDetailsModal);
+
+    // Fechar com ESC
+    const escHandler = (e) => {
+        if (e.key === "Escape") {
+            closeDetailsModal();
+            document.removeEventListener("keydown", escHandler);
+        }
+    };
+    document.addEventListener("keydown", escHandler);
+
+    // Buscar detalhes do pedido
+    try {
+        const res = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+        });
+        if (!res.ok) throw new Error("Erro ao buscar detalhes");
+        const order = await res.json();
+
+        const subtitle = overlay.querySelector(".modal-subtitle");
+        subtitle.textContent = `Pedido #${String(order.id).padStart(2, "0")} — ${statusLabel(order.status)}`;
+
+        const address = order.street_name
+            ? `${order.street_type || "Rua"} ${order.street_name}, n${order.street_number} - ${order.neighborhood}`
+            : "";
+
+        const itemsHtml = (order.items || [])
+            .map((item) => {
+                const coverRaw = item.cover_image || "";
+                let cover = "/assets/books/upload.svg";
+                if (coverRaw) {
+                    cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                    if (!cover.startsWith("/assets")) {
+                        cover = `/assets${cover}`;
+                    }
+                }
+                const itemTotal = Number(item.price) * Number(item.quantity);
+                return `
+                    <div class="modal-item">
+                        <img src="${cover}" alt="${item.title}" class="modal-item__cover" onerror="this.src='/assets/books/upload.svg'" />
+                        <div class="modal-item__info">
+                            <div class="modal-item__title">${item.title}</div>
+                            <div class="modal-item__detail">Por: ${item.author_name || "Autor"}</div>
+                            <div class="modal-item__detail">Quantidade: ${item.quantity}</div>
+                            ${address ? `<div class="modal-item__detail">Endereço: ${address}</div>` : ""}
+                            <div class="modal-item__detail">Total: ${formatCurrency(itemTotal)}</div>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+
+        document.getElementById("modal-items-list").innerHTML = itemsHtml;
+
+        const freight = Number(order.freight || 0);
+        document.getElementById("modal-freight").textContent = freight > 0 ? formatCurrency(freight) : "Grátis";
+        document.getElementById("modal-total").textContent = formatCurrency(order.total_amount);
+        document.getElementById("modal-footer-info").style.display = "";
+    } catch (err) {
+        console.error("Erro ao carregar detalhes:", err);
+        const subtitle = overlay.querySelector(".modal-subtitle");
+        subtitle.textContent = "Erro ao carregar detalhes do pedido.";
+        subtitle.style.color = "var(--color-error1)";
+    }
+}
+
+function closeDetailsModal() {
+    const modal = document.getElementById("details-order-modal");
+    if (modal) modal.remove();
+}
+
+// ── Listeners da tabela (editar / visualizar) ────────────────────────────────
+function attachTableListeners() {
+    const tableBody = document.getElementById("orders-table-body");
+    if (!tableBody) return;
+
+    tableBody.addEventListener("click", (e) => {
+        const editBtn = e.target.closest('[aria-label="Editar"]');
+        if (editBtn) {
+            const id     = editBtn.dataset.id;
+            const status = editBtn.dataset.status;
+            openEditModal(id, status);
+            return;
+        }
+
+        const viewBtn = e.target.closest('[aria-label="Visualizar"]');
+        if (viewBtn) {
+            const id = viewBtn.dataset.id;
+            openDetailsModal(id);
+        }
+    });
+}
+
+// ── Inicialização principal ──────────────────────────────────────────────────
+export const initAdminOrderList = async () => {
+    const tableBody = document.getElementById("orders-table-body");
+    if (!tableBody) return;
+
+    tableBody.innerHTML = `<div class="orders-empty">Carregando pedidos...</div>`;
+
+    try {
+        const response = await fetch(`${API_BASE}/admin/orders`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        allOrders     = Array.isArray(data) ? data : data.orders || [];
+        filteredOrders = [...allOrders];
+
+        renderTable();
+        attachTableListeners();
+
+        const statusFilter = document.getElementById("status-filter");
+        if (statusFilter) {
+            statusFilter.addEventListener("change", (e) => applyFilter(e.target.value));
+        }
+    } catch (error) {
+        console.error("Erro ao buscar pedidos (admin):", error);
+        tableBody.innerHTML = `
+            <div class="orders-empty" style="color: var(--color-error1);">
+              Erro ao carregar pedidos. Verifique a conexão com o servidor.
+            </div>`;
+    }
+};
+
+// Auto-inicializa quando a página de pedidos admin estiver ativa
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("orders-table-body")) {
+        initAdminOrderList();
+    }
+});

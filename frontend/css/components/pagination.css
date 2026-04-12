@@ -19,6 +19,12 @@
   gap: 12px;
 }
 
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .page-number {
   display: flex;
   align-items: center;
@@ -39,3 +45,4 @@
   background-color: var(--color-primaria100);
   color: var(--color-white);
 }
+

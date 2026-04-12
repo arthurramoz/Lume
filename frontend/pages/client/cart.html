@@ -262,7 +262,7 @@
 
             async function updateQuantity(itemId, quantity) {
                 try {
-                    await fetch(`${API}/cart/${itemId}`, {
+                    const res = await fetch(`${API}/cart/${itemId}`, {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json",
@@ -270,8 +270,14 @@
                         },
                         body: JSON.stringify({ quantity }),
                     });
+                    
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.error || "Erro ao atualizar quantidade");
+                    }
                 } catch (err) {
                     console.error(err);
+                    throw err;
                 }
             }
 
@@ -602,7 +608,13 @@
                     const price = Number(item.price || 0);
                     const qty = Number(item.quantity || 1);
                     const coverRaw = item.cover_image || "";
-                    const cover = coverRaw ? (coverRaw.startsWith("/") ? `/assets${coverRaw}` : coverRaw) : "/assets/books/upload.svg";
+                    let cover = "/assets/books/upload.svg";
+                    if (coverRaw) {
+                        cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                        if (!cover.startsWith("/assets")) {
+                            cover = `/assets${cover}`;
+                        }
+                    }
                     const itemId = item.id;
 
                     const el = document.createElement("div");
@@ -641,10 +653,14 @@
                         if (newQty < 1) {
                             await handleRemoveItem(id);
                         } else {
-                            item.quantity = newQty;
-                            await updateQuantity(id, newQty);
-                            renderCartItems();
-                            renderSummary();
+                            try {
+                                await updateQuantity(id, newQty);
+                                item.quantity = newQty;
+                                renderCartItems();
+                                renderSummary();
+                            } catch (err) {
+                                alert(err.message);
+                            }
                         }
                     });
                 });
@@ -656,10 +672,15 @@
                             (i) => String(i.id) === String(id),
                         );
                         if (!item) return;
-                        item.quantity = Number(item.quantity || 1) + 1;
-                        await updateQuantity(id, item.quantity);
-                        renderCartItems();
-                        renderSummary();
+                        const newQty = Number(item.quantity || 1) + 1;
+                        try {
+                            await updateQuantity(id, newQty);
+                            item.quantity = newQty;
+                            renderCartItems();
+                            renderSummary();
+                        } catch (err) {
+                            alert(err.message);
+                        }
                     });
                 });
 

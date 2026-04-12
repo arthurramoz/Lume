@@ -19,6 +19,12 @@ class CartDao {
         return result.rows[0];
     }
 
+    async findCartItemById(item_id) {
+        const query = "SELECT * FROM cart_items WHERE id = $1";
+        const result = await pool.query(query, [item_id]);
+        return result.rows[0];
+    }
+
     async createCartItem(cart_id, book_id, quantity) {
         const query = `
             INSERT INTO cart_items (cart_id, book_id, quantity) 
