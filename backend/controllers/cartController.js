@@ -12,10 +12,13 @@ exports.createCart = async function (req, res) {
         const user_id = req.user.id;
 
         if (!book_id || !quantity) {
-            return res.status(400).json({ error: "book_id e quantity são obrigatórios" });
+            return res
+                .status(400)
+                .json({ error: "book_id e quantity são obrigatórios" });
         }
 
         const book = await bookDao.findById(book_id);
+
         if (!book) {
             return res.status(404).json({ error: "Livro não encontrado" });
         }
@@ -33,20 +36,27 @@ exports.createCart = async function (req, res) {
         if (itemExistente) {
             const novaQuantidade = itemExistente.quantity + quantity;
             if (novaQuantidade > book.stock_quantity) {
-                 return res.status(400).json({ 
-                     error: "Quantidade solicitada excede o estoque disponível",
-                     maxAllowed: book.stock_quantity - itemExistente.quantity
-                 });
+                return res.status(400).json({
+                    error: "Quantidade solicitada excede o estoque disponível",
+                    maxAllowed: book.stock_quantity - itemExistente.quantity,
+                });
             }
-            finalItem = await cartDao.updateItemQuantity(itemExistente.id, quantity);
+            finalItem = await cartDao.updateItemQuantity(
+                itemExistente.id,
+                quantity,
+            );
         } else {
             if (quantity > book.stock_quantity) {
-                 return res.status(400).json({ 
-                     error: "Quantidade solicitada excede o estoque disponível",
-                     maxAllowed: book.stock_quantity
-                 });
+                return res.status(400).json({
+                    error: "Quantidade solicitada excede o estoque disponível",
+                    maxAllowed: book.stock_quantity,
+                });
             }
-            finalItem = await cartDao.createCartItem(cart.id, book_id, quantity);
+            finalItem = await cartDao.createCartItem(
+                cart.id,
+                book_id,
+                quantity,
+            );
         }
 
         res.status(201).json(finalItem);
@@ -105,7 +115,9 @@ exports.updateCartItem = async function (req, res) {
 
         const item = await cartDao.findCartItemById(req.params.id);
         if (!item) {
-            return res.status(404).json({ error: "Item não encontrado no carrinho" });
+            return res
+                .status(404)
+                .json({ error: "Item não encontrado no carrinho" });
         }
 
         const book = await bookDao.findById(item.book_id);
@@ -114,13 +126,16 @@ exports.updateCartItem = async function (req, res) {
         }
 
         if (req.body.quantity > book.stock_quantity) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: "Quantidade solicitada excede o estoque disponível",
-                maxAllowed: book.stock_quantity
+                maxAllowed: book.stock_quantity,
             });
         }
 
-        const updatedItem = await cartDao.updateCartItem(req.params.id, req.body.quantity);
+        const updatedItem = await cartDao.updateCartItem(
+            req.params.id,
+            req.body.quantity,
+        );
         res.status(200).json(updatedItem);
     } catch (error) {
         console.error("Erro ao atualizar item do carrinho:", error);

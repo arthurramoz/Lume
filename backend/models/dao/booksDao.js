@@ -8,7 +8,14 @@ class BookDao {
     }
 
     async findById(id) {
-        const query = "SELECT * FROM books WHERE id = $1";
+        const query = `
+            SELECT 
+                books.*,
+                authors.name AS author_name
+            FROM books 
+            INNER JOIN authors ON books.author_id = authors.id
+            WHERE books.id = $1
+        `;
         const result = await pool.query(query, [id]);
         return result.rows[0];
     }
