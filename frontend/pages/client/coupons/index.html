@@ -87,7 +87,8 @@
             }
 
             function getStatus(coupon) {
-                if (coupon.is_used) return "Expirado";
+                if (coupon.user_has_used) return "Usado";
+                if (coupon.is_used) return "Inativo";
                 if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) return "Expirado";
                 return "Ativo";
             }

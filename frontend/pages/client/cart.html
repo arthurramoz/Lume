@@ -103,28 +103,19 @@
                                 </a>
                             </div>
                             <div class="cart-coupon-section">
-                                <label class="label-admin">Cupons</label>
+                                <label class="label-admin">Cupom promocional</label>
                                 <div class="coupon-row">
-                                    <div
-                                        class="input-wrapper coupon-row__input"
-                                    >
-                                        <input
-                                            type="text"
-                                            id="coupon-input"
-                                            placeholder="Digite o código"
-                                        />
+                                    <div class="input-wrapper coupon-row__input">
+                                        <input type="text" id="coupon-input" placeholder="Digite o código" />
                                     </div>
-                                    <button
-                                        class="btn-primary cart-apply-btn"
-                                        id="btn-apply-coupon"
-                                    >
-                                        Aplicar
-                                    </button>
+                                    <button class="btn-primary cart-apply-btn" id="btn-apply-coupon">Aplicar</button>
                                 </div>
-                                <div
-                                    id="coupon-msg"
-                                    class="cart-coupon-msg"
-                                ></div>
+                                <div id="coupon-msg" class="cart-coupon-msg"></div>
+                            </div>
+
+                            <div class="cart-coupon-section" id="exchange-coupons-section" style="display:none;">
+                                <label class="label-admin">Cupons de troca disponíveis</label>
+                                <div id="exchange-coupons-list"></div>
                             </div>
                         </div>
                     </div>
@@ -212,11 +203,14 @@
             let cartItems = [];
             let addresses = [];
             let cards = [];
+            let exchangeCoupons = [];
             let selectedAddressId = null;
             let selectedCards = [];
             let appliedDiscount = 0;
-            let appliedCouponCode = null;
-            let appliedCouponId = null;
+            let appliedPromoCouponId = null;
+            let appliedPromoCouponCode = null;
+            let selectedExchangeIds = [];
+            let exchangeDiscount = 0;
             let currentFreight = 0;
             let currentEstimatedDays = 0;
 
@@ -311,14 +305,69 @@
                 }
             }
 
+            async function fetchExchangeCoupons() {
+                try {
+                    const res = await fetch(`${API}/coupons/my`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) return;
+                    exchangeCoupons = (await res.json()).filter(c => !c.is_used);
+                } catch (err) {
+                    exchangeCoupons = [];
+                }
+            }
+
+            function renderExchangeCoupons() {
+                const section = document.getElementById("exchange-coupons-section");
+                const list = document.getElementById("exchange-coupons-list");
+                if (!exchangeCoupons.length) {
+                    section.style.display = "none";
+                    return;
+                }
+                section.style.display = "";
+                list.innerHTML = exchangeCoupons.map(c => `
+                    <label class="exchange-coupon-item" data-id="${c.id}">
+                        <input type="checkbox" class="exchange-coupon-check" data-id="${c.id}" data-value="${c.value}" />
+                        <div class="exchange-coupon-item__info">
+                            <span class="exchange-coupon-item__code">${c.code}</span>
+                            <span class="exchange-coupon-item__value">- ${formatCurrency(Number(c.value))}</span>
+                        </div>
+                    </label>
+                `).join("");
+
+                list.querySelectorAll(".exchange-coupon-check").forEach(chk => {
+                    chk.addEventListener("change", () => {
+                        chk.closest(".exchange-coupon-item").classList.toggle("is-checked", chk.checked);
+                        selectedExchangeIds = [];
+                        exchangeDiscount = 0;
+                        list.querySelectorAll(".exchange-coupon-check:checked").forEach(c => {
+                            selectedExchangeIds.push(Number(c.dataset.id));
+                            exchangeDiscount += Number(c.dataset.value);
+                        });
+                        autoFillSingleCard();
+                        renderCardRows();
+                        renderSummary();
+                    });
+                });
+            }
+
             async function finalizeOrder() {
+                const couponIds = [];
+                if (appliedPromoCouponId) couponIds.push(appliedPromoCouponId);
+                selectedExchangeIds.forEach(id => couponIds.push(id));
+
+                const total = getTotal();
                 const body = {
                     address_id: selectedAddressId,
-                    cards: selectedCards,
                     freight: currentFreight,
-                    coupon_id: appliedCouponId || undefined,
-                    coupon_code: appliedCouponCode || undefined,
+                    coupon_ids: couponIds.length ? couponIds : undefined,
+                    // retrocompat: se só 1 cupom promo via código
+                    coupon_code: (couponIds.length === 0 && appliedPromoCouponCode) ? appliedPromoCouponCode : undefined,
                 };
+
+                if (total > 0) {
+                    body.cards = selectedCards;
+                }
 
                 const res = await fetch(`${API}/orders`, {
                     method: "POST",
@@ -469,7 +518,7 @@
             function getTotal() {
                 const subtotal = getSubtotal();
                 const freight = currentFreight;
-                const discount = appliedDiscount;
+                const discount = appliedDiscount + exchangeDiscount;
                 let total = subtotal + freight - discount;
                 if (total < 0) total = 0;
                 return Math.round(total * 100) / 100;
@@ -516,7 +565,7 @@
             function renderSummary() {
                 const subtotal = getSubtotal();
                 const freight = currentFreight;
-                const discount = appliedDiscount;
+                const discount = appliedDiscount + exchangeDiscount;
                 const total = Math.max(0, subtotal + freight - discount);
                 const count = cartItems.reduce(
                     (s, i) => s + Number(i.quantity || 1),
@@ -534,29 +583,81 @@
                 document.getElementById("summary-total").textContent =
                     formatCurrency(total);
 
+                updateCardSection(total);
                 updateCardsTotal();
                 updateFinalizeButton();
+            }
+
+            function updateCardSection(total) {
+                const cardPanel = document.getElementById("cards-list");
+                const addCardBtn = document.getElementById("btn-add-card");
+                const cardError = document.getElementById("cards-error");
+                const cardsTotalInfo = document.getElementById("cards-total-info");
+
+                if (total === 0) {
+                    // Desmarcar e limpar todos os cartões
+                    selectedCards = [];
+                    if (cardPanel) {
+                        cardPanel.querySelectorAll("select, input").forEach(el => {
+                            el.disabled = true;
+                        });
+                        cardPanel.style.opacity = "0.35";
+                        cardPanel.style.pointerEvents = "none";
+                    }
+                    if (addCardBtn) {
+                        addCardBtn.disabled = true;
+                        addCardBtn.style.opacity = "0.35";
+                        addCardBtn.style.pointerEvents = "none";
+                    }
+                    if (cardError) cardError.textContent = "";
+                    if (cardsTotalInfo) cardsTotalInfo.style.display = "none";
+                } else {
+                    // Reativar se havia sido desabilitado
+                    if (cardPanel) {
+                        cardPanel.querySelectorAll("select, input").forEach(el => {
+                            el.disabled = false;
+                        });
+                        cardPanel.style.opacity = "";
+                        cardPanel.style.pointerEvents = "";
+                    }
+                    if (addCardBtn) {
+                        addCardBtn.disabled = false;
+                        addCardBtn.style.opacity = "";
+                        addCardBtn.style.pointerEvents = "";
+                    }
+                    // Garantir ao menos 1 cartão na lista
+                    if (selectedCards.length === 0) {
+                        selectedCards.push({ card_id: null, amount: 0 });
+                        autoFillSingleCard();
+                        renderCardRows();
+                    }
+                }
             }
 
             function updateFinalizeButton() {
                 const btn = document.getElementById("btn-finalize");
                 const warning = document.getElementById("finalize-warning");
+                const total = getTotal();
 
-                // Verifica se tem endereço selecionado
                 if (!selectedAddressId || cartItems.length === 0) {
                     btn.disabled = true;
                     warning.style.display = "block";
                     return;
                 }
 
-                // Verifica se tem pelo menos um cartão
+                // Se total === 0 (coberto por cupons), não precisa de cartão
+                if (total === 0) {
+                    btn.disabled = false;
+                    warning.style.display = "none";
+                    return;
+                }
+
                 if (selectedCards.length === 0) {
                     btn.disabled = true;
                     warning.style.display = "block";
                     return;
                 }
 
-                // Verifica se todos os cartões têm seleção
                 for (let i = 0; i < selectedCards.length; i++) {
                     if (!selectedCards[i].card_id) {
                         btn.disabled = true;
@@ -565,13 +666,11 @@
                     }
                 }
 
-                // Verifica se a soma dos valores bate com o total
                 let soma = 0;
                 for (let i = 0; i < selectedCards.length; i++) {
                     soma = soma + (Number(selectedCards[i].amount) || 0);
                 }
                 soma = Math.round(soma * 100) / 100;
-                const total = getTotal();
 
                 if (soma !== total) {
                     btn.disabled = true;
@@ -764,12 +863,10 @@
 
                     try {
                         const result = await applyCoupon(code);
-                        const discount = Number(
-                            result.discount || result.value || 0,
-                        );
+                        const discount = Number(result.discount || result.value || 0);
                         appliedDiscount = discount;
-                        appliedCouponCode = code;
-                        appliedCouponId = result.id;
+                        appliedPromoCouponCode = code;
+                        appliedPromoCouponId = result.id;
 
                         msgEl.style.color = "green";
                         msgEl.textContent = `✓ Cupom aplicado! Desconto de ${formatCurrency(discount)}`;
@@ -778,8 +875,8 @@
                         renderSummary();
                     } catch (err) {
                         appliedDiscount = 0;
-                        appliedCouponCode = null;
-                        appliedCouponId = null;
+                        appliedPromoCouponCode = null;
+                        appliedPromoCouponId = null;
                         msgEl.style.color = "var(--color-error1)";
                         msgEl.textContent = "✗ " + err.message;
                         autoFillSingleCard();
@@ -816,10 +913,11 @@
                     fetchCart(),
                     fetchAddresses(),
                     fetchCards(),
+                    fetchExchangeCoupons(),
                 ]);
                 renderAddresses();
+                renderExchangeCoupons();
 
-                // Adiciona a primeira linha de cartão automaticamente
                 selectedCards.push({ card_id: null, amount: 0 });
                 autoFillSingleCard();
                 renderCardRows();

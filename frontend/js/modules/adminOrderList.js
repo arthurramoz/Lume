@@ -9,28 +9,32 @@ let filteredOrders = [];
 
 // ── Mapa de status (banco → label legível) ──────────────────────────────────
 const STATUS_LABEL = {
-    em_processamento:    "Em processamento",
-    em_transito:         "Em trânsito",
-    entregue:            "Entregue",
-    em_troca:            "Em troca",
-    solicitacao_de_troca:"Solicitação de troca",
-    troca_autorizada:    "Troca autorizada",
-    troca_concluida:     "Troca concluída",
-    // fallback (caso a string já venha legível da API)
-    "Em processamento":   "Em processamento",
-    "Em trânsito":        "Em trânsito",
-    "Entregue":           "Entregue",
-    "Em troca":           "Em troca",
-    "Solicitação de troca":"Solicitação de troca",
-    "Troca autorizada":   "Troca autorizada",
-    "Troca concluída":    "Troca concluída",
+    em_processamento: "Em processamento",
+    em_transito: "Em trânsito",
+    entregue: "Entregue",
+    em_troca: "Em troca",
+    solicitacao_de_troca: "Solicitação de troca",
+    troca_autorizada: "Troca autorizada",
+    troca_concluida: "Troca concluída",
+    "Em processamento": "Em processamento",
+    "Em trânsito": "Em trânsito",
+    Entregue: "Entregue",
+    "Em troca": "Em troca",
+    "Solicitação de troca": "Solicitação de troca",
+    "Troca autorizada": "Troca autorizada",
+    "Troca concluída": "Troca concluída",
 };
 
-// Status que o admin pode alterar manualmente (troca é fluxo de cliente)
 const EDITABLE_STATUSES = new Set([
     "em_processamento",
     "em_transito",
     "entregue",
+    "em_troca",
+    "troca_autorizada",
+]);
+
+const EXCHANGE_STATUSES = new Set([
+    "em_troca",
     "troca_autorizada",
     "troca_concluida",
 ]);
@@ -45,15 +49,18 @@ function getToken() {
 function formatDate(dateStr) {
     if (!dateStr) return "---";
     const d = new Date(dateStr);
-    const day   = String(d.getDate()).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
     const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year  = d.getFullYear();
+    const year = d.getFullYear();
     return `${day}/${month}/${year}`;
 }
 
 function formatCurrency(value) {
     if (value === undefined || value === null) return "---";
-    return Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    });
 }
 
 function statusLabel(status) {
@@ -110,7 +117,7 @@ function renderTable() {
     if (currentPage > totalPages) currentPage = totalPages;
     if (currentPage < 1) currentPage = 1;
 
-    const start     = (currentPage - 1) * ORDERS_PER_PAGE;
+    const start = (currentPage - 1) * ORDERS_PER_PAGE;
     const pageSlice = filteredOrders.slice(start, start + ORDERS_PER_PAGE);
 
     tableBody.innerHTML = pageSlice.map(createOrderRow).join("");
@@ -119,14 +126,15 @@ function renderTable() {
 
 // ── Paginação ────────────────────────────────────────────────────────────────
 function updatePagination(totalPages) {
-    const info     = document.getElementById("pagination-info");
-    const numbers  = document.getElementById("page-numbers");
-    const prevBtn  = document.getElementById("prev-page");
-    const nextBtn  = document.getElementById("next-page");
+    const info = document.getElementById("pagination-info");
+    const numbers = document.getElementById("page-numbers");
+    const prevBtn = document.getElementById("prev-page");
+    const nextBtn = document.getElementById("next-page");
 
     const safeTotalPages = Math.max(totalPages, 1);
 
-    if (info) info.textContent = `Mostrando ${currentPage} de ${safeTotalPages}`;
+    if (info)
+        info.textContent = `Mostrando ${currentPage} de ${safeTotalPages}`;
 
     if (numbers) {
         numbers.innerHTML = "";
@@ -144,7 +152,7 @@ function updatePagination(totalPages) {
     }
 
     if (prevBtn) {
-        prevBtn.disabled      = currentPage <= 1;
+        prevBtn.disabled = currentPage <= 1;
         prevBtn.style.opacity = currentPage <= 1 ? "0.4" : "1";
         prevBtn.onclick = () => {
             if (currentPage > 1) {
@@ -155,7 +163,7 @@ function updatePagination(totalPages) {
     }
 
     if (nextBtn) {
-        nextBtn.disabled      = currentPage >= safeTotalPages;
+        nextBtn.disabled = currentPage >= safeTotalPages;
         nextBtn.style.opacity = currentPage >= safeTotalPages ? "0.4" : "1";
         nextBtn.onclick = () => {
             if (currentPage < safeTotalPages) {
@@ -183,13 +191,6 @@ function openEditModal(orderId, currentStatus) {
             <div class="form-group" style="margin-bottom: 24px;">
                 <div class="select-edit-wrapper">
                     <select id="modal-order-status-select">
-                        <option value="em_processamento">Em processamento</option>
-                        <option value="em_transito">Em trânsito</option>
-                        <option value="entregue">Entregue</option>
-                        <option value="em_troca">Em troca</option>
-                        <option value="solicitacao_de_troca">Solicitação de troca</option>
-                        <option value="troca_autorizada">Troca autorizada</option>
-                        <option value="troca_concluida">Troca concluída</option>
                     </select>
                     <span class="select-chevron">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -198,6 +199,11 @@ function openEditModal(orderId, currentStatus) {
                         </svg>
                     </span>
                 </div>
+            </div>
+
+            <div id="exchange-coupon-note" style="display:none; background:var(--color-secundaria20,#e8f5e9); border:1px solid var(--color-success1,#22c55e); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--color-neutro100);">
+                <strong>&#9432; Cupom de troca será gerado</strong><br/>
+                Ao concluir a troca, um cupom de troca no valor de <strong id="exchange-coupon-value"></strong> será emitido automaticamente para o cliente.
             </div>
 
             <div class="modal-buttons">
@@ -209,10 +215,49 @@ function openEditModal(orderId, currentStatus) {
 
     document.body.appendChild(overlay);
 
-    // Setar o valor atual
+    const order = allOrders.find((o) => o.id == orderId);
+    const orderTotal = order ? Number(order.total_amount || 0) : 0;
+
+    // Popular o select com as opções corretas baseadas no status atual
     const select = document.getElementById("modal-order-status-select");
-    if (currentStatus && select) {
-        select.value = currentStatus;
+    const noteEl = document.getElementById("exchange-coupon-note");
+    const noteValueEl = document.getElementById("exchange-coupon-value");
+
+    if (noteValueEl) {
+        noteValueEl.textContent = formatCurrency(orderTotal);
+    }
+
+    function updateExchangeNote() {
+        if (noteEl) {
+            noteEl.style.display = select.value === "troca_concluida" ? "block" : "none";
+        }
+    }
+
+    if (select) {
+        const isExchangeFlow = EXCHANGE_STATUSES.has(currentStatus);
+
+        const options = isExchangeFlow
+            ? [
+                  { value: "em_troca", label: "Em troca" },
+                  { value: "troca_autorizada", label: "Troca autorizada" },
+                  { value: "troca_concluida", label: "Troca concluída" },
+              ]
+            : [
+                  { value: "em_processamento", label: "Em processamento" },
+                  { value: "em_transito", label: "Em trânsito" },
+                  { value: "entregue", label: "Entregue" },
+              ];
+
+        select.innerHTML = options
+            .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+            .join("");
+
+        if (currentStatus) {
+            select.value = currentStatus;
+        }
+
+        select.addEventListener("change", updateExchangeNote);
+        updateExchangeNote();
     }
 
     // Fechar ao clicar no overlay (fora do modal)
@@ -230,48 +275,58 @@ function openEditModal(orderId, currentStatus) {
     document.addEventListener("keydown", escHandler);
 
     // Cancelar
-    document.getElementById("modal-btn-cancelar").addEventListener("click", closeEditModal);
+    document
+        .getElementById("modal-btn-cancelar")
+        .addEventListener("click", closeEditModal);
 
     // Salvar
-    document.getElementById("modal-btn-salvar").addEventListener("click", async () => {
-        const newStatus = select.value;
-        const btnSalvar = document.getElementById("modal-btn-salvar");
+    document
+        .getElementById("modal-btn-salvar")
+        .addEventListener("click", async () => {
+            const newStatus = select.value;
+            const btnSalvar = document.getElementById("modal-btn-salvar");
 
-        try {
-            btnSalvar.disabled = true;
-            btnSalvar.textContent = "Salvando...";
+            try {
+                btnSalvar.disabled = true;
+                btnSalvar.textContent = "Salvando...";
 
-            const res = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getToken()}`,
-                },
-                body: JSON.stringify({ status: newStatus }),
-            });
-
-            if (res.ok) {
-                // Atualiza localmente sem recarregar a página
-                const order = allOrders.find((o) => o.id == orderId);
-                if (order) order.status = newStatus;
-                filteredOrders = filteredOrders.map((o) =>
-                    o.id == orderId ? { ...o, status: newStatus } : o
+                const res = await fetch(
+                    `${API_BASE}/admin/orders/${orderId}/status`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${getToken()}`,
+                        },
+                        body: JSON.stringify({ status: newStatus }),
+                    },
                 );
-                renderTable();
-                attachTableListeners();
-                closeEditModal();
-            } else {
-                const errData = await res.json();
-                alert("Erro ao atualizar status: " + (errData.error || errData.message || ""));
+
+                if (res.ok) {
+                    // Atualiza localmente sem recarregar a página
+                    const order = allOrders.find((o) => o.id == orderId);
+                    if (order) order.status = newStatus;
+                    filteredOrders = filteredOrders.map((o) =>
+                        o.id == orderId ? { ...o, status: newStatus } : o,
+                    );
+                    renderTable();
+                    attachTableListeners();
+                    closeEditModal();
+                } else {
+                    const errData = await res.json();
+                    alert(
+                        "Erro ao atualizar status: " +
+                            (errData.error || errData.message || ""),
+                    );
+                }
+            } catch (error) {
+                console.error("Erro ao salvar status:", error);
+                alert("Erro de conexão ao salvar status.");
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = "Salvar";
             }
-        } catch (error) {
-            console.error("Erro ao salvar status:", error);
-            alert("Erro de conexão ao salvar status.");
-        } finally {
-            btnSalvar.disabled = false;
-            btnSalvar.textContent = "Salvar";
-        }
-    });
+        });
 }
 
 function closeEditModal() {
@@ -286,7 +341,9 @@ function applyFilter(statusValue) {
     } else {
         // Compara com valor do banco OU label legível
         filteredOrders = allOrders.filter(
-            (o) => o.status === statusValue || statusLabel(o.status) === statusValue
+            (o) =>
+                o.status === statusValue ||
+                statusLabel(o.status) === statusValue,
         );
     }
     currentPage = 1;
@@ -312,8 +369,13 @@ async function openDetailsModal(orderId) {
             </a>
             <h2 class="modal-title">Detalhes do pedido</h2>
             <p class="modal-subtitle">Carregando...</p>
+
+            <div id="modal-client-info" style="display: none;"></div>
+            <div id="modal-exchange-reason" style="display: none;"></div>
+
             <div class="modal-items" id="modal-items-list"></div>
             <div class="modal-footer-info" id="modal-footer-info" style="display: none;">
+                <div id="modal-coupons-used" style="display: none;"></div>
                 <div class="modal-footer-row">
                     <span class="modal-footer-label">Frete</span>
                     <span class="modal-footer-value" id="modal-freight"></span>
@@ -338,7 +400,9 @@ async function openDetailsModal(orderId) {
     });
 
     // Fechar com botão voltar
-    document.getElementById("modal-details-close").addEventListener("click", closeDetailsModal);
+    document
+        .getElementById("modal-details-close")
+        .addEventListener("click", closeDetailsModal);
 
     // Fechar com ESC
     const escHandler = (e) => {
@@ -360,6 +424,53 @@ async function openDetailsModal(orderId) {
         const subtitle = overlay.querySelector(".modal-subtitle");
         subtitle.textContent = `Pedido #${String(order.id).padStart(2, "0")} — ${statusLabel(order.status)}`;
 
+        // Dados do cliente
+        const clientInfoEl = document.getElementById("modal-client-info");
+        if (clientInfoEl) {
+            const phone = order.client_phone_ddd
+                ? `(${order.client_phone_ddd}) ${order.client_phone_number}`
+                : "";
+
+            clientInfoEl.innerHTML = `
+                <div class="modal-section">
+                    <h3 class="modal-section__title">Dados do cliente</h3>
+                    <div class="modal-section__grid">
+                        <div class="modal-section__field">
+                            <span class="modal-section__label">Nome</span>
+                            <span class="modal-section__value">${order.client_name || "---"}</span>
+                        </div>
+                        <div class="modal-section__field">
+                            <span class="modal-section__label">E-mail</span>
+                            <span class="modal-section__value">${order.client_email || "---"}</span>
+                        </div>
+                        ${order.client_cpf ? `
+                        <div class="modal-section__field">
+                            <span class="modal-section__label">CPF</span>
+                            <span class="modal-section__value">${order.client_cpf}</span>
+                        </div>` : ""}
+                        ${phone ? `
+                        <div class="modal-section__field">
+                            <span class="modal-section__label">Telefone</span>
+                            <span class="modal-section__value">${phone}</span>
+                        </div>` : ""}
+                    </div>
+                </div>
+            `;
+            clientInfoEl.style.display = "";
+        }
+
+        // Motivo da troca
+        const exchangeReasonEl = document.getElementById("modal-exchange-reason");
+        if (exchangeReasonEl && order.exchange_reason) {
+            exchangeReasonEl.innerHTML = `
+                <div class="modal-section">
+                    <h3 class="modal-section__title">Motivo da troca</h3>
+                    <p class="modal-section__text">${order.exchange_reason}</p>
+                </div>
+            `;
+            exchangeReasonEl.style.display = "";
+        }
+
         const address = order.street_name
             ? `${order.street_type || "Rua"} ${order.street_name}, n${order.street_number} - ${order.neighborhood}`
             : "";
@@ -369,7 +480,9 @@ async function openDetailsModal(orderId) {
                 const coverRaw = item.cover_image || "";
                 let cover = "/assets/books/upload.svg";
                 if (coverRaw) {
-                    cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                    cover = coverRaw.startsWith("/")
+                        ? coverRaw
+                        : `/${coverRaw}`;
                     if (!cover.startsWith("/assets")) {
                         cover = `/assets${cover}`;
                     }
@@ -392,9 +505,29 @@ async function openDetailsModal(orderId) {
 
         document.getElementById("modal-items-list").innerHTML = itemsHtml;
 
+        // Cupons utilizados
+        const couponsEl = document.getElementById("modal-coupons-used");
+        if (couponsEl && order.coupons_used && order.coupons_used.length > 0) {
+            const couponsRows = order.coupons_used.map((c) => {
+                const typeLabel = c.coupon_type === "promocional" ? "Promocional" : "Troca";
+                return `
+                    <div class="modal-footer-row">
+                        <span class="modal-footer-label">${c.coupon_code} <small>(${typeLabel})</small></span>
+                        <span class="modal-footer-value" style="color: var(--color-success1);">- ${formatCurrency(c.applied_value)}</span>
+                    </div>
+                `;
+            }).join("");
+
+            couponsEl.innerHTML = couponsRows;
+            couponsEl.style.display = "";
+        }
+
         const freight = Number(order.freight || 0);
-        document.getElementById("modal-freight").textContent = freight > 0 ? formatCurrency(freight) : "Grátis";
-        document.getElementById("modal-total").textContent = formatCurrency(order.total_amount);
+        document.getElementById("modal-freight").textContent =
+            freight > 0 ? formatCurrency(freight) : "Grátis";
+        document.getElementById("modal-total").textContent = formatCurrency(
+            order.total_amount,
+        );
         document.getElementById("modal-footer-info").style.display = "";
     } catch (err) {
         console.error("Erro ao carregar detalhes:", err);
@@ -417,7 +550,7 @@ function attachTableListeners() {
     tableBody.addEventListener("click", (e) => {
         const editBtn = e.target.closest('[aria-label="Editar"]');
         if (editBtn) {
-            const id     = editBtn.dataset.id;
+            const id = editBtn.dataset.id;
             const status = editBtn.dataset.status;
             openEditModal(id, status);
             return;
@@ -446,7 +579,7 @@ export const initAdminOrderList = async () => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
-        allOrders     = Array.isArray(data) ? data : data.orders || [];
+        allOrders = Array.isArray(data) ? data : data.orders || [];
         filteredOrders = [...allOrders];
 
         renderTable();
@@ -454,7 +587,9 @@ export const initAdminOrderList = async () => {
 
         const statusFilter = document.getElementById("status-filter");
         if (statusFilter) {
-            statusFilter.addEventListener("change", (e) => applyFilter(e.target.value));
+            statusFilter.addEventListener("change", (e) =>
+                applyFilter(e.target.value),
+            );
         }
     } catch (error) {
         console.error("Erro ao buscar pedidos (admin):", error);

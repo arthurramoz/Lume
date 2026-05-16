@@ -125,12 +125,8 @@ async function handleAddToCart(bookId, btn) {
     cartIcons.forEach((icon) => {
       icon.src = "../assets/icons/home-cart-notification.svg";
     });
-    
-    setTimeout(() => {
-      btn.disabled = false;
-    }, 1000);
-    
-    alert("Livro adicionado ao carrinho com sucesso!");
+
+    window.location.href = "/pages/client/cart.html";
   } catch (err) {
     alert(err.message);
     btn.disabled = false;
