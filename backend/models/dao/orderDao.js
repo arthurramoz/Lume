@@ -31,9 +31,36 @@ class OrderDao {
         return result.rows[0];
     }
 
+    async createOrderCoupon(order_id, coupon_id, applied_value, coupon_code, coupon_type) {
+        const query = `
+            INSERT INTO order_coupons (order_id, coupon_id, applied_value, coupon_code, coupon_type)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *
+        `;
+        const result = await pool.query(query, [order_id, coupon_id, applied_value, coupon_code, coupon_type]);
+        return result.rows[0];
+    }
+
+    async getOrderCoupons(order_id) {
+        const query = "SELECT * FROM order_coupons WHERE order_id = $1";
+        const result = await pool.query(query, [order_id]);
+        return result.rows;
+    }
+
     async updateOrderStatus(order_id, status) {
         const query = "UPDATE orders SET status = $1 WHERE id = $2 RETURNING *";
         const result = await pool.query(query, [status, order_id]);
+        return result.rows[0];
+    }
+
+    async requestExchange(order_id, reason) {
+        const query = `
+            UPDATE orders 
+            SET status = 'em_troca', exchange_reason = $1 
+            WHERE id = $2 
+            RETURNING *
+        `;
+        const result = await pool.query(query, [reason, order_id]);
         return result.rows[0];
     }
 
@@ -131,9 +158,13 @@ class OrderDao {
                 o.total_amount,
                 o.freight,
                 o.status,
+                o.exchange_reason,
                 o.created_at,
                 u.full_name  AS client_name,
                 u.email      AS client_email,
+                u.cpf        AS client_cpf,
+                u.phone_ddd  AS client_phone_ddd,
+                u.phone_number AS client_phone_number,
                 addr.street_type, addr.street_name, addr.street_number, addr.neighborhood,
                 json_agg(json_build_object(
                     'id',           oi.id,
@@ -151,7 +182,7 @@ class OrderDao {
             LEFT JOIN books b         ON oi.book_id   = b.id
             LEFT JOIN authors a        ON b.author_id  = a.id
             WHERE o.id = $1
-            GROUP BY o.id, u.full_name, u.email,
+            GROUP BY o.id, u.full_name, u.email, u.cpf, u.phone_ddd, u.phone_number,
                      addr.street_type, addr.street_name, addr.street_number, addr.neighborhood
         `;
         const result = await pool.query(query, [order_id]);

@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const couponRoutes = require("./routes/couponRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
+const adminCouponRoutes = require("./routes/adminCouponRoutes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api", orderRoutes);
 app.use("/api", couponRoutes);
 app.use("/api", shippingRoutes);
 app.use("/api", adminOrderRoutes);
+app.use("/api", adminCouponRoutes);
 
 const PORT = process.env.PORT || 3333;
 
