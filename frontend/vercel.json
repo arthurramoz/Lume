@@ -7,8 +7,8 @@
       "destination": "/pages/login"
     },
     {
-      "source": "/product",
-      "destination": "/pages/product"
+      "source": "/book",
+      "destination": "/pages/book"
     },
     {
       "source": "/admin/users",

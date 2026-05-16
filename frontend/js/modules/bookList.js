@@ -68,9 +68,18 @@ function attachBuyButtons(container) {
     const btn = card.querySelector(".book-card__btn");
     const bookId = card.dataset.id;
 
-    if (!btn || !bookId) return;
+    if (!bookId) return;
 
-    btn.addEventListener("click", async () => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".book-card__btn")) return;
+      window.location.href = `/pages/book.html?id=${bookId}`;
+    });
+
+    if (!btn) return;
+
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       btn.disabled = true;
 
       try {
