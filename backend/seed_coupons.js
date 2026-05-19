@@ -2,6 +2,9 @@ const pool = require('./config/database');
 
 async function seed() {
     try {
+        await pool.query(`TRUNCATE coupons CASCADE`);
+        console.log('Todos os cupons removidos.');
+
         const coupons = [
             { code: 'LUMEPROMO10', value: 10.00 },
             { code: 'LUMEPROMO20', value: 20.00 },
@@ -15,6 +18,7 @@ async function seed() {
             `, [c.code, c.value]);
             console.log(`Cupom ${c.code} criado!`);
         }
+
 
         process.exit(0);
     } catch (err) {
