@@ -100,7 +100,7 @@ describe("Registro de pedido de venda com sucesso", () => {
         cy.wait(STEP_PAUSE);
 
         cy.on("window:alert", (alertText) => {
-            expect(alSsertText).to.equal("Compra finalizada com sucesso!");
+            expect(alertText).to.equal("Compra finalizada com sucesso!");
         });
 
         cy.get("#btn-finalize").click();
