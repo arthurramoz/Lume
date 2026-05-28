@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -58,7 +58,7 @@
 
       async function fetchAddresses() {
         try {
-          const res = await fetch("http://localhost:3333/api/addresses", {
+          const res = await fetch("https://lume-api-xi0p.onrender.com/api/addresses", {
             headers: { "Authorization": `Bearer ${getToken()}` }
           });
           if (!res.ok) throw new Error("Erro ao carregar endereços");
@@ -128,7 +128,7 @@
           const id = deleteBtn.dataset.id;
           if (confirm("Tem certeza que deseja deletar este endereço?")) {
             try {
-              const res = await fetch(`http://localhost:3333/api/addresses/${id}`, {
+              const res = await fetch(`https://lume-api-xi0p.onrender.com/api/addresses/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${getToken()}` }
               });

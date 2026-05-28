@@ -1,4 +1,4 @@
-import { formatCurrency } from "../utils/format.js";
+﻿import { formatCurrency } from "../utils/format.js";
 import { getIsAuthenticated, localStorageKeys } from "../hooks/useAuth.js";
 
 const createBookCard = (book, isCatalog = false) => `
@@ -40,7 +40,7 @@ async function addToCart(bookId) {
     localStorage.getItem(localStorageKeys.accessToken) ||
     sessionStorage.getItem(localStorageKeys.accessToken);
 
-  const response = await fetch("http://localhost:3333/api/cart", {
+  const response = await fetch("https://lume-api-xi0p.onrender.com/api/cart", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export const initBookList = async () => {
     let items = [];
 
     try {
-        const response = await fetch("http://localhost:3333/api/books/cards");
+        const response = await fetch("https://lume-api-xi0p.onrender.com/api/books/cards");
         if (response.ok) {
             const apiBooks = await response.json();
             items = apiBooks.map((book, index) => {

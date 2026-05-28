@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -46,7 +46,7 @@
 
       async function fetchCards() {
         try {
-          const res = await fetch("http://localhost:3333/api/cards", {
+          const res = await fetch("https://lume-api-xi0p.onrender.com/api/cards", {
             headers: { "Authorization": `Bearer ${getToken()}` }
           });
           if (!res.ok) throw new Error("Erro ao carregar cartões");
@@ -92,7 +92,7 @@
           const id = deleteBtn.dataset.id;
           if (confirm("Tem certeza que deseja deletar este cartão?")) {
             try {
-              const res = await fetch(`http://localhost:3333/api/cards/${id}`, {
+              const res = await fetch(`https://lume-api-xi0p.onrender.com/api/cards/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${getToken()}` }
               });

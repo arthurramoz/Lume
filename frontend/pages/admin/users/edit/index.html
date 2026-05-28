@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -140,7 +140,7 @@
       const userId = urlParams.get("id");
 
       if (userId) {
-        fetch(`http://localhost:3333/api/users/${userId}`, {
+        fetch(`https://lume-api-xi0p.onrender.com/api/users/${userId}`, {
           headers: { "Authorization": `Bearer ${getToken()}` }
         })
           .then((res) => res.json())
@@ -220,7 +220,7 @@
           if (success) {
             try {
               const res = await fetch(
-                `http://localhost:3333/api/users/${userId}`,
+                `https://lume-api-xi0p.onrender.com/api/users/${userId}`,
                 {
                   method: "PUT",
                   headers: {

@@ -1,4 +1,4 @@
-const createUserRow = (user) => {
+﻿const createUserRow = (user) => {
   const formattedPhone = user.phone_ddd && user.phone_number 
     ? `(${user.phone_ddd}) ${user.phone_number}` 
     : user.phone_number || "Sem telefone";
@@ -55,7 +55,7 @@ export const initUserList = async () => {
   if (!tableBody || !tableContainer) return;
 
   try {
-    const response = await fetch("http://localhost:3333/api/users", {
+    const response = await fetch("https://lume-api-xi0p.onrender.com/api/users", {
         headers: { "Authorization": `Bearer ${getToken()}` }
     });
     
@@ -84,10 +84,10 @@ export const initUserList = async () => {
     if (searchInput) {
       searchInput.addEventListener("input", async (e) => {
         const term = e.target.value;
-        let url = "http://localhost:3333/api/users";
+        let url = "https://lume-api-xi0p.onrender.com/api/users";
         
         if (term) {
-          url = `http://localhost:3333/api/users?search=${term}`;
+          url = `https://lume-api-xi0p.onrender.com/api/users?search=${term}`;
         }
         
         const response = await fetch(url, {
@@ -125,7 +125,7 @@ export const initUserList = async () => {
 
         if (confirm("Tem certeza que deseja deletar este usuário?")) {
           try {
-            const res = await fetch(`http://localhost:3333/api/users/${idText}`, {
+            const res = await fetch(`https://lume-api-xi0p.onrender.com/api/users/${idText}`, {
               method: "DELETE",
               headers: { "Authorization": `Bearer ${getToken()}` }
             });
@@ -160,7 +160,7 @@ export const initUserList = async () => {
         statusSpan.textContent = isActive ? "Ativo" : "Inativo";
 
         try {
-          const res = await fetch(`http://localhost:3333/api/users/${idText}/status`, {
+          const res = await fetch(`https://lume-api-xi0p.onrender.com/api/users/${idText}/status`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",

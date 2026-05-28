@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
   // ========== PASSWORD TOGGLE ==========
   document.querySelectorAll(".register-password-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // 1. Criar usuário e pegar Token
-      const userRes = await fetch("http://localhost:3333/api/auth/register", {
+      const userRes = await fetch("https://lume-api-xi0p.onrender.com/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // 2. Criar endereços
       for (const addr of allAddresses) {
         try {
-          await fetch("http://localhost:3333/api/addresses", {
+          await fetch("https://lume-api-xi0p.onrender.com/api/addresses", {
             method: "POST",
             headers: { 
               "Content-Type": "application/json",

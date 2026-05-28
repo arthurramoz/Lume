@@ -1,4 +1,4 @@
-import { localStorageKeys } from "./hooks/useAuth.js";
+﻿import { localStorageKeys } from "./hooks/useAuth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("senha");
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.disabled = true;
 
       try {
-        const response = await fetch("http://localhost:3333/api/auth/login", {
+        const response = await fetch("https://lume-api-xi0p.onrender.com/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password: pass }),

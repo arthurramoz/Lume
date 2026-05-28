@@ -1,4 +1,4 @@
-import { formatCurrency } from "../utils/format.js";
+﻿import { formatCurrency } from "../utils/format.js";
 import { initTopbar } from "../modules/topbar.js";
 import { getIsAuthenticated, localStorageKeys } from "../hooks/useAuth.js";
 
@@ -18,7 +18,7 @@ async function loadProductDetails() {
   }
 
   try {
-    const response = await fetch(`http://localhost:3333/api/books/${bookId}`);
+    const response = await fetch(`https://lume-api-xi0p.onrender.com/api/books/${bookId}`);
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error("Livro não encontrado no catálogo.");
@@ -107,7 +107,7 @@ async function handleAddToCart(bookId, btn) {
     sessionStorage.getItem(localStorageKeys.accessToken);
 
   try {
-    const response = await fetch("http://localhost:3333/api/cart", {
+    const response = await fetch("https://lume-api-xi0p.onrender.com/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
