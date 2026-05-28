@@ -149,7 +149,14 @@ class OrderDao {
             GROUP BY o.id, addr.street_type, addr.street_name, addr.street_number, addr.neighborhood
         `;
         const result = await pool.query(query, [order_id, user_id]);
-        return result.rows[0];
+        const order = result.rows[0];
+
+        if (order) {
+            const exchangeItems = await this.getExchangeItems(order_id);
+            order.exchange_items = exchangeItems;
+        }
+
+        return order;
     }
 
     async clearCart(user_id) {

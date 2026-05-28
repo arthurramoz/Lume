@@ -96,6 +96,7 @@
                 <h2 class="modal-title">Detalhes do pedido</h2>
                 <p class="modal-subtitle">Veja aqui os detalhes do pedido:</p>
                 <div class="modal-items" id="modal-items-list"></div>
+                <div id="modal-exchange-info" style="display: none"></div>
                 <div class="modal-footer-info">
                     <div id="modal-coupons-used" style="display: none"></div>
                     <div class="modal-footer-row">
@@ -338,6 +339,41 @@
 
                     document.getElementById("modal-items-list").innerHTML =
                         itemsHtml;
+
+                    const exchangeItems = order.exchange_items || [];
+                    const exchangeContainer = document.getElementById("modal-exchange-info");
+                    if (exchangeContainer && exchangeItems.length > 0) {
+                        const exchangeHtml = exchangeItems.map((ei) => {
+                            const coverRaw = ei.cover_image || "";
+                            let cover = "/assets/books/upload.svg";
+                            if (coverRaw) {
+                                cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                                if (!cover.startsWith("/assets")) cover = `/assets${cover}`;
+                            }
+                            return `
+                                <div class="exchange-section__item">
+                                    <img src="${cover}" alt="${ei.title}" class="exchange-section__cover" onerror="this.src='/assets/books/upload.svg'" />
+                                    <div class="exchange-section__info">
+                                        <div class="exchange-section__book-title">${ei.title}</div>
+                                        <div class="exchange-section__detail">Por: ${ei.author_name || "Autor"}</div>
+                                        <div class="exchange-section__detail">Qtd: ${ei.quantity} — ${formatCurrency(Number(ei.price) * Number(ei.quantity))}</div>
+                                        <div class="exchange-section__reason">Motivo: ${ei.reason}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join("");
+
+                        exchangeContainer.innerHTML = `
+                            <div class="exchange-section">
+                                <h3 class="exchange-section__title">Itens solicitados para troca</h3>
+                                ${exchangeHtml}
+                            </div>
+                        `;
+                        exchangeContainer.style.display = "";
+                    } else if (exchangeContainer) {
+                        exchangeContainer.innerHTML = "";
+                        exchangeContainer.style.display = "none";
+                    }
 
                     const couponsEl =
                         document.getElementById("modal-coupons-used");
