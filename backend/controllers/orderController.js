@@ -285,6 +285,7 @@ exports.getOrderById = async function (req, res) {
 exports.requestExchange = async function (req, res) {
     try {
         const reason = req.body.reason;
+        const items = req.body.items || [];
 
         const order = await orderDao.getOrderById(req.params.id, req.user.id);
 
@@ -298,13 +299,33 @@ exports.requestExchange = async function (req, res) {
             });
         }
 
+        if (!items || items.length === 0) {
+            return res
+                .status(400)
+                .json({ error: "Selecione pelo menos um item para troca" });
+        }
+
         if (!reason || reason.trim().length === 0) {
             return res
                 .status(400)
                 .json({ error: "Motivo da troca é obrigatório" });
         }
 
-        const updated = await orderDao.requestExchange(order.id, reason.trim());
+        const orderItemIds = (order.items || []).map((i) => i.id);
+        for (const item of items) {
+            if (!orderItemIds.includes(item.order_item_id)) {
+                return res.status(400).json({
+                    error: `Item ${item.order_item_id} não pertence a este pedido`,
+                });
+            }
+        }
+
+        const exchangeItems = items.map((item) => ({
+            order_item_id: item.order_item_id,
+            reason: reason.trim(),
+        }));
+
+        const updated = await orderDao.requestExchange(order.id, exchangeItems);
 
         res.status(200).json({
             message: "Troca solicitada com sucesso",

@@ -105,12 +105,20 @@ exports.updateOrderStatus = async function (req, res) {
         let generatedCoupon = null;
 
         if (status === "troca_concluida") {
-            const couponValue = Number(order.total_amount);
-            generatedCoupon = await couponDao.createExchangeCoupon(
-                order.user_id,
-                order.id,
-                couponValue,
-            );
+            const exchangeItems = await orderDao.getExchangeItems(order.id);
+            let couponValue = 0;
+            for (const ei of exchangeItems) {
+                couponValue += Number(ei.price) * Number(ei.quantity);
+            }
+            couponValue = Math.round(couponValue * 100) / 100;
+
+            if (couponValue > 0) {
+                generatedCoupon = await couponDao.createExchangeCoupon(
+                    order.user_id,
+                    order.id,
+                    couponValue,
+                );
+            }
         }
 
         const response = {

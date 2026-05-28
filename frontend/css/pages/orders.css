@@ -262,3 +262,141 @@
     padding: 0 24px;
     width: auto;
 }
+
+.exchange-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.exchange-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--color-neutro20);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.15s;
+}
+
+.exchange-item:hover {
+    background-color: var(--color-primaria20);
+}
+
+.exchange-item:last-child {
+    border-bottom: none;
+}
+
+.exchange-item__checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primaria100);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.exchange-item__cover {
+    width: 56px;
+    height: 74px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background-color: var(--color-neutro20);
+}
+
+.exchange-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.exchange-item__title {
+    font-family: var(--font-secundaria);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-neutro100);
+}
+
+.exchange-item__detail {
+    font-size: 13px;
+    color: var(--color-neutro80);
+}
+
+.exchange-reason-section {
+    margin-bottom: 4px;
+}
+
+.exchange-reason-label {
+    display: block;
+    font-family: var(--font-secundaria);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-neutro100);
+    margin-bottom: 8px;
+}
+
+.exchange-section {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: var(--color-primaria20, #fef3e2);
+    border: 1px solid var(--color-primaria60, #f0b45e);
+    border-radius: 12px;
+}
+
+.exchange-section__title {
+    font-family: var(--font-secundaria);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primaria100);
+    margin: 0 0 12px 0;
+}
+
+.exchange-section__item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-primaria60, #f0b45e);
+}
+
+.exchange-section__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.exchange-section__cover {
+    width: 48px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background-color: var(--color-neutro20);
+}
+
+.exchange-section__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.exchange-section__book-title {
+    font-family: var(--font-secundaria);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-neutro100);
+}
+
+.exchange-section__detail {
+    font-size: 13px;
+    color: var(--color-neutro80);
+}
+
+.exchange-section__reason {
+    font-size: 13px;
+    color: var(--color-primaria100);
+    font-style: italic;
+    margin-top: 4px;
+}

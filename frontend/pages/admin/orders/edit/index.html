@@ -104,7 +104,10 @@
             btnSalvar.disabled = true;
             btnSalvar.textContent = "Salvando...";
 
-            const res = await fetch(`https://lume-api-xi0p.onrender.com/api/admin/orders/${orderId}/status`, {
+            const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+              ? 'http://localhost:3333'
+              : 'https://lume-api-xi0p.onrender.com';
+            const res = await fetch(`${apiHost}/api/admin/orders/${orderId}/status`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",

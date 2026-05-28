@@ -123,7 +123,7 @@
         </div>
 
         <div class="modal-overlay" id="modal-exchange" style="display: none">
-            <div class="modal-content modal-content--sm">
+            <div class="modal-content">
                 <a
                     href="javascript:void(0)"
                     class="client-back-link"
@@ -144,13 +144,20 @@
                     Voltar
                 </a>
                 <h2 class="modal-title">Solicitar troca</h2>
-                <p class="modal-subtitle">Escreva o motivo da troca:</p>
-                <textarea
-                    class="modal-textarea"
-                    id="exchange-reason"
-                    placeholder="Digite o motivo"
-                    rows="5"
-                ></textarea>
+                <p class="modal-subtitle">Selecione os itens que deseja trocar:</p>
+
+                <div id="exchange-items-list" class="exchange-items-list"></div>
+
+                <div class="exchange-reason-section">
+                    <label class="exchange-reason-label" for="exchange-reason">Motivo da troca:</label>
+                    <textarea
+                        class="modal-textarea"
+                        id="exchange-reason"
+                        placeholder="Digite o motivo da troca dos itens selecionados"
+                        rows="4"
+                    ></textarea>
+                </div>
+
                 <div class="modal-buttons">
                     <button class="btn-outline" id="btn-cancel-exchange">
                         Cancelar
@@ -166,7 +173,10 @@
         <script type="module">
             import { localStorageKeys } from "/js/hooks/useAuth.js";
 
-            const API = "https://lume-api-xi0p.onrender.com/api";
+            const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:3333'
+                : 'https://lume-api-xi0p.onrender.com';
+            const API = `${API_BASE}/api`;
             const ITEMS_PER_PAGE = 10;
             let allOrders = [];
             let filteredOrders = [];
@@ -329,7 +339,6 @@
                     document.getElementById("modal-items-list").innerHTML =
                         itemsHtml;
 
-                    // Cupons utilizados
                     const couponsEl =
                         document.getElementById("modal-coupons-used");
                     if (
@@ -370,11 +379,51 @@
                 }
             }
 
-            function openExchangeModal(orderId) {
+            async function openExchangeModal(orderId) {
                 exchangeOrderId = orderId;
                 document.getElementById("exchange-reason").value = "";
-                document.getElementById("modal-exchange").style.display =
-                    "flex";
+                const itemsList = document.getElementById("exchange-items-list");
+                itemsList.innerHTML = `<p style="text-align:center; color: var(--color-neutro60); padding: 20px 0;">Carregando itens...</p>`;
+                document.getElementById("modal-exchange").style.display = "flex";
+
+                try {
+                    const res = await fetch(`${API}/orders/${orderId}`, {
+                        headers: { Authorization: `Bearer ${getToken()}` },
+                    });
+                    if (!res.ok) throw new Error("Erro ao buscar itens");
+                    const order = await res.json();
+
+                    const items = order.items || [];
+                    if (items.length === 0) {
+                        itemsList.innerHTML = `<p style="text-align:center; color: var(--color-neutro60);">Nenhum item encontrado.</p>`;
+                        return;
+                    }
+
+                    itemsList.innerHTML = items.map((item) => {
+                        const coverRaw = item.cover_image || "";
+                        let cover = "/assets/books/upload.svg";
+                        if (coverRaw) {
+                            cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                            if (!cover.startsWith("/assets")) {
+                                cover = `/assets${cover}`;
+                            }
+                        }
+                        const itemTotal = Number(item.price) * Number(item.quantity);
+                        return `
+                            <label class="exchange-item" for="exchange-check-${item.id}">
+                                <input type="checkbox" class="exchange-item__checkbox" id="exchange-check-${item.id}" value="${item.id}" />
+                                <img src="${cover}" alt="${item.title}" class="exchange-item__cover" onerror="this.src='/assets/books/upload.svg'" />
+                                <div class="exchange-item__info">
+                                    <div class="exchange-item__title">${item.title}</div>
+                                    <div class="exchange-item__detail">Por: ${item.author_name || "Autor"}</div>
+                                    <div class="exchange-item__detail">Qtd: ${item.quantity} — ${formatCurrency(itemTotal)}</div>
+                                </div>
+                            </label>
+                        `;
+                    }).join("");
+                } catch (err) {
+                    itemsList.innerHTML = `<p style="text-align:center; color: var(--color-error1);">Erro ao carregar itens.</p>`;
+                }
             }
 
             function renderPagination() {
@@ -481,6 +530,19 @@
                     const reason = document
                         .getElementById("exchange-reason")
                         .value.trim();
+
+                    const checkedBoxes = document.querySelectorAll(
+                        ".exchange-item__checkbox:checked"
+                    );
+                    const selectedItems = Array.from(checkedBoxes).map((cb) => ({
+                        order_item_id: Number(cb.value),
+                    }));
+
+                    if (selectedItems.length === 0) {
+                        alert("Selecione pelo menos um item para trocar.");
+                        return;
+                    }
+
                     if (!reason) {
                         alert("Digite o motivo da troca.");
                         return;
@@ -499,7 +561,7 @@
                                     "Content-Type": "application/json",
                                     Authorization: `Bearer ${getToken()}`,
                                 },
-                                body: JSON.stringify({ reason }),
+                                body: JSON.stringify({ items: selectedItems, reason }),
                             },
                         );
 

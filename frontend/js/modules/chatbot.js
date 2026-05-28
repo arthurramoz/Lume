@@ -137,8 +137,8 @@ async function sendToAPI(message) {
 }
 
 export const initChatbot = () => {
-  const main = document.querySelector("main");
-  if (!main) return;
+  const isHomePage = document.querySelector("main.landing");
+  if (!isHomePage) return;
 
   const fab = buildFAB();
   const chatWindow = buildWindow();

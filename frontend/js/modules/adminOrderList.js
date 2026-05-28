@@ -1,6 +1,9 @@
 import { localStorageKeys } from "../hooks/useAuth.js";
 
-const API_BASE = "https://lume-api-xi0p.onrender.com/api";
+const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3333'
+    : 'https://lume-api-xi0p.onrender.com';
+const API_BASE = `${API_HOST}/api`;
 const ORDERS_PER_PAGE = 10;
 
 let currentPage = 1;
@@ -210,15 +213,31 @@ function openEditModal(orderId, currentStatus) {
     document.body.appendChild(overlay);
 
     const order = allOrders.find((o) => o.id == orderId);
-    const orderTotal = order ? Number(order.total_amount || 0) : 0;
 
     const select = document.getElementById("modal-order-status-select");
     const noteEl = document.getElementById("exchange-coupon-note");
     const noteValueEl = document.getElementById("exchange-coupon-value");
 
-    if (noteValueEl) {
-        noteValueEl.textContent = formatCurrency(orderTotal);
+    async function loadExchangeValue() {
+        try {
+            const res = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            if (res.ok) {
+                const detail = await res.json();
+                if (detail.exchange_items && detail.exchange_items.length > 0) {
+                    let total = 0;
+                    for (const ei of detail.exchange_items) {
+                        total += Number(ei.price) * Number(ei.quantity);
+                    }
+                    if (noteValueEl) noteValueEl.textContent = formatCurrency(total);
+                    return;
+                }
+            }
+        } catch (e) { /* fallback */ }
+        if (noteValueEl) noteValueEl.textContent = formatCurrency(order ? Number(order.total_amount || 0) : 0);
     }
+    loadExchangeValue();
 
     function updateExchangeNote() {
         if (noteEl) {
@@ -439,11 +458,31 @@ async function openDetailsModal(orderId) {
         }
 
         const exchangeReasonEl = document.getElementById("modal-exchange-reason");
-        if (exchangeReasonEl && order.exchange_reason) {
+        if (exchangeReasonEl && order.exchange_items && order.exchange_items.length > 0) {
+            const exchangeItemsHtml = order.exchange_items.map((ei) => {
+                const coverRaw = ei.cover_image || "";
+                let cover = "/assets/books/upload.svg";
+                if (coverRaw) {
+                    cover = coverRaw.startsWith("/") ? coverRaw : `/${coverRaw}`;
+                    if (!cover.startsWith("/assets")) cover = `/assets${cover}`;
+                }
+                return `
+                    <div class="exchange-section__item">
+                        <img src="${cover}" alt="${ei.title}" class="exchange-section__cover" onerror="this.src='/assets/books/upload.svg'" />
+                        <div class="exchange-section__info">
+                            <div class="exchange-section__book-title">${ei.title}</div>
+                            <div class="exchange-section__detail">Por: ${ei.author_name || "Autor"}</div>
+                            <div class="exchange-section__detail">Qtd: ${ei.quantity} — ${formatCurrency(Number(ei.price) * Number(ei.quantity))}</div>
+                            <div class="exchange-section__reason">Motivo: ${ei.reason}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
             exchangeReasonEl.innerHTML = `
-                <div class="modal-section">
-                    <h3 class="modal-section__title">Motivo da troca</h3>
-                    <p class="modal-section__text">${order.exchange_reason}</p>
+                <div class="exchange-section">
+                    <h3 class="exchange-section__title">Itens solicitados para troca</h3>
+                    ${exchangeItemsHtml}
                 </div>
             `;
             exchangeReasonEl.style.display = "";

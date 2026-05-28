@@ -53,15 +53,61 @@ class OrderDao {
         return result.rows[0];
     }
 
-    async requestExchange(order_id, reason) {
-        const query = `
-            UPDATE orders 
-            SET status = 'em_troca', exchange_reason = $1 
-            WHERE id = $2 
-            RETURNING *
-        `;
-        const result = await pool.query(query, [reason, order_id]);
+    async requestExchange(order_id, items) {
+        await pool.query(
+            "UPDATE orders SET status = 'em_troca' WHERE id = $1",
+            [order_id]
+        );
+
+        for (const item of items) {
+            await pool.query(
+                `INSERT INTO exchange_items (order_id, order_item_id, reason)
+                 VALUES ($1, $2, $3)`,
+                [order_id, item.order_item_id, item.reason]
+            );
+        }
+
+        const result = await pool.query("SELECT * FROM orders WHERE id = $1", [order_id]);
         return result.rows[0];
+    }
+
+    async getExchangeItems(order_id) {
+        try {
+            const query = `
+                SELECT
+                    ei.id,
+                    ei.order_item_id,
+                    ei.reason,
+                    ei.created_at,
+                    oi.quantity,
+                    oi.price,
+                    b.title,
+                    b.cover_image,
+                    a.name AS author_name
+                FROM exchange_items ei
+                JOIN order_items oi ON ei.order_item_id = oi.id
+                JOIN books b ON oi.book_id = b.id
+                LEFT JOIN authors a ON b.author_id = a.id
+                WHERE ei.order_id = $1
+                ORDER BY ei.created_at ASC
+            `;
+            const result = await pool.query(query, [order_id]);
+            return result.rows;
+        } catch (err) {
+            return [];
+        }
+    }
+
+    async ensureExchangeItemsTable() {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS exchange_items (
+                id SERIAL PRIMARY KEY,
+                order_id INTEGER NOT NULL REFERENCES orders(id),
+                order_item_id INTEGER NOT NULL REFERENCES order_items(id),
+                reason TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
+            )
+        `);
     }
 
     async getOrdersByUserId(user_id) {
@@ -158,7 +204,6 @@ class OrderDao {
                 o.total_amount,
                 o.freight,
                 o.status,
-                o.exchange_reason,
                 o.created_at,
                 u.full_name  AS client_name,
                 u.email      AS client_email,
@@ -186,7 +231,14 @@ class OrderDao {
                      addr.street_type, addr.street_name, addr.street_number, addr.neighborhood
         `;
         const result = await pool.query(query, [order_id]);
-        return result.rows[0];
+        const order = result.rows[0];
+
+        if (order) {
+            const exchangeItems = await this.getExchangeItems(order_id);
+            order.exchange_items = exchangeItems;
+        }
+
+        return order;
     }
 
     async updateDeliveryStatus(order_id, status) {
