@@ -1,4 +1,4 @@
-﻿import { localStorageKeys } from "../hooks/useAuth.js";
+import { localStorageKeys } from "../hooks/useAuth.js";
 
 const API_BASE = "https://lume-api-xi0p.onrender.com/api";
 const ORDERS_PER_PAGE = 10;
@@ -7,7 +7,6 @@ let currentPage = 1;
 let allOrders = [];
 let filteredOrders = [];
 
-// ── Mapa de status (banco → label legível) ──────────────────────────────────
 const STATUS_LABEL = {
     em_processamento: "Em processamento",
     em_transito: "Em trânsito",
@@ -67,7 +66,6 @@ function statusLabel(status) {
     return STATUS_LABEL[status] || status || "---";
 }
 
-// ── Criação de linha da tabela ───────────────────────────────────────────────
 function createOrderRow(order) {
     const isEditable = EDITABLE_STATUSES.has(order.status);
 
@@ -102,7 +100,6 @@ function createOrderRow(order) {
     </div>`;
 }
 
-// ── Renderização da tabela ───────────────────────────────────────────────────
 function renderTable() {
     const tableBody = document.getElementById("orders-table-body");
     if (!tableBody) return;
@@ -124,7 +121,6 @@ function renderTable() {
     updatePagination(totalPages);
 }
 
-// ── Paginação ────────────────────────────────────────────────────────────────
 function updatePagination(totalPages) {
     const info = document.getElementById("pagination-info");
     const numbers = document.getElementById("page-numbers");
@@ -174,9 +170,7 @@ function updatePagination(totalPages) {
     }
 }
 
-// ── Modal de edição de status ────────────────────────────────────────────────
 function openEditModal(orderId, currentStatus) {
-    // Remove modal anterior, se houver
     const existing = document.getElementById("edit-order-modal");
     if (existing) existing.remove();
 
@@ -218,7 +212,6 @@ function openEditModal(orderId, currentStatus) {
     const order = allOrders.find((o) => o.id == orderId);
     const orderTotal = order ? Number(order.total_amount || 0) : 0;
 
-    // Popular o select com as opções corretas baseadas no status atual
     const select = document.getElementById("modal-order-status-select");
     const noteEl = document.getElementById("exchange-coupon-note");
     const noteValueEl = document.getElementById("exchange-coupon-value");
@@ -260,12 +253,10 @@ function openEditModal(orderId, currentStatus) {
         updateExchangeNote();
     }
 
-    // Fechar ao clicar no overlay (fora do modal)
     overlay.addEventListener("click", (e) => {
         if (e.target === overlay) closeEditModal();
     });
 
-    // Fechar com ESC
     const escHandler = (e) => {
         if (e.key === "Escape") {
             closeEditModal();
@@ -274,12 +265,10 @@ function openEditModal(orderId, currentStatus) {
     };
     document.addEventListener("keydown", escHandler);
 
-    // Cancelar
     document
         .getElementById("modal-btn-cancelar")
         .addEventListener("click", closeEditModal);
 
-    // Salvar
     document
         .getElementById("modal-btn-salvar")
         .addEventListener("click", async () => {
@@ -303,7 +292,6 @@ function openEditModal(orderId, currentStatus) {
                 );
 
                 if (res.ok) {
-                    // Atualiza localmente sem recarregar a página
                     const order = allOrders.find((o) => o.id == orderId);
                     if (order) order.status = newStatus;
                     filteredOrders = filteredOrders.map((o) =>
@@ -334,12 +322,10 @@ function closeEditModal() {
     if (modal) modal.remove();
 }
 
-// ── Filtro de status ─────────────────────────────────────────────────────────
 function applyFilter(statusValue) {
     if (!statusValue) {
         filteredOrders = [...allOrders];
     } else {
-        // Compara com valor do banco OU label legível
         filteredOrders = allOrders.filter(
             (o) =>
                 o.status === statusValue ||
@@ -350,9 +336,7 @@ function applyFilter(statusValue) {
     renderTable();
 }
 
-// ── Modal de detalhes do pedido ──────────────────────────────────────────────
 async function openDetailsModal(orderId) {
-    // Remove modal anterior, se houver
     const existing = document.getElementById("details-order-modal");
     if (existing) existing.remove();
 
@@ -394,17 +378,14 @@ async function openDetailsModal(orderId) {
 
     document.body.appendChild(overlay);
 
-    // Fechar ao clicar no overlay
     overlay.addEventListener("click", (e) => {
         if (e.target === overlay) closeDetailsModal();
     });
 
-    // Fechar com botão voltar
     document
         .getElementById("modal-details-close")
         .addEventListener("click", closeDetailsModal);
 
-    // Fechar com ESC
     const escHandler = (e) => {
         if (e.key === "Escape") {
             closeDetailsModal();
@@ -413,7 +394,6 @@ async function openDetailsModal(orderId) {
     };
     document.addEventListener("keydown", escHandler);
 
-    // Buscar detalhes do pedido
     try {
         const res = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
             headers: { Authorization: `Bearer ${getToken()}` },
@@ -424,7 +404,6 @@ async function openDetailsModal(orderId) {
         const subtitle = overlay.querySelector(".modal-subtitle");
         subtitle.textContent = `Pedido #${String(order.id).padStart(2, "0")} — ${statusLabel(order.status)}`;
 
-        // Dados do cliente
         const clientInfoEl = document.getElementById("modal-client-info");
         if (clientInfoEl) {
             const phone = order.client_phone_ddd
@@ -459,7 +438,6 @@ async function openDetailsModal(orderId) {
             clientInfoEl.style.display = "";
         }
 
-        // Motivo da troca
         const exchangeReasonEl = document.getElementById("modal-exchange-reason");
         if (exchangeReasonEl && order.exchange_reason) {
             exchangeReasonEl.innerHTML = `
@@ -505,7 +483,6 @@ async function openDetailsModal(orderId) {
 
         document.getElementById("modal-items-list").innerHTML = itemsHtml;
 
-        // Cupons utilizados
         const couponsEl = document.getElementById("modal-coupons-used");
         if (couponsEl && order.coupons_used && order.coupons_used.length > 0) {
             const couponsRows = order.coupons_used.map((c) => {
@@ -542,7 +519,6 @@ function closeDetailsModal() {
     if (modal) modal.remove();
 }
 
-// ── Listeners da tabela (editar / visualizar) ────────────────────────────────
 function attachTableListeners() {
     const tableBody = document.getElementById("orders-table-body");
     if (!tableBody) return;
@@ -564,7 +540,6 @@ function attachTableListeners() {
     });
 }
 
-// ── Inicialização principal ──────────────────────────────────────────────────
 export const initAdminOrderList = async () => {
     const tableBody = document.getElementById("orders-table-body");
     if (!tableBody) return;
@@ -600,7 +575,6 @@ export const initAdminOrderList = async () => {
     }
 };
 
-// Auto-inicializa quando a página de pedidos admin estiver ativa
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("orders-table-body")) {
         initAdminOrderList();

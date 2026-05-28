@@ -67,8 +67,6 @@
   color: var(--color-neutro100);
 }
 
-/* ========== SECTION DIVIDERS ========== */
-
 .register-section {
   width: 100%;
   display: flex;
@@ -85,8 +83,6 @@
   border-bottom: 2px solid var(--color-primaria20);
 }
 
-/* ========== FORM GRID ========== */
-
 .register-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -99,8 +95,6 @@
   flex-direction: column;
   gap: 8px;
 }
-
-/* ========== PASSWORD ========== */
 
 .register-password-wrapper {
   position: relative;
@@ -125,8 +119,6 @@
   justify-content: center;
 }
 
-/* ========== ACTIONS ========== */
-
 .register-form-actions {
   display: flex;
   justify-content: flex-end;
@@ -139,8 +131,6 @@
   width: 100%;
   height: 48px;
 }
-
-/* ========== LOGIN LINK ========== */
 
 .register-login-text {
   font-family: var(--font-secundaria);
@@ -162,14 +152,10 @@
   text-decoration: underline;
 }
 
-/* ========== ADD BUTTON ========== */
-
 .register-add-btn {
   display: flex;
   justify-content: flex-end;
 }
-
-/* ========== CHECKBOX ========== */
 
 .register-checkbox-wrapper {
   display: flex;
@@ -191,8 +177,6 @@
   color: var(--color-neutro100);
   cursor: pointer;
 }
-
-/* ========== ADDRESS BLOCK ========== */
 
 .register-address-block {
   border: 1px solid var(--color-neutro20);
@@ -234,4 +218,3 @@
 .register-address-remove:hover {
   opacity: 0.7;
 }
-

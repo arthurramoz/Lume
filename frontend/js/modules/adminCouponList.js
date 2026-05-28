@@ -1,4 +1,4 @@
-﻿import { localStorageKeys } from "../hooks/useAuth.js";
+import { localStorageKeys } from "../hooks/useAuth.js";
 
 const API_BASE = "https://lume-api-xi0p.onrender.com/api";
 const ITEMS_PER_PAGE = 10;

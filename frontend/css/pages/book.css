@@ -135,7 +135,6 @@
     box-shadow: none;
 }
 
-/* Skeletons */
 .product-skeleton {
     display: grid;
     grid-template-columns: 1fr;

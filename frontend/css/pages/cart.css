@@ -325,8 +325,6 @@
     line-height: 1.5;
 }
 
-/* ======= MULTI-CARD PAYMENT ======= */
-
 .cart-cards-list {
     display: flex;
     flex-direction: column;
@@ -420,8 +418,6 @@
     margin-top: 4px;
 }
 
-/* ======= FREIGHT / FRETE ======= */
-
 .cart-freight-text {
     margin-top: 12px;
     font-size: 14px;
@@ -445,4 +441,3 @@
 .cart-secondary-link:hover {
     opacity: 0.8;
 }
-

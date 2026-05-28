@@ -1,5 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
-  // ========== PASSWORD TOGGLE ==========
+document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".register-password-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
       const input = btn.parentElement.querySelector("input");
@@ -16,7 +15,6 @@
       }
     });
   });
-  // ========== MASKS ==========
   document.addEventListener("input", (e) => {
     if (e.target.name && e.target.name.endsWith("_cep")) {
       let v = e.target.value.replace(/\D/g, "");
@@ -41,7 +39,6 @@
     }
   });
 
-  // ========== DYNAMIC ADDRESS BLOCKS ==========
   let entregaCount = 0;
   let cobrancaCount = 0;
 
@@ -156,7 +153,7 @@
     const container = type === "entrega" ? entregaContainer : cobrancaContainer;
     const blocks = container.querySelectorAll(".register-address-block");
     const labelPrefix = type === "entrega" ? "Entrega" : "Cobrança";
-    
+
     blocks.forEach((block, idx) => {
       const headerSpan = block.querySelector(".register-address-header span");
       if (headerSpan) {
@@ -172,7 +169,6 @@
     updateAddressLabels(type);
   }
 
-  // Add first delivery address by default
   addAddressBlock("entrega");
 
   document.getElementById("btn-add-entrega").addEventListener("click", () => {
@@ -183,7 +179,6 @@
     addAddressBlock("cobranca");
   });
 
-  // Remove address block
   document.addEventListener("click", (e) => {
     const removeBtn = e.target.closest(".register-address-remove");
     if (!removeBtn) return;
@@ -195,11 +190,9 @@
     }
   });
 
-  // Checkbox: toggle cobrança section visibility
   sameAsBillingCheckbox.addEventListener("change", () => {
     if (sameAsBillingCheckbox.checked) {
       cobrancaSection.style.display = "none";
-      // Disable required on hidden cobrança fields
       cobrancaContainer
         .querySelectorAll("[required]")
         .forEach((el) => (el.required = false));
@@ -208,19 +201,16 @@
       cobrancaContainer
         .querySelectorAll("input, select")
         .forEach((el) => {
-          // Re-enable required except for observações
           if (!el.name.includes("_observacoes")) {
             el.required = true;
           }
         });
-      // Add default cobrança block if none exists
       if (cobrancaContainer.children.length === 0) {
         addAddressBlock("cobranca");
       }
     }
   });
 
-  // ========== HELPERS ==========
   function collectAddressData(block, type) {
     const prefix = `${type}_${block.dataset.index}`;
     const get = (field) => {
@@ -245,7 +235,6 @@
     };
   }
 
-  // ========== FORM SUBMIT ==========
   const form = document.getElementById("register-form");
   if (!form) return;
 
@@ -260,7 +249,6 @@
       return;
     }
 
-    // Validate at least 1 entrega address
     const entregaBlocks = entregaContainer.querySelectorAll(
       ".register-address-block",
     );
@@ -269,7 +257,6 @@
       return;
     }
 
-    // Validate cobrança if checkbox is not checked
     const cobrancaBlocks = cobrancaContainer.querySelectorAll(
       ".register-address-block",
     );
@@ -291,7 +278,6 @@
     }
     const phone_type = telefoneRaw.length >= 11 ? "Celular" : "Fixo";
 
-    // Dados do usuário
     const userData = {
       gender: document.getElementById("genero").value,
       full_name: document.getElementById("nome").value,
@@ -304,7 +290,6 @@
       password_hash: senha,
     };
 
-    // Collect all addresses
     const allAddresses = [];
 
     entregaBlocks.forEach((block) => {
@@ -312,7 +297,6 @@
     });
 
     if (sameAsBillingCheckbox.checked) {
-      // Copy entrega addresses as cobrança
       entregaBlocks.forEach((block) => {
         const billingCopy = collectAddressData(block, "entrega");
         billingCopy.is_delivery = false;
@@ -325,13 +309,10 @@
       });
     }
 
-
-
     const confirmSave = confirm("Deseja confirmar o cadastro?");
     if (!confirmSave) return;
 
     try {
-      // 1. Criar usuário e pegar Token
       const userRes = await fetch("https://lume-api-xi0p.onrender.com/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -346,14 +327,13 @@
 
       const createdResponse = await userRes.json();
       const userId = createdResponse.user?.id || createdResponse.id;
-      const userToken = createdResponse.token; // O Token gerado pela API
+      const userToken = createdResponse.token;
 
-      // 2. Criar endereços
       for (const addr of allAddresses) {
         try {
           await fetch("https://lume-api-xi0p.onrender.com/api/addresses", {
             method: "POST",
-            headers: { 
+            headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${userToken}`
             },
@@ -363,8 +343,6 @@
           console.error("Erro ao salvar endereço:", err);
         }
       }
-
-
 
       alert("Cadastro realizado com sucesso!");
       window.location.href = "login.html";

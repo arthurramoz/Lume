@@ -1,4 +1,4 @@
-﻿import { formatCurrency } from "../utils/format.js";
+import { formatCurrency } from "../utils/format.js";
 import { getIsAuthenticated, localStorageKeys } from "../hooks/useAuth.js";
 
 const createBookCard = (book, isCatalog = false) => `
@@ -54,7 +54,6 @@ async function addToCart(bookId) {
     throw new Error(err.error || "Erro ao adicionar ao carrinho");
   }
 
-  // Troca o ícone do carrinho para notificação em todas as navbars
   const cartIcons = document.querySelectorAll("#topbar-cart-icon, #client-cart-icon");
   cartIcons.forEach((icon) => {
     icon.src = "/assets/icons/home-cart-notification.svg";
@@ -121,7 +120,7 @@ export const initBookList = async () => {
                               )
                             : book.price,
                     image: {
-                        url: book.cover_image 
+                        url: book.cover_image
                              ? (book.cover_image.startsWith('/') ? `/assets${book.cover_image}` : book.cover_image)
                              : "assets/books/upload.svg",
                     },
@@ -176,7 +175,7 @@ export const initBookList = async () => {
 
                 let startPage = Math.max(1, page - 2);
                 let endPage = Math.min(totalPages, page + 2);
-                
+
                 if (startPage > 1) {
                     controlsHTML += `<button class="page-number" data-page="1">1</button>`;
                     if (startPage > 2) {

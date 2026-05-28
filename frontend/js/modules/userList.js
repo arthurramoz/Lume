@@ -1,9 +1,8 @@
-﻿const createUserRow = (user) => {
-  const formattedPhone = user.phone_ddd && user.phone_number 
-    ? `(${user.phone_ddd}) ${user.phone_number}` 
+const createUserRow = (user) => {
+  const formattedPhone = user.phone_ddd && user.phone_number
+    ? `(${user.phone_ddd}) ${user.phone_number}`
     : user.phone_number || "Sem telefone";
-    
-  // Vamos assumir Ativo por padrão se não houver campo de status no banco de dados ainda
+
   const statusAtivo = user.status !== undefined ? user.status : true;
 
   return `
@@ -58,7 +57,7 @@ export const initUserList = async () => {
     const response = await fetch("https://lume-api-xi0p.onrender.com/api/users", {
         headers: { "Authorization": `Bearer ${getToken()}` }
     });
-    
+
     if (!response.ok) {
       throw new Error("Erro na resposta da API");
     }
@@ -85,11 +84,11 @@ export const initUserList = async () => {
       searchInput.addEventListener("input", async (e) => {
         const term = e.target.value;
         let url = "https://lume-api-xi0p.onrender.com/api/users";
-        
+
         if (term) {
           url = `https://lume-api-xi0p.onrender.com/api/users?search=${term}`;
         }
-        
+
         const response = await fetch(url, {
             headers: { "Authorization": `Bearer ${getToken()}` }
         });
@@ -168,7 +167,7 @@ export const initUserList = async () => {
             },
             body: JSON.stringify({ status: isActive })
           });
-          
+
           if (!res.ok) {
             throw new Error("Erro ao atualizar status na API");
           }

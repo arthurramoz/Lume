@@ -47,10 +47,7 @@
     color: var(--color-neutro100);
     font-family: var(--font-secundaria);
     line-height: 1.2;
-    /* max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; */
+    
 }
 
 .book-card__author {

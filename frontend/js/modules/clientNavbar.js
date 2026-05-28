@@ -1,4 +1,4 @@
-﻿import { getUser, logout, localStorageKeys } from "../hooks/useAuth.js";
+import { getUser, logout, localStorageKeys } from "../hooks/useAuth.js";
 
 export const initClientNavbar = () => {
   const sidebar = document.querySelector(".client-sidebar");
@@ -71,7 +71,6 @@ export const initClientTopbar = () => {
     });
   }
 
-  // Verifica se tem itens no carrinho e troca o ícone
   const token = localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
   if (token) {
     fetch("https://lume-api-xi0p.onrender.com/api/cart/count", {

@@ -1,4 +1,4 @@
-﻿import { formatCurrency } from "../utils/format.js";
+import { formatCurrency } from "../utils/format.js";
 import { initTopbar } from "../modules/topbar.js";
 import { getIsAuthenticated, localStorageKeys } from "../hooks/useAuth.js";
 
@@ -25,7 +25,7 @@ async function loadProductDetails() {
       }
       throw new Error("Erro ao carregar os detalhes do livro.");
     }
-    
+
     const book = await response.json();
     renderProductDetails(book);
   } catch (err) {
@@ -36,11 +36,11 @@ async function loadProductDetails() {
 
 function renderProductDetails(book) {
   const container = document.getElementById("product-details");
-  
-  const price = typeof book.price === "string" 
-    ? parseFloat(book.price.replace("R$", "").replace(",", ".")) 
+
+  const price = typeof book.price === "string"
+    ? parseFloat(book.price.replace("R$", "").replace(",", "."))
     : book.price;
-    
+
   let imageUrl = "../assets/books/upload.svg";
   if (book.cover_image) {
     if (book.cover_image.startsWith('http')) {
@@ -53,28 +53,28 @@ function renderProductDetails(book) {
       imageUrl = `../assets/${book.cover_image}`;
     }
   }
-    
+
   const isAvailable = book.stock_quantity > 0;
 
   document.getElementById("breadcrumb-title").textContent = book.title;
-  
+
   const description = book.synopsis || book.description || "Descrição detalhada não disponível para este livro.";
-  
+
   const html = `
     <div class="product-image-container">
       <img src="${imageUrl}" alt="${book.title}" class="product-image" />
     </div>
-    
+
     <div class="product-info">
       <h1 class="product-title">${book.title}</h1>
       <div class="product-author">por <strong>${book.author_name || "Desconhecido"}</strong></div>
-      
+
       <div class="product-price">${formatCurrency(price)}</div>
-      
+
       <div class="product-description">
         ${description}
       </div>
-      
+
       <div class="product-actions">
         <button id="add-to-cart-btn" class="btn-add-cart" ${!isAvailable ? 'disabled' : ''}>
           <img src="../assets/icons/cart-white.svg" alt="Carrinho" width="24" />
@@ -83,9 +83,9 @@ function renderProductDetails(book) {
       </div>
     </div>
   `;
-  
+
   container.innerHTML = html;
-  
+
   const btn = document.getElementById("add-to-cart-btn");
   if (btn) {
     btn.addEventListener("click", () => handleAddToCart(book.id, btn));

@@ -5,8 +5,7 @@ import { initAdminNavbar } from "./modules/navbar.js";
 import { initUserList } from "./modules/userList.js";
 import { initDashboard } from "./modules/dashboard.js";
 import { initClientNavbar, initClientTopbar, initClientFooter } from "./modules/clientNavbar.js";
-
-// verifyAccess();
+import { initChatbot } from "./modules/chatbot.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initTopbar();
@@ -17,4 +16,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initClientNavbar();
   initClientTopbar();
   initClientFooter();
+  initChatbot();
 });

@@ -1,4 +1,4 @@
-﻿import { localStorageKeys } from "./hooks/useAuth.js";
+import { localStorageKeys } from "./hooks/useAuth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("senha");
@@ -56,15 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Salva os dados retornados no localStorage
         localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
         localStorage.setItem(localStorageKeys.accessToken, data.token);
 
-        // Redireciona baseado no role do usuário (admin vs client)
         if (data.user.role === "admin") {
           window.location.replace("/pages/admin/users/index.html");
         } else {
-          window.location.replace("/"); 
+          window.location.replace("/");
         }
       } catch (err) {
         console.error("Erro no login:", err);
