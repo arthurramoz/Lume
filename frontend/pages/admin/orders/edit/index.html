@@ -58,6 +58,7 @@
       </div>
     </main>
 
+    <script src="/js/config.js"></script>
     <script type="module" src="/js/main.js"></script>
     <script type="module">
       import { localStorageKeys } from "/js/hooks/useAuth.js";
@@ -104,10 +105,7 @@
             btnSalvar.disabled = true;
             btnSalvar.textContent = "Salvando...";
 
-            const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-              ? 'http://localhost:3333'
-              : 'https://lume-api-xi0p.onrender.com';
-            const res = await fetch(`${apiHost}/api/admin/orders/${orderId}/status`, {
+            const res = await fetch(`${window.API_URL}/api/admin/orders/${orderId}/status`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",

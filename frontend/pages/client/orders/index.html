@@ -170,14 +170,12 @@
             </div>
         </div>
 
+        <script src="/js/config.js"></script>
         <script type="module" src="/js/main.js"></script>
         <script type="module">
             import { localStorageKeys } from "/js/hooks/useAuth.js";
 
-            const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:3333'
-                : 'https://lume-api-xi0p.onrender.com';
-            const API = `${API_BASE}/api`;
+            const API = `${window.API_URL}/api`;
             const ITEMS_PER_PAGE = 10;
             let allOrders = [];
             let filteredOrders = [];

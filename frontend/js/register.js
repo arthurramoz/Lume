@@ -1,3 +1,5 @@
+const API_URL = window.API_URL;
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".register-password-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -313,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirmSave) return;
 
     try {
-      const userRes = await fetch("https://lume-api-xi0p.onrender.com/api/auth/register", {
+      const userRes = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -331,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (const addr of allAddresses) {
         try {
-          await fetch("https://lume-api-xi0p.onrender.com/api/addresses", {
+          await fetch(`${API_URL}/api/addresses`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

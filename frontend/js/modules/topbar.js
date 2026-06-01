@@ -1,4 +1,5 @@
 import { getIsAuthenticated, getUser, logout, localStorageKeys } from "../hooks/useAuth.js";
+const API_URL = window.API_URL;
 
 export const initTopbar = () => {
   const topbar = document.querySelector(".topbar");
@@ -66,7 +67,7 @@ export const initTopbar = () => {
 
     const token = localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
     if (token) {
-      fetch("https://lume-api-xi0p.onrender.com/api/cart/count", {
+      fetch(`${API_URL}/api/cart/count`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())

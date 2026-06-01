@@ -48,9 +48,11 @@
       <footer class="client-footer"></footer>
     </div>
 
+    <script src="/js/config.js"></script>
     <script type="module" src="/js/main.js"></script>
     <script type="module">
       import { localStorageKeys } from "/js/hooks/useAuth.js";
+      const API_URL = window.API_URL;
       
       function getToken() {
         return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
@@ -58,7 +60,7 @@
 
       async function fetchAddresses() {
         try {
-          const res = await fetch("https://lume-api-xi0p.onrender.com/api/addresses", {
+          const res = await fetch(`${API_URL}/api/addresses`, {
             headers: { "Authorization": `Bearer ${getToken()}` }
           });
           if (!res.ok) throw new Error("Erro ao carregar endereços");
@@ -128,7 +130,7 @@
           const id = deleteBtn.dataset.id;
           if (confirm("Tem certeza que deseja deletar este endereço?")) {
             try {
-              const res = await fetch(`https://lume-api-xi0p.onrender.com/api/addresses/${id}`, {
+              const res = await fetch(`${API_URL}/api/addresses/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${getToken()}` }
               });

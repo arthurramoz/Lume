@@ -111,9 +111,11 @@
       </div>
     </main>
 
+    <script src="/js/config.js"></script>
     <script type="module" src="/js/main.js"></script>
     <script type="module">
       import { localStorageKeys } from "/js/hooks/useAuth.js";
+      const API_URL = window.API_URL;
 
       function getToken() {
         return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
@@ -123,7 +125,7 @@
       const userId = urlParams.get("id");
 
       if (userId) {
-        fetch(`https://lume-api-xi0p.onrender.com/api/users/${userId}`, {
+        fetch(`${API_URL}/api/users/${userId}`, {
           headers: { "Authorization": `Bearer ${getToken()}` }
         })
           .then((res) => res.json())

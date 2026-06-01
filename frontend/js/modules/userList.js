@@ -42,6 +42,7 @@ const renderEmptyState = () => `
 `;
 
 import { localStorageKeys } from "../hooks/useAuth.js";
+const API_URL = window.API_URL;
 
 function getToken() {
   return localStorage.getItem(localStorageKeys.accessToken) || sessionStorage.getItem(localStorageKeys.accessToken);
@@ -54,7 +55,7 @@ export const initUserList = async () => {
   if (!tableBody || !tableContainer) return;
 
   try {
-    const response = await fetch("https://lume-api-xi0p.onrender.com/api/users", {
+    const response = await fetch(`${API_URL}/api/users`, {
         headers: { "Authorization": `Bearer ${getToken()}` }
     });
 
@@ -83,10 +84,10 @@ export const initUserList = async () => {
     if (searchInput) {
       searchInput.addEventListener("input", async (e) => {
         const term = e.target.value;
-        let url = "https://lume-api-xi0p.onrender.com/api/users";
+        let url = `${API_URL}/api/users`;
 
         if (term) {
-          url = `https://lume-api-xi0p.onrender.com/api/users?search=${term}`;
+          url = `${API_URL}/api/users?search=${term}`;
         }
 
         const response = await fetch(url, {
@@ -124,7 +125,7 @@ export const initUserList = async () => {
 
         if (confirm("Tem certeza que deseja deletar este usuário?")) {
           try {
-            const res = await fetch(`https://lume-api-xi0p.onrender.com/api/users/${idText}`, {
+            const res = await fetch(`${API_URL}/api/users/${idText}`, {
               method: "DELETE",
               headers: { "Authorization": `Bearer ${getToken()}` }
             });
@@ -159,7 +160,7 @@ export const initUserList = async () => {
         statusSpan.textContent = isActive ? "Ativo" : "Inativo";
 
         try {
-          const res = await fetch(`https://lume-api-xi0p.onrender.com/api/users/${idText}/status`, {
+          const res = await fetch(`${API_URL}/api/users/${idText}/status`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",

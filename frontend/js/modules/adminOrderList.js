@@ -1,9 +1,7 @@
 import { localStorageKeys } from "../hooks/useAuth.js";
 
-const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3333'
-    : 'https://lume-api-xi0p.onrender.com';
-const API_BASE = `${API_HOST}/api`;
+const API_URL = window.API_URL;
+const API_BASE = `${API_URL}/api`;
 const ORDERS_PER_PAGE = 10;
 
 let currentPage = 1;
