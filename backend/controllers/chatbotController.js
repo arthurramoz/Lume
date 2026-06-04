@@ -1,7 +1,7 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 const chatbotDao = require("../models/dao/chatbotDao");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 /**
  * Monta o system prompt fechado com contexto do usuário.
@@ -56,30 +56,32 @@ exports.chat = async function (req, res) {
 
         const systemPrompt = await buildSystemPrompt(userId);
 
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-flash",
-            systemInstruction: systemPrompt,
-        });
-
-        // Monta o histórico para o Gemini
-        const contents = [];
+        // Monta o histórico para o Groq (formato OpenAI-compatible)
+        const messages = [
+            { role: "system", content: systemPrompt },
+        ];
 
         for (const msg of conversationHistory) {
-            contents.push({
-                role: msg.role === "user" ? "user" : "model",
-                parts: [{ text: msg.content }],
+            messages.push({
+                role: msg.role === "user" ? "user" : "assistant",
+                content: msg.content,
             });
         }
 
         // Adiciona a mensagem atual do usuário
-        contents.push({
+        messages.push({
             role: "user",
-            parts: [{ text: userMessage }],
+            content: userMessage,
         });
 
-        const result = await model.generateContent({ contents });
-        const response = result.response;
-        const reply = response.text();
+        const result = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages,
+            temperature: 0.7,
+            max_tokens: 300,
+        });
+
+        const reply = result.choices[0]?.message?.content || "Desculpe, não consegui processar sua mensagem.";
 
         return res.status(200).json({ reply });
     } catch (error) {
