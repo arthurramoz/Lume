@@ -13,6 +13,7 @@ const shippingRoutes = require("./routes/shippingRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 const adminCouponRoutes = require("./routes/adminCouponRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api", shippingRoutes);
 app.use("/api", adminOrderRoutes);
 app.use("/api", adminCouponRoutes);
 app.use("/api", chatbotRoutes);
+app.use("/api", dashboardRoutes);
 
 const PORT = process.env.PORT || 3333;
 

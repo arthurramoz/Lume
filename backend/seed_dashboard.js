@@ -6,141 +6,141 @@ const bcrypt = require("bcryptjs");
 
 const users = [
   {
-    gender: "M",
+    gender: "Masculino",
     full_name: "Carlos Eduardo Mendes",
     birth_date: "1990-03-15",
-    cpf: "123.456.789-00",
-    phone_type: "celular",
+    cpf: "12345678900",
+    phone_type: "Celular",
     phone_ddd: "11",
-    phone_number: "98765-4321",
+    phone_number: "987654321",
     email: "carlos.mendes@email.com",
     password: "Senha@123",
   },
   {
-    gender: "F",
+    gender: "Feminino",
     full_name: "Ana Paula Ferreira",
     birth_date: "1995-07-22",
-    cpf: "234.567.890-11",
-    phone_type: "celular",
+    cpf: "23456789011",
+    phone_type: "Celular",
     phone_ddd: "21",
-    phone_number: "97654-3210",
+    phone_number: "976543210",
     email: "ana.ferreira@email.com",
     password: "Senha@123",
   },
   {
-    gender: "M",
+    gender: "Masculino",
     full_name: "Roberto Silva Neto",
     birth_date: "1988-11-05",
-    cpf: "345.678.901-22",
-    phone_type: "fixo",
+    cpf: "34567890122",
+    phone_type: "Fixo",
     phone_ddd: "31",
-    phone_number: "3322-1100",
+    phone_number: "33221100",
     email: "roberto.neto@email.com",
     password: "Senha@123",
   },
   {
-    gender: "F",
+    gender: "Feminino",
     full_name: "Juliana Costa Alves",
     birth_date: "1992-05-30",
-    cpf: "456.789.012-33",
-    phone_type: "celular",
+    cpf: "45678901233",
+    phone_type: "Celular",
     phone_ddd: "51",
-    phone_number: "98877-6655",
+    phone_number: "988776655",
     email: "juliana.alves@email.com",
     password: "Senha@123",
   },
   {
-    gender: "M",
+    gender: "Masculino",
     full_name: "Marcos Antônio Lima",
     birth_date: "1985-09-18",
-    cpf: "567.890.123-44",
-    phone_type: "celular",
+    cpf: "56789012344",
+    phone_type: "Celular",
     phone_ddd: "41",
-    phone_number: "99988-7766",
+    phone_number: "999887766",
     email: "marcos.lima@email.com",
     password: "Senha@123",
   },
   {
-    gender: "F",
+    gender: "Feminino",
     full_name: "Fernanda Rocha Santos",
     birth_date: "1998-01-12",
-    cpf: "678.901.234-55",
-    phone_type: "celular",
+    cpf: "67890123455",
+    phone_type: "Celular",
     phone_ddd: "71",
-    phone_number: "91234-5678",
+    phone_number: "912345678",
     email: "fernanda.santos@email.com",
     password: "Senha@123",
   },
   {
-    gender: "M",
+    gender: "Masculino",
     full_name: "Thiago Oliveira Barros",
     birth_date: "1993-04-25",
-    cpf: "789.012.345-66",
-    phone_type: "celular",
+    cpf: "78901234566",
+    phone_type: "Celular",
     phone_ddd: "61",
-    phone_number: "98765-1234",
+    phone_number: "987651234",
     email: "thiago.barros@email.com",
     password: "Senha@123",
   },
   {
-    gender: "F",
+    gender: "Feminino",
     full_name: "Camila Pereira Gomes",
     birth_date: "1997-08-09",
-    cpf: "890.123.456-77",
-    phone_type: "celular",
+    cpf: "89012345677",
+    phone_type: "Celular",
     phone_ddd: "19",
-    phone_number: "97890-1234",
+    phone_number: "978901234",
     email: "camila.gomes@email.com",
     password: "Senha@123",
   },
   {
-    gender: "M",
+    gender: "Masculino",
     full_name: "Felipe Nascimento Cruz",
     birth_date: "1991-12-03",
-    cpf: "901.234.567-88",
-    phone_type: "celular",
+    cpf: "90123456788",
+    phone_type: "Celular",
     phone_ddd: "85",
-    phone_number: "98901-2345",
+    phone_number: "989012345",
     email: "felipe.cruz@email.com",
     password: "Senha@123",
   },
   {
-    gender: "F",
+    gender: "Feminino",
     full_name: "Beatriz Martins Cardoso",
     birth_date: "1996-06-17",
-    cpf: "012.345.678-99",
-    phone_type: "celular",
+    cpf: "01234567899",
+    phone_type: "Celular",
     phone_ddd: "47",
-    phone_number: "99012-3456",
+    phone_number: "990123456",
     email: "beatriz.cardoso@email.com",
     password: "Senha@123",
   },
 ];
 
 const addresses = [
-  { alias: "Casa", residence_type: "casa", street_type: "Rua", street_name: "das Flores", street_number: "123", neighborhood: "Jardim Europa", zip_code: "01310-100", city: "São Paulo", state: "SP" },
-  { alias: "Casa", residence_type: "apartamento", street_type: "Av", street_name: "Atlântica", street_number: "456", neighborhood: "Copacabana", zip_code: "22010-000", city: "Rio de Janeiro", state: "RJ" },
-  { alias: "Trabalho", residence_type: "casa", street_type: "Rua", street_name: "dos Inconfidentes", street_number: "789", neighborhood: "Savassi", zip_code: "30140-120", city: "Belo Horizonte", state: "MG" },
-  { alias: "Casa", residence_type: "casa", street_type: "Av", street_name: "Ipiranga", street_number: "321", neighborhood: "Centro", zip_code: "90160-092", city: "Porto Alegre", state: "RS" },
-  { alias: "Casa", residence_type: "condominio", street_type: "Rua", street_name: "XV de Novembro", street_number: "654", neighborhood: "Bigorrilho", zip_code: "80020-310", city: "Curitiba", state: "PR" },
-  { alias: "Casa", residence_type: "casa", street_type: "Rua", street_name: "da Bahia", street_number: "987", neighborhood: "Pituba", zip_code: "41830-021", city: "Salvador", state: "BA" },
-  { alias: "Apartamento", residence_type: "apartamento", street_type: "SQN", street_name: "203 Bloco A", street_number: "12", neighborhood: "Asa Norte", zip_code: "70833-030", city: "Brasília", state: "DF" },
-  { alias: "Casa", residence_type: "casa", street_type: "Av", street_name: "Brasil", street_number: "1500", neighborhood: "Cambuí", zip_code: "13025-001", city: "Campinas", state: "SP" },
-  { alias: "Casa", residence_type: "casa", street_type: "Rua", street_name: "Meireles", street_number: "200", neighborhood: "Meireles", zip_code: "60165-050", city: "Fortaleza", state: "CE" },
-  { alias: "Casa", residence_type: "apartamento", street_type: "Rua", street_name: "Visconde de Taunay", street_number: "350", neighborhood: "Victor Konder", zip_code: "89012-190", city: "Blumenau", state: "SC" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Rua", street_name: "das Flores", street_number: "123", neighborhood: "Jardim Europa", zip_code: "01310100", city: "São Paulo", state: "SP" },
+  { alias: "Casa", residence_type: "Apartamento", street_type: "Avenida", street_name: "Atlântica", street_number: "456", neighborhood: "Copacabana", zip_code: "22010000", city: "Rio de Janeiro", state: "RJ" },
+  { alias: "Trabalho", residence_type: "Casa", street_type: "Rua", street_name: "dos Inconfidentes", street_number: "789", neighborhood: "Savassi", zip_code: "30140120", city: "Belo Horizonte", state: "MG" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Avenida", street_name: "Ipiranga", street_number: "321", neighborhood: "Centro", zip_code: "90160092", city: "Porto Alegre", state: "RS" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Rua", street_name: "XV de Novembro", street_number: "654", neighborhood: "Bigorrilho", zip_code: "80020310", city: "Curitiba", state: "PR" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Rua", street_name: "da Bahia", street_number: "987", neighborhood: "Pituba", zip_code: "41830021", city: "Salvador", state: "BA" },
+  { alias: "Apartamento", residence_type: "Apartamento", street_type: "Rua", street_name: "203 Bloco A", street_number: "12", neighborhood: "Asa Norte", zip_code: "70833030", city: "Brasília", state: "DF" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Avenida", street_name: "Brasil", street_number: "1500", neighborhood: "Cambuí", zip_code: "13025001", city: "Campinas", state: "SP" },
+  { alias: "Casa", residence_type: "Casa", street_type: "Rua", street_name: "Meireles", street_number: "200", neighborhood: "Meireles", zip_code: "60165050", city: "Fortaleza", state: "CE" },
+  { alias: "Casa", residence_type: "Apartamento", street_type: "Rua", street_name: "Visconde de Taunay", street_number: "350", neighborhood: "Victor Konder", zip_code: "89012190", city: "Blumenau", state: "SC" },
 ];
 
 const cards = [
-  { card_number: "4111111111111111", printed_name: "CARLOS E MENDES", card_flag: "Visa", security_code: "123", expiration_date: "12/2027" },
-  { card_number: "5500005555555559", printed_name: "ANA P FERREIRA", card_flag: "Mastercard", security_code: "456", expiration_date: "08/2026" },
-  { card_number: "4012888888881881", printed_name: "ROBERTO S NETO", card_flag: "Visa", security_code: "789", expiration_date: "03/2028" },
-  { card_number: "5555555555554444", printed_name: "JULIANA C ALVES", card_flag: "Mastercard", security_code: "321", expiration_date: "10/2027" },
-  { card_number: "4111111111111111", printed_name: "MARCOS A LIMA", card_flag: "Visa", security_code: "654", expiration_date: "05/2026" },
-  { card_number: "5105105105105100", printed_name: "FERNANDA R SANTOS", card_flag: "Mastercard", security_code: "987", expiration_date: "11/2028" },
-  { card_number: "4012888888881881", printed_name: "THIAGO O BARROS", card_flag: "Visa", security_code: "147", expiration_date: "07/2027" },
-  { card_number: "5500005555555559", printed_name: "CAMILA P GOMES", card_flag: "Mastercard", security_code: "258", expiration_date: "09/2026" },
-  { card_number: "4111111111111111", printed_name: "FELIPE N CRUZ", card_flag: "Visa", security_code: "369", expiration_date: "01/2029" },
-  { card_number: "5555555555554444", printed_name: "BEATRIZ M CARDOSO", card_flag: "Mastercard", security_code: "741", expiration_date: "04/2027" },
+  { card_number: "4111111111111111", printed_name: "CARLOS E MENDES", card_flag: "Visa", security_code: "123", expiration_date: "1227" },
+  { card_number: "5500005555555559", printed_name: "ANA P FERREIRA", card_flag: "MasterCard", security_code: "456", expiration_date: "0826" },
+  { card_number: "4012888888881881", printed_name: "ROBERTO S NETO", card_flag: "Visa", security_code: "789", expiration_date: "0328" },
+  { card_number: "5555555555554444", printed_name: "JULIANA C ALVES", card_flag: "MasterCard", security_code: "321", expiration_date: "1027" },
+  { card_number: "4111111111111111", printed_name: "MARCOS A LIMA", card_flag: "Visa", security_code: "654", expiration_date: "0526" },
+  { card_number: "5105105105105100", printed_name: "FERNANDA R SANTOS", card_flag: "MasterCard", security_code: "987", expiration_date: "1128" },
+  { card_number: "4012888888881881", printed_name: "THIAGO O BARROS", card_flag: "Visa", security_code: "147", expiration_date: "0727" },
+  { card_number: "5500005555555559", printed_name: "CAMILA P GOMES", card_flag: "MasterCard", security_code: "258", expiration_date: "0926" },
+  { card_number: "4111111111111111", printed_name: "FELIPE N CRUZ", card_flag: "Visa", security_code: "369", expiration_date: "0129" },
+  { card_number: "5555555555554444", printed_name: "BEATRIZ M CARDOSO", card_flag: "MasterCard", security_code: "741", expiration_date: "0427" },
 ];
 
 /**
@@ -166,20 +166,20 @@ function randomStatus(daysAgo) {
   if (daysAgo > 14) {
     const roll = Math.random();
     if (roll < 0.7) return "entregue";
-    if (roll < 0.85) return "enviado";
-    return "cancelado";
+    if (roll < 0.85) return "em_transito";
+    return "em_processamento";
   }
   if (daysAgo > 7) {
     const roll = Math.random();
     if (roll < 0.4) return "entregue";
-    if (roll < 0.7) return "enviado";
-    if (roll < 0.85) return "processando";
+    if (roll < 0.7) return "em_transito";
+    if (roll < 0.85) return "em_processamento";
     return "aguardando_pagamento";
   }
   const roll = Math.random();
   if (roll < 0.3) return "aguardando_pagamento";
-  if (roll < 0.6) return "processando";
-  if (roll < 0.8) return "enviado";
+  if (roll < 0.6) return "em_processamento";
+  if (roll < 0.8) return "em_transito";
   return "entregue";
 }
 

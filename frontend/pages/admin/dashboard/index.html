@@ -23,7 +23,7 @@
         <header class="dashboard-header">
           <h1 class="dashboard-title">Dashboard</h1>
           <p class="dashboard-subtitle">
-            Visualize o volume de vendas por produto ou categoria em períodos
+            Visualize o volume de vendas por gênero literário em períodos
             personalizados
           </p>
         </header>
@@ -36,26 +36,16 @@
 
           <div class="filters-body">
             <div class="input-group">
-              <p class="label-admin">Data inicial</p>
+              <p class="label-admin">Mês/Ano inicial</p>
               <div class="input-wrapper">
-                <input type="text" placeholder="dd/mm/aaaa" />
-                <img
-                  src="/assets/icons/dashboard-calendar.svg"
-                  alt="calendario"
-                  width="20"
-                />
+                <input type="month" id="filter-start-date" />
               </div>
             </div>
 
             <div class="input-group">
-              <p class="label-admin">Data final</p>
+              <p class="label-admin">Mês/Ano final</p>
               <div class="input-wrapper">
-                <input type="text" placeholder="dd/mm/aaaa" />
-                <img
-                  src="/assets/icons/dashboard-calendar.svg"
-                  alt="calendario"
-                  width="20"
-                />
+                <input type="month" id="filter-end-date" />
               </div>
             </div>
 
@@ -68,9 +58,13 @@
             <img src="/assets/icons/dashboard-no-data.svg" alt="Nenhum dado" />
             <h3 class="empty-state__title">Nenhum dado para exibir</h3>
             <p class="empty-state__text">
-              Selecione um produto, defina o período e clique em "Gerar Análise"
-              para visualizar os dados de vendas.
+              Defina o período e clique em "Gerar Análise"
+              para visualizar as vendas por gênero.
             </p>
+          </div>
+
+          <div id="dashboard-loading" class="empty-state" style="display: none;">
+            <p class="empty-state__text">Carregando dados...</p>
           </div>
 
           <div class="chart-container" id="dashboard-data">
