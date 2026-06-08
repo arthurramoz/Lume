@@ -42,16 +42,18 @@ function renderProductDetails(book) {
     ? parseFloat(book.price.replace("R$", "").replace(",", "."))
     : book.price;
 
-  let imageUrl = "../assets/books/upload.svg";
+  let imageUrl = "/assets/books/upload.svg";
   if (book.cover_image) {
     if (book.cover_image.startsWith('http')) {
       imageUrl = book.cover_image;
-    } else if (book.cover_image.startsWith('/')) {
-      imageUrl = `../assets${book.cover_image}`;
+    } else if (book.cover_image.startsWith('/assets/')) {
+      imageUrl = book.cover_image;
     } else if (book.cover_image.startsWith('assets/')) {
-      imageUrl = `../${book.cover_image}`;
+      imageUrl = `/${book.cover_image}`;
+    } else if (book.cover_image.startsWith('/')) {
+      imageUrl = `/assets${book.cover_image}`;
     } else {
-      imageUrl = `../assets/${book.cover_image}`;
+      imageUrl = `/assets/${book.cover_image}`;
     }
   }
 
@@ -78,7 +80,7 @@ function renderProductDetails(book) {
 
       <div class="product-actions">
         <button id="add-to-cart-btn" class="btn-add-cart" ${!isAvailable ? 'disabled' : ''}>
-          <img src="../assets/icons/cart-white.svg" alt="Carrinho" width="24" />
+          <img src="/assets/icons/cart-white.svg" alt="Carrinho" width="24" />
           ${isAvailable ? 'Adicionar ao Carrinho' : 'Indisponível'}
         </button>
       </div>
@@ -124,7 +126,7 @@ async function handleAddToCart(bookId, btn) {
 
     const cartIcons = document.querySelectorAll("#topbar-cart-icon, #client-cart-icon");
     cartIcons.forEach((icon) => {
-      icon.src = "../assets/icons/home-cart-notification.svg";
+      icon.src = "/assets/icons/home-cart-notification.svg";
     });
 
     window.location.href = "/pages/client/cart.html";

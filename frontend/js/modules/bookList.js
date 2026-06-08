@@ -122,8 +122,16 @@ export const initBookList = async () => {
                             : book.price,
                     image: {
                         url: book.cover_image
-                             ? (book.cover_image.startsWith('/') ? `/assets${book.cover_image}` : book.cover_image)
-                             : "assets/books/upload.svg",
+                             ? (book.cover_image.startsWith('http')
+                                 ? book.cover_image
+                                 : book.cover_image.startsWith('/assets/')
+                                     ? book.cover_image
+                                     : book.cover_image.startsWith('assets/')
+                                         ? `/${book.cover_image}`
+                                         : book.cover_image.startsWith('/')
+                                             ? `/assets${book.cover_image}`
+                                             : `/assets/${book.cover_image}`)
+                             : "/assets/books/upload.svg",
                     },
                     available: book.stock_quantity > 0,
                 };
