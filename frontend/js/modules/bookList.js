@@ -2,6 +2,8 @@ import { formatCurrency } from "../utils/format.js";
 import { getIsAuthenticated, localStorageKeys } from "../hooks/useAuth.js";
 const API_URL = window.API_URL;
 
+/* ─── Book Card Template ──────────────────────────────────────────── */
+
 const createBookCard = (book, isCatalog = false) => `
   <div class="book-card" data-id="${book.id}">
     <img
@@ -28,6 +30,8 @@ const createBookCard = (book, isCatalog = false) => `
     </div>
   </div>
 `;
+
+/* ─── Cart ────────────────────────────────────────────────────────── */
 
 async function addToCart(bookId) {
   const isAuthenticated = getIsAuthenticated();
@@ -97,137 +101,333 @@ function attachBuyButtons(container) {
   });
 }
 
-export const initBookList = async () => {
-    const container = document.querySelector(".book-list");
-    const catalogContainer = document.querySelector("#catalog-grid");
+/* ─── Image URL resolver ──────────────────────────────────────────── */
 
-    let items = [];
+function resolveImageUrl(coverImage) {
+  if (!coverImage) return "/assets/books/upload.svg";
+  if (coverImage.startsWith("http")) return coverImage;
+  if (coverImage.startsWith("/assets/")) return coverImage;
+  if (coverImage.startsWith("assets/")) return `/${coverImage}`;
+  if (coverImage.startsWith("/")) return `/assets${coverImage}`;
+  return `/assets/${coverImage}`;
+}
 
-    try {
-        const response = await fetch(`${API_URL}/api/books/cards`);
-        if (response.ok) {
-            const apiBooks = await response.json();
-            items = apiBooks.map((book, index) => {
-                return {
-                    id: book.id || index + 1,
-                    title: book.title,
-                    by: book.author_name || "Desconhecido",
-                    price:
-                        typeof book.price === "string"
-                            ? parseFloat(
-                                  book.price
-                                      .replace("R$", "")
-                                      .replace(",", "."),
-                              )
-                            : book.price,
-                    image: {
-                        url: book.cover_image
-                             ? (book.cover_image.startsWith('http')
-                                 ? book.cover_image
-                                 : book.cover_image.startsWith('/assets/')
-                                     ? book.cover_image
-                                     : book.cover_image.startsWith('assets/')
-                                         ? `/${book.cover_image}`
-                                         : book.cover_image.startsWith('/')
-                                             ? `/assets${book.cover_image}`
-                                             : `/assets/${book.cover_image}`)
-                             : "/assets/books/upload.svg",
-                    },
-                    available: book.stock_quantity > 0,
-                };
+/* ─── Map API book to card data ───────────────────────────────────── */
+
+function mapBookToCard(book) {
+  return {
+    id: book.id,
+    title: book.title,
+    by: book.author_name || "Desconhecido",
+    price: typeof book.price === "string"
+      ? parseFloat(book.price.replace("R$", "").replace(",", "."))
+      : book.price,
+    image: { url: resolveImageUrl(book.cover_image) },
+    available: book.stock_quantity > 0,
+  };
+}
+
+/* ─── Catalog State ───────────────────────────────────────────────── */
+
+let catalogState = {
+  search: "",
+  authorIds: [],
+  genreIds: [],
+  sort: "",
+  page: 1,
+  limit: 6,
+};
+
+/* ─── Debounce helper ─────────────────────────────────────────────── */
+
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+/* ─── Catalog: Load filters from API ──────────────────────────────── */
+
+async function loadFilters() {
+  try {
+    const [authorsRes, genresRes] = await Promise.all([
+      fetch(`${API_URL}/api/books/authors`),
+      fetch(`${API_URL}/api/books/genres`),
+    ]);
+
+    if (authorsRes.ok) {
+      const authors = await authorsRes.json();
+      const authorsContainer = document.getElementById("catalog-authors");
+      if (authorsContainer) {
+        const VISIBLE_COUNT = 5;
+        const hasMore = authors.length > VISIBLE_COUNT;
+
+        authorsContainer.innerHTML = authors
+          .map(
+            (a, i) => `
+            <label class="catalog-checkbox ${i >= VISIBLE_COUNT ? "catalog-checkbox--hidden" : ""}">
+              <input type="checkbox" value="${a.id}" name="author" /> ${a.name}
+            </label>`
+          )
+          .join("");
+
+        if (hasMore) {
+          const toggleBtn = document.createElement("button");
+          toggleBtn.className = "catalog-toggle-btn";
+          toggleBtn.textContent = `Ver todos (${authors.length})`;
+          toggleBtn.addEventListener("click", () => {
+            const hidden = authorsContainer.querySelectorAll(".catalog-checkbox--hidden");
+            const isExpanded = toggleBtn.dataset.expanded === "true";
+
+            hidden.forEach((el) => {
+              el.style.display = isExpanded ? "none" : "flex";
             });
-        } else {
-            console.error("Erro ao buscar livros da API.");
+
+            toggleBtn.dataset.expanded = isExpanded ? "false" : "true";
+            toggleBtn.textContent = isExpanded
+              ? `Ver todos (${authors.length})`
+              : "Ver menos";
+          });
+          authorsContainer.appendChild(toggleBtn);
         }
-    } catch (error) {
-        console.error("Erro de conexão na API:", error);
+
+        authorsContainer.querySelectorAll("input[name='author']").forEach((cb) => {
+          cb.addEventListener("change", () => {
+            catalogState.authorIds = getCheckedValues("author");
+            catalogState.page = 1;
+            loadCatalog();
+          });
+        });
+      }
     }
 
-    if (container && items.length > 0) {
+    if (genresRes.ok) {
+      const genres = await genresRes.json();
+      const genresContainer = document.getElementById("catalog-genres");
+      if (genresContainer) {
+        genresContainer.innerHTML = genres
+          .map(
+            (g) => `
+            <label class="catalog-checkbox">
+              <input type="checkbox" value="${g.id}" name="genre" /> ${g.name}
+            </label>`
+          )
+          .join("");
+
+        genresContainer.querySelectorAll("input[name='genre']").forEach((cb) => {
+          cb.addEventListener("change", () => {
+            catalogState.genreIds = getCheckedValues("genre");
+            catalogState.page = 1;
+            loadCatalog();
+          });
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao carregar filtros:", error);
+  }
+}
+
+function getCheckedValues(name) {
+  return [...document.querySelectorAll(`input[name='${name}']:checked`)].map(
+    (cb) => Number(cb.value)
+  );
+}
+
+/* ─── Catalog: Load books from search API ─────────────────────────── */
+
+async function loadCatalog() {
+  const catalogContainer = document.getElementById("catalog-grid");
+  if (!catalogContainer) return;
+
+  const params = new URLSearchParams();
+  if (catalogState.search) params.set("search", catalogState.search);
+  if (catalogState.authorIds.length > 0) params.set("authors", catalogState.authorIds.join(","));
+  if (catalogState.genreIds.length > 0) params.set("genres", catalogState.genreIds.join(","));
+  if (catalogState.sort) params.set("sort", catalogState.sort);
+  params.set("page", catalogState.page);
+  params.set("limit", catalogState.limit);
+
+  try {
+    const response = await fetch(`${API_URL}/api/books/search?${params.toString()}`);
+    if (!response.ok) throw new Error("Erro na busca");
+
+    const data = await response.json();
+    const items = data.books.map(mapBookToCard);
+
+    if (items.length === 0) {
+      catalogContainer.innerHTML = `
+        <div class="catalog-empty">
+          <p>Nenhum livro encontrado com os filtros selecionados.</p>
+        </div>
+      `;
+    } else {
+      catalogContainer.innerHTML = items
+        .map((book) => createBookCard(book, true))
+        .join("");
+      attachBuyButtons(catalogContainer);
+    }
+
+    renderPagination(data.total, data.page, data.totalPages);
+  } catch (error) {
+    console.error("Erro ao buscar catálogo:", error);
+    catalogContainer.innerHTML = `
+      <div class="catalog-empty">
+        <p>Erro ao carregar livros. Tente novamente.</p>
+      </div>
+    `;
+  }
+}
+
+/* ─── Pagination ──────────────────────────────────────────────────── */
+
+function renderPagination(total, currentPage, totalPages) {
+  const paginationInfo = document.querySelector("#catalog-pagination .pagination-info");
+  const paginationControls = document.querySelector("#catalog-pagination .pagination-controls");
+
+  if (paginationInfo) {
+    const showing = Math.min(catalogState.limit, total - (currentPage - 1) * catalogState.limit);
+    paginationInfo.textContent = total > 0
+      ? `Mostrando ${showing.toString().padStart(2, "0")} de ${total.toString().padStart(2, "0")}`
+      : "";
+  }
+
+  if (!paginationControls || totalPages <= 1) {
+    if (paginationControls) paginationControls.innerHTML = "";
+    return;
+  }
+
+  let controlsHTML = `
+    <button class="page-number" data-page="${currentPage > 1 ? currentPage - 1 : 1}" ${currentPage === 1 ? "disabled" : ""}>
+      <img src="/assets/icons/users-pagination-left.svg" alt="Anterior" />
+    </button>
+  `;
+
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, currentPage + 2);
+
+  if (startPage > 1) {
+    controlsHTML += `<button class="page-number" data-page="1">1</button>`;
+    if (startPage > 2) {
+      controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
+    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    controlsHTML += `
+      <button class="page-number ${i === currentPage ? "active" : ""}" data-page="${i}">${i}</button>
+    `;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
+    }
+    controlsHTML += `<button class="page-number" data-page="${totalPages}">${totalPages}</button>`;
+  }
+
+  controlsHTML += `
+    <button class="page-number" data-page="${currentPage < totalPages ? currentPage + 1 : totalPages}" ${currentPage === totalPages ? "disabled" : ""}>
+      <img src="/assets/icons/users-pagination-right.svg" alt="Próximo" />
+    </button>
+  `;
+
+  paginationControls.innerHTML = controlsHTML;
+
+  paginationControls.querySelectorAll("button[data-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      const newPage = parseInt(btn.dataset.page);
+      if (newPage && newPage !== catalogState.page) {
+        catalogState.page = newPage;
+        loadCatalog();
+        const sectionTitle = document.querySelector(".catalog-title");
+        if (sectionTitle) sectionTitle.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+}
+
+/* ─── Init: Wire up events ────────────────────────────────────────── */
+
+function initCatalogEvents() {
+  // Search input com debounce
+  const searchInput = document.getElementById("catalog-search-input");
+  if (searchInput) {
+    const debouncedSearch = debounce((value) => {
+      catalogState.search = value;
+      catalogState.page = 1;
+      loadCatalog();
+    }, 400);
+
+    searchInput.addEventListener("input", (e) => {
+      debouncedSearch(e.target.value);
+    });
+  }
+
+  // Sort select
+  const sortSelect = document.getElementById("catalog-sort");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (e) => {
+      catalogState.sort = e.target.value;
+      catalogState.page = 1;
+      loadCatalog();
+    });
+  }
+
+  // Clear filters button
+  const clearBtn = document.getElementById("catalog-clear-filters");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      catalogState.search = "";
+      catalogState.authorIds = [];
+      catalogState.genreIds = [];
+      catalogState.sort = "";
+      catalogState.page = 1;
+
+      // Reset UI
+      if (searchInput) searchInput.value = "";
+      if (sortSelect) sortSelect.value = "";
+      document.querySelectorAll("input[name='author'], input[name='genre']").forEach((cb) => {
+        cb.checked = false;
+      });
+
+      loadCatalog();
+    });
+  }
+}
+
+/* ─── Main init ───────────────────────────────────────────────────── */
+
+export const initBookList = async () => {
+  const container = document.querySelector(".book-list");
+  const catalogContainer = document.getElementById("catalog-grid");
+
+  // ── Seção "Favoritos dos pequenos leitores" (top 5 livros) ──
+  try {
+    const response = await fetch(`${API_URL}/api/books/cards`);
+    if (response.ok) {
+      const apiBooks = await response.json();
+      const items = apiBooks.map(mapBookToCard);
+
+      if (container && items.length > 0) {
         container.innerHTML = items
-            .slice(0, 5)
-            .map((book) => createBookCard(book, false))
-            .join("");
+          .slice(0, 5)
+          .map((book) => createBookCard(book, false))
+          .join("");
         attachBuyButtons(container);
+      }
     }
+  } catch (error) {
+    console.error("Erro de conexão na API:", error);
+  }
 
-    if (catalogContainer && items.length > 0) {
-        const itemsPerPage = 6;
-        let currentPage = 1;
-        const totalItems = items.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-
-        const renderCatalogPage = (page) => {
-            const start = (page - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageItems = items.slice(start, end);
-
-            catalogContainer.innerHTML = pageItems
-                .map((book) => createBookCard(book, true))
-                .join("");
-            attachBuyButtons(catalogContainer);
-
-            const paginationInfo = document.querySelector(".pagination-info");
-            const paginationControls = document.querySelector(".pagination-controls");
-
-            if (paginationInfo) {
-                const showingCount = pageItems.length;
-                paginationInfo.textContent = `Mostrando ${showingCount.toString().padStart(2, '0')} de ${totalItems.toString().padStart(2, '0')}`;
-            }
-
-            if (paginationControls) {
-                let controlsHTML = `
-                    <button class="page-number" data-page="${page > 1 ? page - 1 : 1}" ${page === 1 ? 'disabled' : ''}>
-                        <img src="/assets/icons/users-pagination-left.svg" alt="Anterior" />
-                    </button>
-                `;
-
-                let startPage = Math.max(1, page - 2);
-                let endPage = Math.min(totalPages, page + 2);
-
-                if (startPage > 1) {
-                    controlsHTML += `<button class="page-number" data-page="1">1</button>`;
-                    if (startPage > 2) {
-                        controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
-                    }
-                }
-
-                for (let i = startPage; i <= endPage; i++) {
-                    controlsHTML += `
-                        <button class="page-number ${i === page ? 'active' : ''}" data-page="${i}">${i}</button>
-                    `;
-                }
-
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        controlsHTML += `<span class="page-number" style="pointer-events: none; border: none; background: transparent;">...</span>`;
-                    }
-                    controlsHTML += `<button class="page-number" data-page="${totalPages}">${totalPages}</button>`;
-                }
-
-                controlsHTML += `
-                    <button class="page-number" data-page="${page < totalPages ? page + 1 : totalPages}" ${page === totalPages ? 'disabled' : ''}>
-                        <img src="/assets/icons/users-pagination-right.svg" alt="Próximo" />
-                    </button>
-                `;
-
-                paginationControls.innerHTML = controlsHTML;
-
-                paginationControls.querySelectorAll("button[data-page]").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        if (btn.disabled) return;
-                        const newPage = parseInt(btn.dataset.page);
-                        if (newPage && newPage !== currentPage) {
-                            currentPage = newPage;
-                            renderCatalogPage(currentPage);
-                            const sectionTitle = document.querySelector('.catalog-title');
-                            if (sectionTitle) sectionTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    });
-                });
-            }
-        };
-
-        renderCatalogPage(currentPage);
-    }
+  // ── Seção Catálogo com busca, filtros, ordenação e paginação ──
+  if (catalogContainer) {
+    await loadFilters();
+    initCatalogEvents();
+    loadCatalog();
+  }
 };
