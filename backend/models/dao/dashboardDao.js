@@ -1,13 +1,6 @@
 const pool = require("../../config/database");
 
 class DashboardDao {
-    /**
-     * Busca vendas agrupadas por gênero e mês dentro de um período.
-     * Considera apenas pedidos com status relevantes (exclui aguardando_pagamento).
-     * @param {string} startDate - Data inicial (formato YYYY-MM-DD)
-     * @param {string} endDate   - Data final (formato YYYY-MM-DD)
-     * @returns {Array} Rows com month_key, month_label, genre_name, total_quantity
-     */
     async findSalesByGenre(startDate, endDate) {
         const query = `
             SELECT
