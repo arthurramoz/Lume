@@ -1,4 +1,4 @@
-const pool = require("../config/database");
+const dashboardDao = require("../models/dao/dashboardDao");
 
 /**
  * GET /api/dashboard/sales-by-genre?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
@@ -24,31 +24,13 @@ exports.getSalesByGenre = async (req, res) => {
             });
         }
 
-        // Query: vendas por gênero agrupadas por mês
-        const query = `
-            SELECT
-                TO_CHAR(o.created_at, 'YYYY-MM') AS month_key,
-                TO_CHAR(o.created_at, 'Mon/YYYY') AS month_label,
-                g.name AS genre_name,
-                COALESCE(SUM(oi.quantity), 0) AS total_quantity
-            FROM orders o
-            JOIN order_items oi ON oi.order_id = o.id
-            JOIN books b ON oi.book_id = b.id
-            JOIN genres g ON b.genre_id = g.id
-            WHERE o.created_at >= $1::date
-              AND o.created_at < ($2::date + INTERVAL '1 day')
-              AND o.status NOT IN ('aguardando_pagamento')
-            GROUP BY month_key, month_label, g.name
-            ORDER BY month_key ASC, g.name ASC
-        `;
-
-        const result = await pool.query(query, [start_date, end_date]);
+        const rows = await dashboardDao.findSalesByGenre(start_date, end_date);
 
         // Organizar dados: extrair labels (meses) e datasets (gêneros)
         const monthsMap = new Map();
         const genresSet = new Set();
 
-        for (const row of result.rows) {
+        for (const row of rows) {
             monthsMap.set(row.month_key, row.month_label);
             genresSet.add(row.genre_name);
         }
@@ -59,7 +41,7 @@ exports.getSalesByGenre = async (req, res) => {
 
         // Montar lookup: { "2025-06|Infantil": 12 }
         const dataLookup = {};
-        for (const row of result.rows) {
+        for (const row of rows) {
             dataLookup[`${row.month_key}|${row.genre_name}`] = parseInt(row.total_quantity);
         }
 
