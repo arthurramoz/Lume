@@ -1,15 +1,245 @@
-# 🗄️ Estrutura do Banco de Dados — Lume
+# 💜 Lume — Livraria Infantil Online
 
-**Banco:** PostgreSQL  
-**Total de tabelas:** 16  
-
-Abaixo está o script DDL completo de criação de todas as tabelas, organizadas por domínio.
+**Lume** é uma livraria online brasileira especializada em **livros infantis**. Nosso site moderno traz um tema roxo encantador, pensado para tornar a experiência de compra fácil, acolhedora e divertida.
 
 ---
 
-## 👤 Usuários
+## 💜 Tecnologias Utilizadas
 
-### `users`
+### Backend
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Node.js** | Runtime JavaScript para o servidor |
+| **Express 5** | Framework web para criação da API REST |
+| **PostgreSQL** | Banco de dados relacional |
+| **pg** | Driver PostgreSQL para Node.js |
+| **JWT** (`jsonwebtoken`) | Autenticação via tokens |
+| **bcryptjs** | Hash seguro de senhas |
+| **dotenv** | Gerenciamento de variáveis de ambiente |
+| **cors** | Controle de acesso entre origens (CORS) |
+
+### Frontend
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **HTML5** | Estrutura das páginas |
+| **CSS3** | Estilização com tema roxo 💜 |
+| **JavaScript (Vanilla)** | Lógica e interatividade no navegador |
+
+### Inteligência Artificial 🤖
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Groq SDK** | Integração com IA para o chatbot da Lume |
+| **LLaMA 3.3 70B** | Modelo de linguagem utilizado pelo chatbot |
+
+O chatbot **Lume** é um assistente virtual inteligente que recomenda livros infantis com base no histórico de compras do cliente e no catálogo disponível na loja.
+
+### Testes
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Cypress** | Testes end-to-end automatizados do frontend |
+
+### Deploy e Infraestrutura 🚀
+
+| Serviço | Utilização |
+|---------|------------|
+| **Render** | Hospedagem do backend (API) e do banco PostgreSQL |
+| **Vercel** | Hospedagem do frontend (site estático) |
+
+---
+
+## 💜 Como Rodar o Projeto
+
+### Pré-requisitos
+
+- **Node.js** (v18 ou superior)
+- **npm**
+- **PostgreSQL** (local ou remoto)
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seu-usuario/Lume.git
+cd Lume
+```
+
+### 2. Configure o banco de dados
+
+Crie um banco PostgreSQL e execute o script de criação das tabelas:
+
+```bash
+psql -U seu_usuario -d lume_db -f backend/scripts/create_tables.sql
+```
+
+### 3. Configure as variáveis de ambiente
+
+Crie o arquivo `backend/.env` com as seguintes variáveis:
+
+```env
+PORT=3333
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/lume_db
+NODE_ENV=development
+GROQ_API_KEY=sua_chave_groq
+JWT_SECRET=sua_chave_secreta
+```
+
+### 4. Instale as dependências e inicie o backend
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+O servidor estará rodando em `http://localhost:3333`
+
+### 5. Popule o banco com dados iniciais (opcional)
+
+```bash
+node seed_books.js
+node seed_genres.js
+node seed_coupons.js
+node seed_dashboard.js
+```
+
+### 6. Inicie o frontend
+
+Abra o arquivo `frontend/index.html` com o **Live Server** (extensão do VS Code) ou qualquer servidor local na porta **5502**.
+
+---
+
+## 💜 Estrutura de Pastas
+
+```
+Lume/
+├── backend/
+│   ├── config/          # Configuração do banco de dados
+│   ├── controllers/     # Lógica de negócio das rotas
+│   ├── middlewares/      # Middleware de autenticação (JWT)
+│   ├── models/dao/      # Camada de acesso a dados (DAOs)
+│   ├── routes/          # Definição das rotas da API
+│   ├── scripts/         # Scripts SQL e documentação do banco
+│   ├── server.js        # Ponto de entrada da aplicação
+│   ├── seed_*.js        # Scripts para popular o banco
+│   └── .env             # Variáveis de ambiente
+│
+├── frontend/
+│   ├── assets/          # Imagens e recursos estáticos
+│   ├── css/             # Estilos CSS
+│   ├── js/              # Scripts JavaScript
+│   ├── pages/           # Páginas HTML (admin e cliente)
+│   ├── cypress/         # Testes end-to-end
+│   ├── index.html       # Página inicial da loja
+│   └── vercel.json      # Configuração de deploy na Vercel
+│
+└── render.yaml          # Configuração de deploy no Render
+```
+
+---
+
+## 💜 Rotas da API
+
+### Autenticação
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/auth/login` | Login do usuário |
+| POST | `/api/auth/register` | Cadastro de novo usuário |
+
+### Usuários
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/users` | Listar todos os usuários |
+| GET | `/api/users/:id` | Buscar usuário por ID |
+| PUT | `/api/users/:id` | Atualizar dados do usuário |
+| PATCH | `/api/users/:id/status` | Ativar/inativar usuário |
+
+### Endereços
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/addresses` | Cadastrar endereço |
+| GET | `/api/addresses/:id` | Buscar endereço por ID |
+| PUT | `/api/addresses/:id` | Atualizar endereço |
+| DELETE | `/api/addresses/:id` | Remover endereço |
+
+### Cartões
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/cards` | Cadastrar cartão |
+| GET | `/api/cards` | Listar cartões |
+| DELETE | `/api/cards/:id` | Remover cartão |
+
+### Livros
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/books` | Listar livros (catálogo) |
+| GET | `/api/books/:id` | Detalhes de um livro |
+| GET | `/api/books/search` | Busca com filtros e paginação |
+
+### Carrinho
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/cart` | Adicionar item ao carrinho |
+| GET | `/api/cart` | Ver itens do carrinho |
+| PUT | `/api/cart/:id` | Atualizar quantidade |
+| DELETE | `/api/cart/:id` | Remover item |
+
+### Pedidos
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/orders` | Criar pedido |
+| GET | `/api/orders` | Listar pedidos do usuário |
+| GET | `/api/orders/:id` | Detalhes do pedido |
+| POST | `/api/orders/:id/exchange` | Solicitar troca |
+
+### Cupons
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/coupons` | Listar cupons do usuário |
+| POST | `/api/coupons/validate` | Validar cupom |
+
+### Frete
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/shipping/:state` | Calcular frete por estado |
+
+### Chatbot 🤖
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/chatbot` | Enviar mensagem ao chatbot Lume |
+
+### Admin — Pedidos
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/admin/orders` | Listar todos os pedidos |
+| GET | `/api/admin/orders/:id` | Detalhes do pedido (admin) |
+| PATCH | `/api/admin/orders/:id/status` | Atualizar status do pedido |
+
+### Admin — Cupons
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/admin/coupons` | Listar todos os cupons |
+| PATCH | `/api/admin/coupons/:id/toggle` | Ativar/desativar cupom |
+
+### Dashboard
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/dashboard/sales` | Vendas por gênero e período |
+
+---
+
+## 💜 Estrutura do Banco de Dados
+
+**Banco:** PostgreSQL  
+**Total de tabelas:** 16
+
+---
+
+### 👤 Usuários
+
+#### `users`
 
 Armazena os **dados cadastrais** dos clientes da plataforma, incluindo informações pessoais, contato e credenciais de acesso.
 
@@ -32,7 +262,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 ---
 
-### `addresses`
+#### `addresses`
 
 Armazena os **endereços** vinculados a um usuário. Cada endereço pode ser marcado como endereço de **cobrança**, de **entrega**, ou ambos.
 
@@ -59,7 +289,7 @@ CREATE TABLE IF NOT EXISTS addresses (
 
 ---
 
-### `credit_cards`
+#### `credit_cards`
 
 Armazena os **cartões de crédito** cadastrados pelo usuário para realizar pagamentos na plataforma.
 
@@ -78,9 +308,9 @@ CREATE TABLE IF NOT EXISTS credit_cards (
 
 ---
 
-## 📖 Catálogo
+### 📖 Catálogo
 
-### `authors`
+#### `authors`
 
 Cadastro dos **autores** dos livros disponíveis no catálogo.
 
@@ -94,7 +324,7 @@ CREATE TABLE IF NOT EXISTS authors (
 
 ---
 
-### `genres`
+#### `genres`
 
 Cadastro dos **gêneros literários** utilizados para classificar os livros (ex.: Aventura, Fábula, Fantasia, Poesia).
 
@@ -108,7 +338,7 @@ CREATE TABLE IF NOT EXISTS genres (
 
 ---
 
-### `books`
+#### `books`
 
 Tabela principal do **catálogo de livros**, com informações como título, preço, estoque, capa e vínculos com autor e gênero.
 
@@ -131,9 +361,9 @@ CREATE TABLE IF NOT EXISTS books (
 
 ---
 
-## 🛒 Carrinho
+### 🛒 Carrinho
 
-### `carts`
+#### `carts`
 
 Representa o **carrinho de compras** de cada usuário. Um carrinho pode estar com status **aberto** (em uso) ou **finalizado** (após a compra).
 
@@ -148,7 +378,7 @@ CREATE TABLE IF NOT EXISTS carts (
 
 ---
 
-### `cart_items`
+#### `cart_items`
 
 Armazena os **itens adicionados ao carrinho**, relacionando cada livro com a quantidade desejada.
 
@@ -164,9 +394,9 @@ CREATE TABLE IF NOT EXISTS cart_items (
 
 ---
 
-## 📦 Pedidos
+### 📦 Pedidos
 
-### `orders`
+#### `orders`
 
 Registra os **pedidos realizados** pelos clientes. Cada pedido possui um status que acompanha seu ciclo de vida: `aguardando_pagamento` → `em_processamento` → `em_transito` → `entregue`. Também pode ser `cancelado` ou estar `em_troca`.
 
@@ -185,7 +415,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ---
 
-### `order_items`
+#### `order_items`
 
 Armazena os **itens de cada pedido**, registrando o livro, a quantidade e o **preço no momento da compra** (snapshot).
 
@@ -202,7 +432,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 ---
 
-### `payments`
+#### `payments`
 
 Registra os **pagamentos** vinculados aos pedidos, incluindo o cartão utilizado, valor e status do pagamento.
 
@@ -220,9 +450,9 @@ CREATE TABLE IF NOT EXISTS payments (
 
 ---
 
-## 🎟️ Cupons
+### 🎟️ Cupons
 
-### `coupons`
+#### `coupons`
 
 Armazena os **cupons de desconto** da plataforma. Podem ser do tipo **promocional** (criados pelo admin) ou **troca** (gerados automaticamente ao aprovar uma devolução).
 
@@ -242,7 +472,7 @@ CREATE TABLE IF NOT EXISTS coupons (
 
 ---
 
-### `coupon_usages`
+#### `coupon_usages`
 
 Registra **qual usuário usou qual cupom**, evitando que um mesmo cupom seja utilizado mais de uma vez pelo mesmo cliente.
 
@@ -257,7 +487,7 @@ CREATE TABLE IF NOT EXISTS coupon_usages (
 
 ---
 
-### `order_coupons`
+#### `order_coupons`
 
 Registra os **cupons efetivamente aplicados** em cada pedido, salvando o valor do desconto, código e tipo no momento do uso.
 
@@ -275,9 +505,9 @@ CREATE TABLE IF NOT EXISTS order_coupons (
 
 ---
 
-## 🔄 Trocas e Frete
+### 🔄 Trocas e Frete
 
-### `exchange_items`
+#### `exchange_items`
 
 Armazena os **itens solicitados para troca/devolução** dentro de um pedido, incluindo o motivo informado pelo cliente.
 
@@ -293,7 +523,7 @@ CREATE TABLE IF NOT EXISTS exchange_items (
 
 ---
 
-### `shipping_rates`
+#### `shipping_rates`
 
 Tabela de **frete por estado** (UF). Utilizada para calcular o custo de envio com base no endereço de entrega do cliente.
 
@@ -308,7 +538,7 @@ CREATE TABLE IF NOT EXISTS shipping_rates (
 
 ---
 
-## 📊 Resumo das Tabelas
+### 📊 Resumo das Tabelas
 
 | Domínio | Tabelas |
 |---------|---------|
@@ -318,3 +548,7 @@ CREATE TABLE IF NOT EXISTS shipping_rates (
 | **📦 Pedidos** | `orders` · `order_items` · `payments` |
 | **🎟️ Cupons** | `coupons` · `coupon_usages` · `order_coupons` |
 | **🔄 Trocas/Frete** | `exchange_items` · `shipping_rates` |
+
+---
+
+> 💜 *Feito com carinho pelo time Lume.*
