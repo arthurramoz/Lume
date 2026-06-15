@@ -5,9 +5,18 @@ exports.getCoupons = async function (req, res) {
         const user_id = req.user ? req.user.id : null;
         const coupons = await couponDao.findAll();
 
+        // Filtra cupons de troca: exibe apenas os do próprio usuário.
+        // Cupons promocionais são globais e aparecem para todos.
+        const filtered = coupons.filter((c) => {
+            if (c.type === "troca") {
+                return c.user_id === user_id;
+            }
+            return true;
+        });
+
         if (user_id) {
             const result = await Promise.all(
-                coupons.map(async (c) => {
+                filtered.map(async (c) => {
                     const used = await couponDao.hasUserUsedCoupon(c.id, user_id);
                     return { ...c, user_has_used: used };
                 })
@@ -15,7 +24,7 @@ exports.getCoupons = async function (req, res) {
             return res.status(200).json(result);
         }
 
-        res.status(200).json(coupons);
+        res.status(200).json(filtered);
     } catch (error) {
         console.error("Erro ao buscar cupons:", error);
         res.status(500).json({ error: "Erro ao buscar cupons" });

@@ -125,13 +125,17 @@ describe("Solicitação de troca de pedido pelo cliente", () => {
         cy.wait(STEP_PAUSE);
         cy.get("#modal-exchange", { timeout: 8000 }).should("be.visible");
         cy.wait(STEP_PAUSE);
+        cy.get(".exchange-item__checkbox").first().check();
+        cy.wait(STEP_PAUSE);
         cy.get("#exchange-reason")
             .clear()
             .type("Livro com defeito na impressão, páginas borradas.", {
                 delay: TYPING_DELAY,
             });
         cy.wait(STEP_PAUSE);
-        cy.on("window:alert", () => {});
+        cy.on("window:alert", (str) => {
+            expect(str).to.equal("Troca solicitada com sucesso!");
+        });
         cy.get("#btn-submit-exchange").click();
         cy.wait(STEP_PAUSE);
         cy.get("#modal-exchange").should("not.be.visible");

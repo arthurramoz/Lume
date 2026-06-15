@@ -96,16 +96,31 @@ describe("Administrador — fluxo de autorização e conclusão de troca", () =>
                                                     Authorization: `Bearer ${adminToken}`,
                                                 },
                                                 body: { status: "entregue" },
-                                            });
-                                            cy.request({
-                                                method: "PUT",
-                                                url: `${API_URL}/orders/${exchangeOrderId}/exchange`,
-                                                headers: {
-                                                    Authorization: `Bearer ${clientToken}`,
-                                                },
-                                                body: {
-                                                    reason: "Produto danificado.",
-                                                },
+                                            }).then(() => {
+                                                cy.request({
+                                                    method: "GET",
+                                                    url: `${API_URL}/orders/${exchangeOrderId}`,
+                                                    headers: {
+                                                        Authorization: `Bearer ${clientToken}`,
+                                                    },
+                                                }).then((orderDetailRes) => {
+                                                    const orderItems = orderDetailRes.body.items || [];
+                                                    const itemsToExchange = orderItems.map((item) => ({
+                                                        order_item_id: item.id,
+                                                    }));
+
+                                                    cy.request({
+                                                        method: "PUT",
+                                                        url: `${API_URL}/orders/${exchangeOrderId}/exchange`,
+                                                        headers: {
+                                                            Authorization: `Bearer ${clientToken}`,
+                                                        },
+                                                        body: {
+                                                            reason: "Produto danificado.",
+                                                            items: itemsToExchange,
+                                                        },
+                                                    });
+                                                });
                                             });
                                         }
                                     });

@@ -38,3 +38,20 @@ Cypress.Commands.add("addBookToCart", (token) => {
         });
     });
 });
+
+Cypress.Commands.add("clearCart", (token) => {
+    cy.request({
+        method: "GET",
+        url: `${API_URL}/cart`,
+        headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+        const items = res.body || [];
+        items.forEach((item) => {
+            cy.request({
+                method: "DELETE",
+                url: `${API_URL}/cart/${item.id}`,
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        });
+    });
+});

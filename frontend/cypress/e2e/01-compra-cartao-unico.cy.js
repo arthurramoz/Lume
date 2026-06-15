@@ -18,6 +18,7 @@ describe("Compra com cartão de crédito único", () => {
         }).then((res) => {
             expect(res.status).to.eq(200);
             authToken = res.body.token;
+            cy.clearCart(authToken);
             cy.addBookToCart(authToken);
         });
     });

@@ -4,13 +4,13 @@ const API_URL = "http://localhost:3333/api";
 const CLIENT_EMAIL = "arthur@lume.com";
 const CLIENT_PASSWORD = "12345678";
 const TOKEN_KEY = "@lume:accessToken";
-const PROMO_COUPON = "LUMEPROMO10";
 
 const TYPING_DELAY = 80;
 const STEP_PAUSE = 2000;
 
 describe("Compra com cupom promocional", () => {
     let authToken;
+    let promoCouponCode;
 
     before(() => {
         cy.request("POST", `${API_URL}/auth/login`, {
@@ -19,7 +19,28 @@ describe("Compra com cupom promocional", () => {
         }).then((res) => {
             expect(res.status).to.eq(200);
             authToken = res.body.token;
-            cy.addBookToCart(authToken);
+
+            // Find an available promo coupon the user hasn't used yet
+            cy.request({
+                method: "GET",
+                url: `${API_URL}/coupons`,
+                headers: { Authorization: `Bearer ${authToken}` },
+            }).then((couponsRes) => {
+                const available = couponsRes.body.filter(
+                    (c) =>
+                        c.type === "promocional" &&
+                        !c.is_used &&
+                        !c.user_has_used,
+                );
+                expect(
+                    available.length,
+                    "Deve haver ao menos 1 cupom promocional disponível",
+                ).to.be.greaterThan(0);
+                promoCouponCode = available[0].code;
+
+                cy.clearCart(authToken);
+                cy.addBookToCart(authToken);
+            });
         });
     });
 
@@ -50,7 +71,7 @@ describe("Compra com cupom promocional", () => {
             .then((totalAntes) => {
                 cy.get("#coupon-input")
                     .clear()
-                    .type(PROMO_COUPON, { delay: TYPING_DELAY });
+                    .type(promoCouponCode, { delay: TYPING_DELAY });
                 cy.wait(STEP_PAUSE);
 
                 cy.get("#btn-apply-coupon").click();
