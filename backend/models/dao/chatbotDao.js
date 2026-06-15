@@ -1,10 +1,6 @@
 const pool = require("../../config/database");
 
 class ChatbotDao {
-    /**
-     * Retorna o histórico de livros comprados pelo usuário
-     * (título, autor, gênero) para alimentar o contexto da IA.
-     */
     async getUserPurchaseHistory(userId) {
         const query = `
             SELECT DISTINCT
@@ -24,10 +20,6 @@ class ChatbotDao {
         return result.rows;
     }
 
-    /**
-     * Retorna o catálogo de livros disponíveis (com estoque > 0)
-     * de forma resumida para o contexto da IA.
-     */
     async getAvailableBooks() {
         const query = `
             SELECT

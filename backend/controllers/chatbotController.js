@@ -3,9 +3,6 @@ const chatbotDao = require("../models/dao/chatbotDao");
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-/**
- * Monta o system prompt fechado com contexto do usuário.
- */
 async function buildSystemPrompt(userId) {
     const purchaseHistory = await chatbotDao.getUserPurchaseHistory(userId);
     const availableBooks = await chatbotDao.getAvailableBooks();
@@ -57,7 +54,7 @@ exports.chat = async function (req, res) {
 
         const systemPrompt = await buildSystemPrompt(userId);
 
-        // Monta o histórico para o Groq (formato OpenAI-compatible)
+
         const messages = [
             { role: "system", content: systemPrompt },
         ];
@@ -69,7 +66,7 @@ exports.chat = async function (req, res) {
             });
         }
 
-        // Adiciona a mensagem atual do usuário
+
         messages.push({
             role: "user",
             content: userMessage,
