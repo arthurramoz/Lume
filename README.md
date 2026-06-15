@@ -1,21 +1,19 @@
--- ╔══════════════════════════════════════════════════════════════════════════════╗
--- ║                                                                            ║
--- ║                         📚  LUME  —  LIVRARIA ONLINE                       ║
--- ║                                                                            ║
--- ║                   Script de Criação do Banco de Dados (DDL)                ║
--- ║                            PostgreSQL  ·  v1.0                             ║
--- ║                                                                            ║
--- ╚══════════════════════════════════════════════════════════════════════════════╝
+# 🗄️ Estrutura do Banco de Dados — Lume
 
+**Banco:** PostgreSQL  
+**Total de tabelas:** 16  
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        👤  DOMÍNIO: USUÁRIOS                               │
--- └──────────────────────────────────────────────────────────────────────────────┘
+Abaixo está o script DDL completo de criação de todas as tabelas, organizadas por domínio.
 
--- ─── 1. users ───────────────────────────────────────────────────────────────────
--- Armazena os dados cadastrais dos clientes da plataforma.
--- ─────────────────────────────────────────────────────────────────────────────────
+---
 
+## 👤 Usuários
+
+### `users`
+
+Armazena os **dados cadastrais** dos clientes da plataforma, incluindo informações pessoais, contato e credenciais de acesso.
+
+```sql
 CREATE TABLE IF NOT EXISTS users (
     id              SERIAL          PRIMARY KEY,
     gender          VARCHAR(20),
@@ -30,12 +28,15 @@ CREATE TABLE IF NOT EXISTS users (
     status          VARCHAR(20)     DEFAULT 'ativo',
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 2. addresses ───────────────────────────────────────────────────────────────
--- Endereços vinculados a um usuário (cobrança e/ou entrega).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `addresses`
 
+Armazena os **endereços** vinculados a um usuário. Cada endereço pode ser marcado como endereço de **cobrança**, de **entrega**, ou ambos.
+
+```sql
 CREATE TABLE IF NOT EXISTS addresses (
     id              SERIAL          PRIMARY KEY,
     user_id         INTEGER         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -54,12 +55,15 @@ CREATE TABLE IF NOT EXISTS addresses (
     is_delivery     BOOLEAN         DEFAULT FALSE,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 3. credit_cards ────────────────────────────────────────────────────────────
--- Cartões de crédito cadastrados pelo usuário para pagamento.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `credit_cards`
 
+Armazena os **cartões de crédito** cadastrados pelo usuário para realizar pagamentos na plataforma.
+
+```sql
 CREATE TABLE IF NOT EXISTS credit_cards (
     id              SERIAL          PRIMARY KEY,
     user_id         INTEGER         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -70,38 +74,45 @@ CREATE TABLE IF NOT EXISTS credit_cards (
     expiration_date VARCHAR(6)      NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        📖  DOMÍNIO: CATÁLOGO                               │
--- └──────────────────────────────────────────────────────────────────────────────┘
+## 📖 Catálogo
 
--- ─── 4. authors ─────────────────────────────────────────────────────────────────
--- Autores dos livros cadastrados no catálogo.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `authors`
 
+Cadastro dos **autores** dos livros disponíveis no catálogo.
+
+```sql
 CREATE TABLE IF NOT EXISTS authors (
     id              SERIAL          PRIMARY KEY,
     name            VARCHAR(255)    NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 5. genres ──────────────────────────────────────────────────────────────────
--- Gêneros literários (Aventura, Fábula, Fantasia, etc.).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `genres`
 
+Cadastro dos **gêneros literários** utilizados para classificar os livros (ex.: Aventura, Fábula, Fantasia, Poesia).
+
+```sql
 CREATE TABLE IF NOT EXISTS genres (
     id              SERIAL          PRIMARY KEY,
     name            VARCHAR(100)    NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 6. books ───────────────────────────────────────────────────────────────────
--- Catálogo de livros disponíveis para venda.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `books`
 
+Tabela principal do **catálogo de livros**, com informações como título, preço, estoque, capa e vínculos com autor e gênero.
+
+```sql
 CREATE TABLE IF NOT EXISTS books (
     id               SERIAL         PRIMARY KEY,
     title            VARCHAR(255)   NOT NULL,
@@ -116,28 +127,32 @@ CREATE TABLE IF NOT EXISTS books (
     genre_id         INTEGER        REFERENCES genres(id),
     created_at       TIMESTAMP      DEFAULT NOW()
 );
+```
 
+---
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        🛒  DOMÍNIO: CARRINHO                               │
--- └──────────────────────────────────────────────────────────────────────────────┘
+## 🛒 Carrinho
 
--- ─── 7. carts ───────────────────────────────────────────────────────────────────
--- Carrinho de compras do usuário. Status: 'aberto' ou 'finalizado'.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `carts`
 
+Representa o **carrinho de compras** de cada usuário. Um carrinho pode estar com status **aberto** (em uso) ou **finalizado** (após a compra).
+
+```sql
 CREATE TABLE IF NOT EXISTS carts (
     id              SERIAL          PRIMARY KEY,
     user_id         INTEGER         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     status          VARCHAR(20)     DEFAULT 'aberto',
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 8. cart_items ──────────────────────────────────────────────────────────────
--- Itens adicionados ao carrinho (livro + quantidade).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `cart_items`
 
+Armazena os **itens adicionados ao carrinho**, relacionando cada livro com a quantidade desejada.
+
+```sql
 CREATE TABLE IF NOT EXISTS cart_items (
     id              SERIAL          PRIMARY KEY,
     cart_id         INTEGER         NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
@@ -145,18 +160,17 @@ CREATE TABLE IF NOT EXISTS cart_items (
     quantity        INTEGER         NOT NULL DEFAULT 1,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        📦  DOMÍNIO: PEDIDOS                                │
--- └──────────────────────────────────────────────────────────────────────────────┘
+## 📦 Pedidos
 
--- ─── 9. orders ──────────────────────────────────────────────────────────────────
--- Pedidos realizados pelos clientes.
--- Status: aguardando_pagamento | em_processamento | em_transito
---         entregue | cancelado | em_troca
--- ─────────────────────────────────────────────────────────────────────────────────
+### `orders`
 
+Registra os **pedidos realizados** pelos clientes. Cada pedido possui um status que acompanha seu ciclo de vida: `aguardando_pagamento` → `em_processamento` → `em_transito` → `entregue`. Também pode ser `cancelado` ou estar `em_troca`.
+
+```sql
 CREATE TABLE IF NOT EXISTS orders (
     id              SERIAL          PRIMARY KEY,
     user_id         INTEGER         NOT NULL REFERENCES users(id),
@@ -167,12 +181,15 @@ CREATE TABLE IF NOT EXISTS orders (
     status          VARCHAR(30)     DEFAULT 'aguardando_pagamento',
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 10. order_items ────────────────────────────────────────────────────────────
--- Itens que compõem cada pedido (livro, quantidade e preço no momento da compra).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `order_items`
 
+Armazena os **itens de cada pedido**, registrando o livro, a quantidade e o **preço no momento da compra** (snapshot).
+
+```sql
 CREATE TABLE IF NOT EXISTS order_items (
     id              SERIAL          PRIMARY KEY,
     order_id        INTEGER         NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -181,12 +198,15 @@ CREATE TABLE IF NOT EXISTS order_items (
     price           NUMERIC(10,2)   NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 11. payments ───────────────────────────────────────────────────────────────
--- Pagamentos vinculados aos pedidos.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `payments`
 
+Registra os **pagamentos** vinculados aos pedidos, incluindo o cartão utilizado, valor e status do pagamento.
+
+```sql
 CREATE TABLE IF NOT EXISTS payments (
     id              SERIAL          PRIMARY KEY,
     order_id        INTEGER         NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -196,16 +216,17 @@ CREATE TABLE IF NOT EXISTS payments (
     payment_status  VARCHAR(30)     DEFAULT 'aprovado',
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        🎟️  DOMÍNIO: CUPONS                                 │
--- └──────────────────────────────────────────────────────────────────────────────┘
+## 🎟️ Cupons
 
--- ─── 12. coupons ────────────────────────────────────────────────────────────────
--- Cupons de desconto. Tipos: 'promocional' ou 'troca'.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `coupons`
 
+Armazena os **cupons de desconto** da plataforma. Podem ser do tipo **promocional** (criados pelo admin) ou **troca** (gerados automaticamente ao aprovar uma devolução).
+
+```sql
 CREATE TABLE IF NOT EXISTS coupons (
     id              SERIAL          PRIMARY KEY,
     code            VARCHAR(50)     UNIQUE NOT NULL,
@@ -217,24 +238,30 @@ CREATE TABLE IF NOT EXISTS coupons (
     order_id        INTEGER         REFERENCES orders(id),
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 13. coupon_usages ──────────────────────────────────────────────────────────
--- Registro de uso de cupons por usuário (evita uso duplicado).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `coupon_usages`
 
+Registra **qual usuário usou qual cupom**, evitando que um mesmo cupom seja utilizado mais de uma vez pelo mesmo cliente.
+
+```sql
 CREATE TABLE IF NOT EXISTS coupon_usages (
     id              SERIAL          PRIMARY KEY,
     coupon_id       INTEGER         NOT NULL REFERENCES coupons(id) ON DELETE CASCADE,
     user_id         INTEGER         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 14. order_coupons ──────────────────────────────────────────────────────────
--- Cupons efetivamente aplicados em cada pedido (valor e tipo no momento do uso).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `order_coupons`
 
+Registra os **cupons efetivamente aplicados** em cada pedido, salvando o valor do desconto, código e tipo no momento do uso.
+
+```sql
 CREATE TABLE IF NOT EXISTS order_coupons (
     id              SERIAL          PRIMARY KEY,
     order_id        INTEGER         NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -244,16 +271,17 @@ CREATE TABLE IF NOT EXISTS order_coupons (
     coupon_type     VARCHAR(30),
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ┌──────────────────────────────────────────────────────────────────────────────┐
--- │                        🔄  DOMÍNIO: TROCAS & FRETE                         │
--- └──────────────────────────────────────────────────────────────────────────────┘
+## 🔄 Trocas e Frete
 
--- ─── 15. exchange_items ─────────────────────────────────────────────────────────
--- Itens solicitados para troca/devolução dentro de um pedido.
--- ─────────────────────────────────────────────────────────────────────────────────
+### `exchange_items`
 
+Armazena os **itens solicitados para troca/devolução** dentro de um pedido, incluindo o motivo informado pelo cliente.
+
+```sql
 CREATE TABLE IF NOT EXISTS exchange_items (
     id              SERIAL          PRIMARY KEY,
     order_id        INTEGER         NOT NULL REFERENCES orders(id),
@@ -261,31 +289,32 @@ CREATE TABLE IF NOT EXISTS exchange_items (
     reason          TEXT            NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ─── 16. shipping_rates ─────────────────────────────────────────────────────────
--- Tabela de frete por estado (UF).
--- ─────────────────────────────────────────────────────────────────────────────────
+### `shipping_rates`
 
+Tabela de **frete por estado** (UF). Utilizada para calcular o custo de envio com base no endereço de entrega do cliente.
+
+```sql
 CREATE TABLE IF NOT EXISTS shipping_rates (
     id              SERIAL          PRIMARY KEY,
     state           VARCHAR(2)      NOT NULL UNIQUE,
     rate            NUMERIC(10,2)   NOT NULL,
     created_at      TIMESTAMP       DEFAULT NOW()
 );
+```
 
+---
 
--- ╔══════════════════════════════════════════════════════════════════════════════╗
--- ║                          ✅  SCRIPT FINALIZADO                             ║
--- ║                                                                            ║
--- ║   Total de tabelas: 16                                                     ║
--- ║   Banco: PostgreSQL                                                        ║
--- ║                                                                            ║
--- ║   👤 Usuários ─── users · addresses · credit_cards                         ║
--- ║   📖 Catálogo ─── authors · genres · books                                 ║
--- ║   🛒 Carrinho ─── carts · cart_items                                       ║
--- ║   📦 Pedidos  ─── orders · order_items · payments                          ║
--- ║   🎟️ Cupons   ─── coupons · coupon_usages · order_coupons                 ║
--- ║   🔄 Extras   ─── exchange_items · shipping_rates                          ║
--- ║                                                                            ║
--- ╚══════════════════════════════════════════════════════════════════════════════╝
+## 📊 Resumo das Tabelas
+
+| Domínio | Tabelas |
+|---------|---------|
+| **👤 Usuários** | `users` · `addresses` · `credit_cards` |
+| **📖 Catálogo** | `authors` · `genres` · `books` |
+| **🛒 Carrinho** | `carts` · `cart_items` |
+| **📦 Pedidos** | `orders` · `order_items` · `payments` |
+| **🎟️ Cupons** | `coupons` · `coupon_usages` · `order_coupons` |
+| **🔄 Trocas/Frete** | `exchange_items` · `shipping_rates` |
