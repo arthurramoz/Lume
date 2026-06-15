@@ -111,6 +111,37 @@ Abra o arquivo `frontend/index.html` com o **Live Server** (extensão do VS Code
 
 ---
 
+## 💜 Como Rodar os Testes (Cypress)
+
+Para validar o funcionamento da plataforma com testes de ponta a ponta (E2E), você pode usar o Cypress:
+
+### 1. Pré-requisitos
+Certifique-se de que:
+- O **backend** está rodando (`npm start` no diretório `/backend`).
+- O **frontend** está ativo e servido no endereço `http://localhost:5502` (conforme configurado no Live Server).
+
+### 2. Preparar o ambiente do frontend
+Navegue até a pasta do frontend e instale as dependências:
+```bash
+cd frontend
+npm install
+```
+
+### 3. Rodar os testes
+
+*   **Modo Interativo (Painel do Cypress 🖥️):**
+    ```bash
+    npm run cypress:open
+    ```
+    Isso abrirá a interface visual do Cypress. Selecione **E2E Testing**, escolha o navegador desejado e clique no arquivo de teste (`.cy.js`) que deseja executar.
+
+*   **Modo Headless (Execução direta no terminal 🧪):**
+    ```bash
+    npm run cypress:run
+    ```
+
+---
+
 ## 💜 Estrutura de Pastas
 
 ```
